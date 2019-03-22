@@ -1,5 +1,0 @@
-﻿language: csharp
-mono: none
-dotnet: 2.2.105
-before_install:
- - docker build -f Dockerfile . --tag steinho/nbicreferences
