@@ -10,7 +10,7 @@ ENV ApiName=api
 
 FROM microsoft/dotnet:2.2-sdk AS build
 WORKDIR /src
-COPY ["Nbic.Reference/Nbic.References.csproj", "Nbic.Reference/"]
+COPY "Nbic.References/Nbic.References.csproj", "Nbic.References/"
 RUN dotnet restore "Nbic.References/Nbic.References.csproj"
 COPY . .
 WORKDIR "/src/Nbic.References"
