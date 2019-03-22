@@ -3,6 +3,11 @@ WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
+ENV AuthAuthority=https://demo.identityserver.io
+ENV AuthAuthorityEndPoint=https://demo.identityserver.io/connect/authorize
+ENV AuthApiSecret="test-secret"
+ENV ApiName=api
+
 FROM microsoft/dotnet:2.2-sdk AS build
 WORKDIR /src
 COPY ["Nbic.Reference/Nbic.Reference.csproj", "Nbic.Reference/"]
