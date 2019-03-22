@@ -3,7 +3,7 @@ mono: none
 dist: xenial
 dotnet: 2.2
 script:
- - docker build --tag steinho/nbicreferences -f "Nbic.References/Dockerfile" . 
+ - docker build --tag steinhoem/nbicreferences -f "Nbic.References/Dockerfile" . 
 deploy:
   skip_cleanup: true
   provider: script
