@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.489
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nbic.Reference", "Nbic.Reference\Nbic.Reference.csproj", "{8959D747-7BDA-480B-9F6F-0EE5FA3C054C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nbic.References", "Nbic.References\Nbic.References.csproj", "{8959D747-7BDA-480B-9F6F-0EE5FA3C054C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

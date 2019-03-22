@@ -5,6 +5,7 @@
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <UserSecretsId>d1a9df1e-a712-4a31-80a5-eb5557a1f6ee</UserSecretsId>
+    <AssemblyName>Nbic.References</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

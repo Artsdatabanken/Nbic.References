@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Nbic.Reference
+namespace Nbic.References
 {
     /// <summary>
     /// Help swagger discover api operations that require authentication

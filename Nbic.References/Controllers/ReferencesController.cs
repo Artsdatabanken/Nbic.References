@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Nbic.Reference.Controllers
+namespace Nbic.References.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

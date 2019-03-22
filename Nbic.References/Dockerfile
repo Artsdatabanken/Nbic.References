@@ -10,16 +10,16 @@ ENV ApiName=api
 
 FROM microsoft/dotnet:2.2-sdk AS build
 WORKDIR /src
-COPY ["Nbic.Reference/Nbic.Reference.csproj", "Nbic.Reference/"]
-RUN dotnet restore "Nbic.Reference/Nbic.Reference.csproj"
+COPY ["Nbic.Reference/Nbic.References.csproj", "Nbic.Reference/"]
+RUN dotnet restore "Nbic.References/Nbic.References.csproj"
 COPY . .
-WORKDIR "/src/Nbic.Reference"
-RUN dotnet build "Nbic.Reference.csproj" -c Release -o /app
+WORKDIR "/src/Nbic.References"
+RUN dotnet build "Nbic.References.csproj" -c Release -o /app
 
 FROM build AS publish
-RUN dotnet publish "Nbic.Reference.csproj" -c Release -o /app
+RUN dotnet publish "Nbic.References.csproj" -c Release -o /app
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app .
-ENTRYPOINT ["dotnet", "Nbic.Reference.dll"]
+ENTRYPOINT ["dotnet", "Nbic.References.dll"]

@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.Swagger;
 
-namespace Nbic.Reference
+namespace Nbic.References
 {
     public class Startup
     {
@@ -143,7 +143,7 @@ namespace Nbic.Reference
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Nbic Reference API V1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Nbic References API V1");
 
                 c.OAuthClientId("implicit");
                 c.OAuthClientSecret(_authApiSecret);
