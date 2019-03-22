@@ -3,4 +3,4 @@ mono: none
 dist: xenial
 dotnet: 2.2
 before_install:
- - docker build -f Nbic.References/Dockerfile . --tag steinho/nbicreferences
+ - docker build --tag steinho/nbicreferences -f "nbic.references\dockerfile" . 
