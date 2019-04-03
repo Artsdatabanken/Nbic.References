@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Nbic.References.EFCore;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace Nbic.References
@@ -21,6 +24,9 @@ namespace Nbic.References
         private readonly string _authApiSecret;
         private readonly string _apiName;
 
+        private readonly string _dbProvider;
+        private readonly string _dbConnectionString;
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -30,6 +36,9 @@ namespace Nbic.References
             _authAuthorityEndPoint = Configuration.GetValue("AuthAuthorityEndPoint", "https://demo.identityserver.io/connect/authorize");
             _apiName = Configuration.GetValue("ApiName", "api");
             _authApiSecret = Configuration.GetValue("AuthApiSecret", "test-secret");
+
+            _dbProvider = Configuration.GetValue("DbProvider", "Sqlite");
+            _dbConnectionString = Configuration.GetValue("DbConnectionString", "DataSource=:memory:");
         }
 
         public IConfiguration Configuration { get; }
@@ -41,6 +50,77 @@ namespace Nbic.References
             
             AddIdentityServerAuthentication(services);
             AddSwaggerGenerator(services);
+            switch (_dbProvider)
+            {
+                case "Sqlite":
+                    
+                    AddSqliteContext(services);
+                    break;
+                case "SqlServer":
+                    AddSqlServerContext(services);
+                    break;
+            }
+           
+        }
+
+        private void AddSqlServerContext(IServiceCollection services)
+        {
+            using (var context = new SqlServerReferencesDbContext(_dbConnectionString))
+            {
+                try
+                {
+                    var any = context.RfReference.Any();
+                }
+                catch (Microsoft.Data.Sqlite.SqliteException ex)
+                {
+                    if (ex.Message.Contains("SQLite Error 1: 'no such table"))
+                    {
+                        context.Database.Migrate();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+            }
+            services.AddDbContext<ReferencesDbContext>(options =>
+                options.UseSqlServer(_dbConnectionString));
+        }
+
+        private void AddSqliteContext(IServiceCollection services)
+        {
+            if (_dbConnectionString == "DataSource=:memory:")
+            {
+                var context = new SqliteReferencesDbContext(_dbConnectionString);
+                context.Database.OpenConnection();
+                context.Database.Migrate();
+                services.AddSingleton<ReferencesDbContext>(context); // in memory version need this
+            }
+            else
+            {
+                // if database is empty - initiate
+                using (var context = new SqliteReferencesDbContext(_dbConnectionString))
+                {
+                    try
+                    {
+                        var any = context.RfReference.Any();
+                    }
+                    catch (Microsoft.Data.Sqlite.SqliteException ex)
+                    {
+                        if (ex.Message.Contains("SQLite Error 1: 'no such table"))
+                        {
+                            context.Database.Migrate();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+                }
+
+                services.AddDbContext<ReferencesDbContext>(options =>
+                    options.UseSqlite(_dbConnectionString));
+            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
