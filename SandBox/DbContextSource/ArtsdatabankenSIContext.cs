@@ -1,18 +1,23 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.Extensions.Configuration;
 
 namespace SandBox.DbContextSource
 {
     public partial class ArtsdatabankenSIContext : DbContext
     {
-        public ArtsdatabankenSIContext()
+        private string _connectionstring;
+
+        public ArtsdatabankenSIContext(string connectionstring)
         {
+            _connectionstring = connectionstring;
         }
 
-        public ArtsdatabankenSIContext(DbContextOptions<ArtsdatabankenSIContext> options)
+        public ArtsdatabankenSIContext(DbContextOptions<ArtsdatabankenSIContext> options, string connectionstring)
             : base(options)
         {
+            _connectionstring = connectionstring;
         }
 
         public virtual DbSet<RfReference> RfReference { get; set; }
@@ -22,8 +27,7 @@ namespace SandBox.DbContextSource
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Data Source=localhost;Initial Catalog=ArtsdatabankenSI;User Id=*; Password=*;");
+                optionsBuilder.UseSqlServer(_connectionstring);
             }
         }
 

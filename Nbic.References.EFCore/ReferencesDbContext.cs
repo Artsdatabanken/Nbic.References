@@ -17,8 +17,8 @@ namespace Nbic.References.EFCore
         {
         }
 
-        public virtual DbSet<RfReference> RfReference { get; set; }
-        public virtual DbSet<RfReferenceUsage> RfReferenceUsage { get; set; }
+        public virtual DbSet<Reference> Reference { get; set; }
+        public virtual DbSet<ReferenceUsage> ReferenceUsage { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -33,21 +33,21 @@ namespace Nbic.References.EFCore
         {
             modelBuilder.HasAnnotation("ProductVersion", "2.2.3-servicing-35854");
 
-            modelBuilder.Entity<RfReference>(entity =>
+            modelBuilder.Entity<Reference>(entity =>
             {
-                entity.HasKey(e => e.PkReferenceId)
-                    .HasName("PK_RF_ReferenceNew");
+                entity.HasKey(e => e.Id)
+                    .HasName("PK_Id");
 
-                entity.ToTable("RF_Reference");
+                entity.ToTable("Reference");
 
-                entity.HasIndex(e => new { e.FkUserId, e.ApplicationId })
-                    .HasName("NonClusteredIndex-20190323-220323");
+                entity.HasIndex(e => new { e.UserId, e.ApplicationId })
+                    .HasName("IX_UserId_ApplicationId");
 
-                entity.Property(e => e.PkReferenceId)
-                    .HasColumnName("PK_ReferenceID")
+                entity.Property(e => e.Id)
+                    .HasColumnName("Id")
                     .ValueGeneratedNever();
 
-                entity.Property(e => e.ApplicationId).HasColumnName("Application_ID");
+                entity.Property(e => e.ApplicationId).HasColumnName("ApplicationId");
 
                 entity.Property(e => e.Author).IsUnicode(false);
 
@@ -59,7 +59,7 @@ namespace Nbic.References.EFCore
 
                 entity.Property(e => e.Firstname).IsUnicode(false);
 
-                entity.Property(e => e.FkUserId).HasColumnName("FK_UserID");
+                entity.Property(e => e.UserId).HasColumnName("UserId");
 
                 entity.Property(e => e.ImportXml)
                     .HasColumnName("ImportXML")
@@ -80,7 +80,7 @@ namespace Nbic.References.EFCore
                 entity.Property(e => e.Title).IsUnicode(false);
 
                 entity.Property(e => e.Url)
-                    .HasColumnName("URL")
+                    .HasColumnName("Url")
                     .IsUnicode(false);
 
                 entity.Property(e => e.Volume).IsUnicode(false);
@@ -88,23 +88,23 @@ namespace Nbic.References.EFCore
                 entity.Property(e => e.Year).IsUnicode(false);
             });
 
-            modelBuilder.Entity<RfReferenceUsage>(entity =>
+            modelBuilder.Entity<ReferenceUsage>(entity =>
             {
-                entity.HasKey(e => new { e.FkReferenceId, e.FkApplicationId, e.FkUserId });
+                entity.HasKey(e => new { e.ReferenceId, e.ApplicationId, e.UserId });
 
-                entity.ToTable("RF_Reference_Usage");
+                entity.ToTable("ReferenceUsage");
 
-                entity.Property(e => e.FkReferenceId).HasColumnName("FK_ReferenceId");
+                entity.Property(e => e.ReferenceId).HasColumnName("ReferenceId");
 
-                entity.Property(e => e.FkApplicationId).HasColumnName("FK_Application_ID");
+                entity.Property(e => e.ApplicationId).HasColumnName("ApplicationId");
 
-                entity.Property(e => e.FkUserId).HasColumnName("FK_UserID");
+                entity.Property(e => e.UserId).HasColumnName("UserId");
 
-                entity.HasOne(d => d.FkReference)
-                    .WithMany(p => p.RfReferenceUsage)
-                    .HasForeignKey(d => d.FkReferenceId)
+                entity.HasOne(d => d.Reference)
+                    .WithMany(p => p.ReferenceUsage)
+                    .HasForeignKey(d => d.ReferenceId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_RF_Reference_Usage_RF_Reference");
+                    .HasConstraintName("FK_ReferenceUsage_Reference");
             });
         }
 

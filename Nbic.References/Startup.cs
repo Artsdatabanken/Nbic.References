@@ -53,7 +53,6 @@ namespace Nbic.References
             switch (_dbProvider)
             {
                 case "Sqlite":
-                    
                     AddSqliteContext(services);
                     break;
                 case "SqlServer":
@@ -69,18 +68,11 @@ namespace Nbic.References
             {
                 try
                 {
-                    var any = context.RfReference.Any();
+                    var any = context.Reference.Any();
                 }
-                catch (Microsoft.Data.Sqlite.SqliteException ex)
+                catch (Exception ex)
                 {
-                    if (ex.Message.Contains("SQLite Error 1: 'no such table"))
-                    {
-                        context.Database.Migrate();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    context.Database.Migrate();
                 }
             }
             services.AddDbContext<ReferencesDbContext>(options =>
@@ -103,7 +95,7 @@ namespace Nbic.References
                 {
                     try
                     {
-                        var any = context.RfReference.Any();
+                        var any = context.Reference.Any();
                     }
                     catch (Microsoft.Data.Sqlite.SqliteException ex)
                     {

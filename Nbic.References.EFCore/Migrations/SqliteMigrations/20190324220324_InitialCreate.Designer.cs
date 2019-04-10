@@ -18,13 +18,13 @@ namespace Nbic.References.EFCore.Migrations.SqliteMigrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "2.2.3-servicing-35854");
 
-            modelBuilder.Entity("Nbic.References.Public.Models.RfReference", b =>
+            modelBuilder.Entity("Nbic.References.Public.Models.Reference", b =>
                 {
-                    b.Property<Guid>("PkReferenceId")
-                        .HasColumnName("PK_ReferenceID");
+                    b.Property<Guid>("Id")
+                        .HasColumnName("Id");
 
                     b.Property<int?>("ApplicationId")
-                        .HasColumnName("Application_ID");
+                        .HasColumnName("ApplicationId");
 
                     b.Property<string>("Author")
                         .IsUnicode(false);
@@ -40,8 +40,8 @@ namespace Nbic.References.EFCore.Migrations.SqliteMigrations
                     b.Property<string>("Firstname")
                         .IsUnicode(false);
 
-                    b.Property<int?>("FkUserId")
-                        .HasColumnName("FK_UserID");
+                    b.Property<int?>("UserId")
+                        .HasColumnName("UserId");
 
                     b.Property<string>("ImportXml")
                         .HasColumnName("ImportXML")
@@ -69,7 +69,7 @@ namespace Nbic.References.EFCore.Migrations.SqliteMigrations
                         .IsUnicode(false);
 
                     b.Property<string>("Url")
-                        .HasColumnName("URL")
+                        .HasColumnName("Url")
                         .IsUnicode(false);
 
                     b.Property<string>("Volume")
@@ -78,37 +78,37 @@ namespace Nbic.References.EFCore.Migrations.SqliteMigrations
                     b.Property<string>("Year")
                         .IsUnicode(false);
 
-                    b.HasKey("PkReferenceId")
-                        .HasName("PK_RF_ReferenceNew");
+                    b.HasKey("Id")
+                        .HasName("PK_Id");
 
-                    b.HasIndex("FkUserId", "ApplicationId")
-                        .HasName("NonClusteredIndex-20190323-220323");
+                    b.HasIndex("UserId", "ApplicationId")
+                        .HasName("IX_UserId_ApplicationId");
 
-                    b.ToTable("RF_Reference");
+                    b.ToTable("Reference");
                 });
 
-            modelBuilder.Entity("Nbic.References.Public.Models.RfReferenceUsage", b =>
+            modelBuilder.Entity("Nbic.References.Public.Models.ReferenceUsage", b =>
                 {
-                    b.Property<Guid>("FkReferenceId")
-                        .HasColumnName("FK_ReferenceId");
+                    b.Property<Guid>("ReferenceId")
+                        .HasColumnName("ReferenceId");
 
-                    b.Property<int>("FkApplicationId")
-                        .HasColumnName("FK_Application_ID");
+                    b.Property<int>("ApplicationId")
+                        .HasColumnName("ApplicationId");
 
-                    b.Property<int>("FkUserId")
-                        .HasColumnName("FK_UserID");
+                    b.Property<int>("UserId")
+                        .HasColumnName("UserId");
 
-                    b.HasKey("FkReferenceId", "FkApplicationId", "FkUserId");
+                    b.HasKey("ReferenceId", "ApplicationId", "UserId");
 
-                    b.ToTable("RF_Reference_Usage");
+                    b.ToTable("ReferenceUsage");
                 });
 
-            modelBuilder.Entity("Nbic.References.Public.Models.RfReferenceUsage", b =>
+            modelBuilder.Entity("Nbic.References.Public.Models.ReferenceUsage", b =>
                 {
-                    b.HasOne("Nbic.References.Public.Models.RfReference", "FkReference")
-                        .WithMany("RfReferenceUsage")
-                        .HasForeignKey("FkReferenceId")
-                        .HasConstraintName("FK_RF_Reference_Usage_RF_Reference");
+                    b.HasOne("Nbic.References.Public.Models.Reference", "Reference")
+                        .WithMany("ReferenceUsage")
+                        .HasForeignKey("ReferenceId")
+                        .HasConstraintName("FK_ReferenceUsage_Reference");
                 });
 #pragma warning restore 612, 618
         }

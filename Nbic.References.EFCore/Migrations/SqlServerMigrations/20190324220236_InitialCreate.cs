@@ -8,12 +8,12 @@ namespace Nbic.References.EFCore.Migrations.SqlServerMigrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "RF_Reference",
+                name: "Reference",
                 columns: table => new
                 {
-                    PK_ReferenceID = table.Column<Guid>(nullable: false),
-                    Application_ID = table.Column<int>(nullable: true),
-                    FK_UserID = table.Column<int>(nullable: true),
+                    Id = table.Column<Guid>(nullable: false),
+                    ApplicationId = table.Column<int>(nullable: true),
+                    UserId = table.Column<int>(nullable: true),
                     Author = table.Column<string>(unicode: false, nullable: true),
                     Year = table.Column<string>(unicode: false, nullable: true),
                     Title = table.Column<string>(unicode: false, nullable: true),
@@ -32,41 +32,41 @@ namespace Nbic.References.EFCore.Migrations.SqlServerMigrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RF_ReferenceNew", x => x.PK_ReferenceID);
+                    table.PrimaryKey("PK_Id", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "RF_Reference_Usage",
+                name: "ReferenceUsage",
                 columns: table => new
                 {
-                    FK_ReferenceId = table.Column<Guid>(nullable: false),
-                    FK_Application_ID = table.Column<int>(nullable: false),
-                    FK_UserID = table.Column<int>(nullable: false)
+                    ReferenceId = table.Column<Guid>(nullable: false),
+                    ApplicationId = table.Column<int>(nullable: false),
+                    UserId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RF_Reference_Usage", x => new { x.FK_ReferenceId, x.FK_Application_ID, x.FK_UserID });
+                    table.PrimaryKey("PK_RF_Reference_Usage", x => new { x.ReferenceId, x.ApplicationId, x.UserId });
                     table.ForeignKey(
-                        name: "FK_RF_Reference_Usage_RF_Reference",
-                        column: x => x.FK_ReferenceId,
-                        principalTable: "RF_Reference",
-                        principalColumn: "PK_ReferenceID",
+                        name: "FK_ReferenceUsage_Reference",
+                        column: x => x.ReferenceId,
+                        principalTable: "Reference",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "NonClusteredIndex-20190323-220323",
-                table: "RF_Reference",
-                columns: new[] { "FK_UserID", "Application_ID" });
+                name: "IX_UserId_ApplicationId",
+                table: "Reference",
+                columns: new[] { "UserId", "ApplicationId" });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "RF_Reference_Usage");
+                name: "ReferenceUsage");
 
             migrationBuilder.DropTable(
-                name: "RF_Reference");
+                name: "Reference");
         }
     }
 }

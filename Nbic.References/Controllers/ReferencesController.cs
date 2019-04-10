@@ -23,16 +23,23 @@ namespace Nbic.References.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<RfReference>> GetAll(int offset = 0, int limit = 10)
+        public ActionResult<IEnumerable<Reference>> GetAll(int offset = 0, int limit = 10)
         {
-            return _referencesDbContext.RfReference.OrderBy(x => x.PkReferenceId)
+            return _referencesDbContext.Reference.OrderBy(x => x.Id)
                 .Skip(offset).Take(limit).ToArray(); // new RfReference[] { new RfReference(){ApplicationId = 1}, new RfReference() { ApplicationId = 2 } };
         }
 
-        [HttpGet("{id}")]
-        public ActionResult<RfReference> Get(Guid id)
+        [HttpGet]
+        [Route("Count")]
+        public ActionResult<int> GetCount()
         {
-            var reference = _referencesDbContext.RfReference.FirstOrDefault(x=>x.PkReferenceId == id);
+            return _referencesDbContext.Reference.Count(); // new RfReference[] { new RfReference(){ApplicationId = 1}, new RfReference() { ApplicationId = 2 } };
+        }
+
+        [HttpGet("{id}")]
+        public ActionResult<Reference> Get(Guid id)
+        {
+            var reference = _referencesDbContext.Reference.FirstOrDefault(x=>x.Id == id);
             if (reference == null)
             {
                 return NotFound();
@@ -43,19 +50,19 @@ namespace Nbic.References.Controllers
 
         [Authorize]
         [HttpPost]
-        public ActionResult<RfReference> Post([FromBody] RfReference value)
+        public ActionResult<Reference> Post([FromBody] Reference value)
         {
             if (value == null)
             {
                 return BadRequest("No data posted");
             }
 
-            if (value.PkReferenceId == Guid.Empty)
+            if (value.Id == Guid.Empty)
             {
-                value.PkReferenceId = Guid.NewGuid();
+                value.Id = Guid.NewGuid();
             }
 
-            _referencesDbContext.RfReference.Add(value);
+            _referencesDbContext.Reference.Add(value);
             try
             {
                 var recordsSaved = _referencesDbContext.SaveChanges();
@@ -72,8 +79,8 @@ namespace Nbic.References.Controllers
         }
         [Authorize]
         [HttpPost]
-        [Route("bulk")]
-        public ActionResult PostMany([FromBody] RfReference[] values)
+        [Route("Bulk")]
+        public ActionResult PostMany([FromBody] Reference[] values)
         {
             //if (value == null)
             //{
@@ -103,9 +110,9 @@ namespace Nbic.References.Controllers
 
         [Authorize]
         [HttpPut("{id}")]
-        public ActionResult Put(Guid id, [FromBody] RfReference value)
+        public ActionResult Put(Guid id, [FromBody] Reference value)
         {
-            var r = _referencesDbContext.RfReference.FirstOrDefault(x => x.PkReferenceId == id);
+            var r = _referencesDbContext.Reference.FirstOrDefault(x => x.Id == id);
             if (r == null)
             {
                 return NotFound();
@@ -142,9 +149,9 @@ namespace Nbic.References.Controllers
         [HttpDelete("{id}")]
         public ActionResult Delete(Guid id)
         {
-            var item = _referencesDbContext.RfReference.FirstOrDefault(x => x.PkReferenceId == id);
+            var item = _referencesDbContext.Reference.FirstOrDefault(x => x.Id == id);
             if (item == null) return NotFound();
-            _referencesDbContext.RfReference.Remove(item);
+            _referencesDbContext.Reference.Remove(item);
             _referencesDbContext.SaveChanges();
             return Ok();
 

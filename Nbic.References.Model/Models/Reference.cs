@@ -3,16 +3,16 @@ using System.Collections.Generic;
 
 namespace Nbic.References.Public.Models
 {
-    public partial class RfReference
+    public partial class Reference
     {
-        public RfReference()
+        public Reference()
         {
-            RfReferenceUsage = new HashSet<RfReferenceUsage>();
+            ReferenceUsage = new HashSet<ReferenceUsage>();
         }
 
-        public Guid PkReferenceId { get; set; }
+        public Guid Id { get; set; }
         public int? ApplicationId { get; set; }
-        public int? FkUserId { get; set; }
+        public int? UserId { get; set; }
         public string Author { get; set; }
         public string Year { get; set; }
         public string Title { get; set; }
@@ -29,6 +29,6 @@ namespace Nbic.References.Public.Models
         public string ImportXml { get; set; }
         public DateTime EditDate { get; set; }
 
-        public virtual ICollection<RfReferenceUsage> RfReferenceUsage { get; set; }
+        public virtual ICollection<ReferenceUsage> ReferenceUsage { get; set; }
     }
 }
