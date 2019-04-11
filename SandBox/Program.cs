@@ -1,13 +1,13 @@
 ﻿using System;
 using SandBox.DbContextSource;
-
+using System.Linq;
 namespace SandBox
 {
     using System.Net.Http;
     using System.Threading.Tasks;
     using IdentityModel;
     using IdentityModel.Client;
-
+    using Microsoft.EntityFrameworkCore;
     using Newtonsoft.Json.Linq;
 
     using SandBox.ApiContext;
@@ -42,7 +42,7 @@ namespace SandBox
             //migrate references
             var api = new ApiContext.Client(apiEndPoint, _apiClient);
             
-            foreach (var item in db.RfReference)
+            foreach (var item in db.RfReference.Include(Reference => Reference.RfReferenceUsage))
             {
                 Console.Write(item.PkReferenceId + ",");
                 var reference = MapToReference(item);
@@ -72,7 +72,11 @@ namespace SandBox
                                      Title = item.Title,
                                      Url = item.Url,
                                      Volume = item.Volume,
-                                     Year = item.Year
+                                     Year = item.Year,
+                                     ReferenceUsage = item.RfReferenceUsage.Select(ru => 
+                                     new ReferenceUsage(){
+                                         ReferenceId = ru.FkReferenceId, ApplicationId = ru.FkApplicationId, UserId = ru.FkUserId
+                                         }).ToArray()
                                   };
             return reference;
         }
