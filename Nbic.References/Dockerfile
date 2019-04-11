@@ -8,7 +8,7 @@ ENV AuthAuthorityEndPoint=https://demo.identityserver.io/connect/authorize
 ENV AuthApiSecret="test-secret"
 ENV ApiName=api
 ENV DbProvider=Sqlite
-ENV DbConnectionString="DataSource=:memory:"
+ENV DbConnectionString="Data Source=referencesdb.db"
 
 FROM microsoft/dotnet:2.2-sdk AS build
 WORKDIR /src

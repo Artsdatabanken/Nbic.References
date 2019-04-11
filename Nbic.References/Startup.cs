@@ -19,6 +19,8 @@ namespace Nbic.References
 {
     public class Startup
     {
+        private readonly ILogger _logger;
+
         private readonly string _authAuthority;
         private readonly string _authAuthorityEndPoint;
         private readonly string _authApiSecret;
@@ -27,9 +29,10 @@ namespace Nbic.References
         private readonly string _dbProvider;
         private readonly string _dbConnectionString;
 
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, ILogger<Startup> logger)
         {
             Configuration = configuration;
+            _logger = logger;
 
             // config
             _authAuthority = Configuration.GetValue("AuthAuthority", "https://demo.identityserver.io");
@@ -47,7 +50,6 @@ namespace Nbic.References
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            
             AddIdentityServerAuthentication(services);
             AddSwaggerGenerator(services);
             switch (_dbProvider)
@@ -64,6 +66,7 @@ namespace Nbic.References
 
         private void AddSqlServerContext(IServiceCollection services)
         {
+            _logger.LogInformation("Adding SqlServerContext");
             using (var context = new SqlServerReferencesDbContext(_dbConnectionString))
             {
                 try
@@ -72,26 +75,35 @@ namespace Nbic.References
                 }
                 catch (Exception ex)
                 {
+                    _logger.LogWarning("Empty Schema - initial create - after error " + ex.Message);
                     context.Database.Migrate();
                 }
             }
             services.AddDbContext<ReferencesDbContext>(options =>
                 options.UseSqlServer(_dbConnectionString));
+            _logger.LogInformation("Added SqlServerContext");
         }
 
         private void AddSqliteContext(IServiceCollection services)
         {
+            _logger.LogInformation("Adding SqliteContext");
             if (_dbConnectionString == "DataSource=:memory:")
             {
+                _logger.LogInformation("SqliteContext - ConnectionString:" + _dbConnectionString);
                 var context = new SqliteReferencesDbContext(_dbConnectionString);
                 context.Database.OpenConnection();
                 context.Database.Migrate();
                 services.AddSingleton<ReferencesDbContext>(context); // in memory version need this
+                _logger.LogWarning("Added InMemoryDatabase");
             }
             else
             {
                 // if database is empty - initiate
-                using (var context = new SqliteReferencesDbContext(_dbConnectionString))
+
+                if (!System.IO.Directory.Exists("Data")) System.IO.Directory.CreateDirectory("Data");
+                var dbConnectionString = _dbConnectionString.Contains('/') ? _dbConnectionString : _dbConnectionString.Replace("Data Source=", "Data Source=./Data/");
+                _logger.LogInformation("SqliteContext - ConnectionString:" + dbConnectionString);
+                using (var context = new SqliteReferencesDbContext(dbConnectionString))
                 {
                     try
                     {
@@ -102,16 +114,19 @@ namespace Nbic.References
                         if (ex.Message.Contains("SQLite Error 1: 'no such table"))
                         {
                             context.Database.Migrate();
+                            _logger.LogWarning("Empty Schema - initial create - after exception " + ex.Message);
                         }
                         else
                         {
                             throw;
                         }
                     }
+                    _logger.LogInformation("Added FileDatabase");
                 }
 
                 services.AddDbContext<ReferencesDbContext>(options =>
-                    options.UseSqlite(_dbConnectionString));
+                    options.UseSqlite(dbConnectionString));
+                _logger.LogInformation("Added SqliteContext");
             }
         }
 
@@ -147,7 +162,6 @@ namespace Nbic.References
 
         private void AddSwaggerGenerator(IServiceCollection services)
         {
-// swagger
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Info {Title = "Nbic References API via Swagger", Version = "v1"});
@@ -164,7 +178,6 @@ namespace Nbic.References
                 });
                 c.OperationFilter<SecurityRequirementsOperationFilter>();
             });
-            //services.AddSwaggerDocument();
         }
 
         private void AddIdentityServerAuthentication(IServiceCollection services)
@@ -224,10 +237,8 @@ namespace Nbic.References
                 c.OAuthScopeSeparator(" ");
                 //c.OAuthAdditionalQueryStringParams(new { foo = "bar" });
                 c.OAuthUseBasicAuthenticationWithAccessCodeGrant();
+                c.RoutePrefix = "";
             });
-            //app.UseSwagger();
-            //app.UseSwaggerUi3();
-            //app.UseReDoc();
         }
     }
 }
