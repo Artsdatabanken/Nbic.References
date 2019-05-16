@@ -9,6 +9,7 @@ ENV AuthApiSecret="test-secret"
 ENV ApiName=api
 ENV DbProvider=Sqlite
 ENV DbConnectionString="Data Source=referencesdb.db"
+VOLUME /app/Data
 
 FROM microsoft/dotnet:2.2-sdk AS build
 WORKDIR /src
