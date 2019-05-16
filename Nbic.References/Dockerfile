@@ -9,7 +9,6 @@ ENV AuthApiSecret="test-secret"
 ENV ApiName=api
 ENV DbProvider=Sqlite
 ENV DbConnectionString="Data Source=referencesdb.db"
-VOLUME /app/Data
 
 FROM microsoft/dotnet:2.2-sdk AS build
 WORKDIR /src
@@ -25,4 +24,5 @@ RUN dotnet publish "Nbic.References.csproj" -c Release -o /app
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app .
+VOLUME /app/Data
 ENTRYPOINT ["dotnet", "Nbic.References.dll"]
