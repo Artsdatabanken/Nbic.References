@@ -1,8 +1,5 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
+﻿using Microsoft.EntityFrameworkCore;
 using Nbic.References.Public.Models;
-using Microsoft.Extensions.Configuration;
 
 namespace Nbic.References.EFCore
 {

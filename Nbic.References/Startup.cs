@@ -5,21 +5,20 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Nbic.References.EFCore;
-using Swashbuckle.AspNetCore.Swagger;
+using Microsoft.OpenApi.Models;
+using Nbic.References.Swagger;
 
 namespace Nbic.References
 {
     public class Startup
     {
-        private readonly ILogger _logger;
+        private ILogger _logger;
 
         private readonly string _authAuthority;
         private readonly string _authAuthorityEndPoint;
@@ -29,12 +28,11 @@ namespace Nbic.References
         private readonly string _dbProvider;
         private readonly string _dbConnectionString;
 
-        public Startup(IConfiguration configuration, ILogger<Startup> logger)
+        public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            _logger = logger;
 
-            // config
+            // configuration
             _authAuthority = Configuration.GetValue("AuthAuthority", "https://demo.identityserver.io");
             _authAuthorityEndPoint = Configuration.GetValue("AuthAuthorityEndPoint", "https://demo.identityserver.io/connect/authorize");
             _apiName = Configuration.GetValue("ApiName", "api");
@@ -49,7 +47,8 @@ namespace Nbic.References
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddControllers();
+            //services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             AddIdentityServerAuthentication(services);
             AddSwaggerGenerator(services);
             switch (_dbProvider)
@@ -64,86 +63,20 @@ namespace Nbic.References
            
         }
 
-        private void AddSqlServerContext(IServiceCollection services)
-        {
-            _logger.LogInformation("Adding SqlServerContext");
-            using (var context = new SqlServerReferencesDbContext(_dbConnectionString))
-            {
-                try
-                {
-                    var any = context.Reference.Any();
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogWarning("Empty Schema - initial create - after error " + ex.Message);
-                    context.Database.Migrate();
-                }
-            }
-            services.AddDbContext<ReferencesDbContext>(options =>
-                options.UseSqlServer(_dbConnectionString));
-            _logger.LogInformation("Added SqlServerContext");
-        }
-
-        private void AddSqliteContext(IServiceCollection services)
-        {
-            _logger.LogInformation("Adding SqliteContext");
-            if (_dbConnectionString == "DataSource=:memory:")
-            {
-                _logger.LogInformation("SqliteContext - ConnectionString:" + _dbConnectionString);
-                var context = new SqliteReferencesDbContext(_dbConnectionString);
-                context.Database.OpenConnection();
-                context.Database.Migrate();
-                services.AddSingleton<ReferencesDbContext>(context); // in memory version need this
-                _logger.LogWarning("Added InMemoryDatabase");
-            }
-            else
-            {
-                // if database is empty - initiate
-
-                if (!System.IO.Directory.Exists("Data")) System.IO.Directory.CreateDirectory("Data");
-                var dbConnectionString = _dbConnectionString.Contains('/') ? _dbConnectionString : _dbConnectionString.Replace("Data Source=", "Data Source=./Data/");
-                _logger.LogInformation("SqliteContext - ConnectionString:" + dbConnectionString);
-                using (var context = new SqliteReferencesDbContext(dbConnectionString))
-                {
-                    try
-                    {
-                        var any = context.Reference.Any();
-                    }
-                    catch (Microsoft.Data.Sqlite.SqliteException ex)
-                    {
-                        if (ex.Message.Contains("SQLite Error 1: 'no such table"))
-                        {
-                            context.Database.Migrate();
-                            _logger.LogWarning("Empty Schema - initial create - after exception " + ex.Message);
-                        }
-                        else
-                        {
-                            throw;
-                        }
-                    }
-                    _logger.LogInformation("Added FileDatabase");
-                }
-
-                services.AddDbContext<ReferencesDbContext>(options =>
-                    options.UseSqlite(dbConnectionString));
-                _logger.LogInformation("Added SqliteContext");
-            }
-        }
-
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
         {
+            _logger = logger;
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
+                logger.LogInformation("In Development environment");
             }
 
             app.UseHttpsRedirection();
+
+            app.UseRouting();
+
             AddSwaggerMiddleware(app);
             app.UseCors(policy =>
             {
@@ -157,23 +90,100 @@ namespace Nbic.References
             });
 
             app.UseAuthentication();
-            app.UseMvc();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
+        }
+
+        private void AddSqlServerContext(IServiceCollection services)
+        {
+            Console.WriteLine("Adding SqlServerContext");
+            using (var context = new SqlServerReferencesDbContext(_dbConnectionString))
+            {
+                try
+                {
+                    var any = context.Reference.Any();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Empty Schema - initial create - after error " + ex.Message);
+                    context.Database.Migrate();
+                }
+            }
+            services.AddDbContext<ReferencesDbContext>(options =>
+                options.UseSqlServer(_dbConnectionString));
+            Console.WriteLine("Added SqlServerContext");
+        }
+
+        private void AddSqliteContext(IServiceCollection services)
+        {
+            Console.WriteLine("Adding SqliteContext");
+            if (_dbConnectionString == "DataSource=:memory:")
+            {
+                Console.WriteLine("SqliteContext - ConnectionString:" + _dbConnectionString);
+                var context = new SqliteReferencesDbContext(_dbConnectionString);
+                context.Database.OpenConnection();
+                context.Database.Migrate();
+                services.AddSingleton<ReferencesDbContext>(context); // in memory version need this
+                Console.WriteLine("Added InMemoryDatabase");
+            }
+            else
+            {
+                // if database is empty - initiate
+
+                if (!System.IO.Directory.Exists("Data")) System.IO.Directory.CreateDirectory("Data");
+                var dbConnectionString = _dbConnectionString.Contains('/') ? _dbConnectionString : _dbConnectionString.Replace("Data Source=", "Data Source=./Data/");
+                Console.WriteLine("SqliteContext - ConnectionString:" + dbConnectionString);
+                using (var context = new SqliteReferencesDbContext(dbConnectionString))
+                {
+                    try
+                    {
+                        var any = context.Reference.Any();
+                    }
+                    catch (Microsoft.Data.Sqlite.SqliteException ex)
+                    {
+                        if (ex.Message.Contains("SQLite Error 1: 'no such table"))
+                        {
+                            context.Database.Migrate();
+                            Console.WriteLine("Empty Schema - initial create - after exception " + ex.Message);
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+                    Console.WriteLine("Added FileDatabase");
+                }
+
+                services.AddDbContext<ReferencesDbContext>(options =>
+                    options.UseSqlite(dbConnectionString));
+                Console.WriteLine("Added SqliteContext");
+            }
         }
 
         private void AddSwaggerGenerator(IServiceCollection services)
         {
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info {Title = "Nbic References API via Swagger", Version = "v1"});
+                c.SwaggerDoc(  "v1", new OpenApiInfo() { Title = "Nbic References API via Swagger", Version = "v1"});
 
-                c.AddSecurityDefinition("oauth2", new OAuth2Scheme
+                c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
                 {
-                    Type = "oauth2",
-                    Flow = "implicit",
-                    AuthorizationUrl = _authAuthorityEndPoint,
-                    Scopes = new Dictionary<string, string>
+                    Type = SecuritySchemeType.OAuth2,
+                    Flows = new OpenApiOAuthFlows
                     {
-                        {_apiName, "Access Api"}
+                        Implicit = new OpenApiOAuthFlow
+                        {
+                            AuthorizationUrl = new Uri(_authAuthorityEndPoint, UriKind.Absolute),
+                            Scopes = new Dictionary<string, string>
+                            {
+                                {_apiName, "Access Api"}
+                                //{ "readAccess", "Access read operations" },
+                                //{ "writeAccess", "Access write operations" }
+                            }
+                        }
                     }
                 });
                 c.OperationFilter<SecurityRequirementsOperationFilter>();
