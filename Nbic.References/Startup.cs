@@ -89,8 +89,9 @@ namespace Nbic.References
                 policy.WithExposedHeaders("WWW-Authenticate");
             });
 
+            
             app.UseAuthentication();
-
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
