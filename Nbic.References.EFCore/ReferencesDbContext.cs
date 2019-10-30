@@ -47,10 +47,18 @@ namespace Nbic.References.EFCore
                 entity.Property(e => e.Author).IsUnicode(false);
 
                 entity.Property(e => e.Bibliography).IsUnicode(false);
-
-                entity.Property(e => e.EditDate)
+                if (this.Database.IsSqlite())
+                {
+                    entity.Property(e => e.EditDate)
+                        .HasColumnType("datetime")
+                        .HasDefaultValueSql("date('now')");
+                }
+                else
+                {
+                    entity.Property(e => e.EditDate)
                     .HasColumnType("datetime")
-                    .HasDefaultValueSql("(getdate())");
+                    .HasDefaultValueSql("GetUtcDate()");
+                }
 
                 entity.Property(e => e.Firstname).IsUnicode(false);
 
