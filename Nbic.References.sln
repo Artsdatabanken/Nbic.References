@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.489
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29409.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nbic.References", "Nbic.References\Nbic.References.csproj", "{8959D747-7BDA-480B-9F6F-0EE5FA3C054C}"
 EndProject
@@ -15,6 +15,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nbic.References.Public", "Nbic.References.Model\Nbic.References.Public.csproj", "{BD5A3AD6-BF68-4398-8EE4-A50C7FE5FAF4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nbic.References.EFCore", "Nbic.References.EFCore\Nbic.References.EFCore.csproj", "{BC6E3FB5-4F74-4CF3-B667-791543AD105E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nbic.References.Tests", "Nbic.References.Tests\Nbic.References.Tests.csproj", "{9DD48F8F-28B8-4C33-9C4C-339C0B360028}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,6 +36,10 @@ Global
 		{BC6E3FB5-4F74-4CF3-B667-791543AD105E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BC6E3FB5-4F74-4CF3-B667-791543AD105E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BC6E3FB5-4F74-4CF3-B667-791543AD105E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9DD48F8F-28B8-4C33-9C4C-339C0B360028}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9DD48F8F-28B8-4C33-9C4C-339C0B360028}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9DD48F8F-28B8-4C33-9C4C-339C0B360028}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9DD48F8F-28B8-4C33-9C4C-339C0B360028}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

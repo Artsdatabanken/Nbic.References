@@ -80,28 +80,31 @@ namespace Nbic.References.Controllers
         [Route("Bulk")]
         public ActionResult PostMany([FromBody] Reference[] values)
         {
-            //if (value == null)
-            //{
-            //    return BadRequest("No data posted");
-            //}
+            if (values == null || values.Length == 0)
+            {
+                return BadRequest("No data posted");
+            }
 
-            //if (value.PkReferenceId == Guid.Empty)
-            //{
-            //    value.PkReferenceId = Guid.NewGuid();
-            //}
-
-            //_referencesDbContext.RfReference.Add(value);
-            //try
-            //{
-            //    var recordsSaved = _referencesDbContext.SaveChanges();
-            //}
-            //catch (SqlException e)
-            //{
-            //    if (e.Message.Contains("Violation of PRIMARY KEY constraint"))
-            //    {
-            //        return BadRequest("Violation of PRIMARY KEY constraint. Key exists!");
-            //    }
-            //}
+            foreach (var value in values)
+            {
+                if (value.Id == Guid.Empty)
+                {
+                    value.Id = Guid.NewGuid();
+                }
+            }
+            
+            _referencesDbContext.Reference.AddRange(values);
+            try
+            {
+                var recordsSaved = _referencesDbContext.SaveChanges();
+            }
+            catch (SqlException e)
+            {
+                if (e.Message.Contains("Violation of PRIMARY KEY constraint"))
+                {
+                    return BadRequest("Violation of PRIMARY KEY constraint. Key exists!");
+                }
+            }
             return Ok();
 //            return value;
         }
