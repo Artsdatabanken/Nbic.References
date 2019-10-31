@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Nbic.References.Controllers;
@@ -12,7 +13,7 @@ namespace Nbic.References.Tests
     public class ReferenceControllerTests
     {
         [Fact]
-        public void CanPostReference()
+        public async Task CanPostReference()
         {
             // In-memory database only exists while the connection is open
             var connection = new SqliteConnection("DataSource=:memory:");
@@ -34,7 +35,7 @@ namespace Nbic.References.Tests
                 using (var context = new ReferencesDbContext(options))
                 {
                     var service = new ReferencesController(context);
-                    var result = service.Post(new Reference() {});
+                    var result = await service.PostAsync(new Reference() {}).ConfigureAwait(false);
                 }
 
                 // Use a separate instance of the context to verify correct data was saved to database

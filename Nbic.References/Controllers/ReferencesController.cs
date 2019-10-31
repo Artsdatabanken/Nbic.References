@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
@@ -48,7 +49,7 @@ namespace Nbic.References.Controllers
 
         [Authorize]
         [HttpPost]
-        public ActionResult<Reference> Post([FromBody] Reference value)
+        public async Task<ActionResult<Reference>> PostAsync([FromBody] Reference value)
         {
             if (value == null)
             {
@@ -63,7 +64,7 @@ namespace Nbic.References.Controllers
             _referencesDbContext.Reference.Add(value);
             try
             {
-                var recordsSaved = _referencesDbContext.SaveChanges();
+                var recordsSaved = await _referencesDbContext.SaveChangesAsync().ConfigureAwait(false);
             }
             catch (SqlException e)
             {
