@@ -2,7 +2,10 @@
 mono: none
 dist: xenial
 dotnet: 3.0.100
+install:
+ - dotnet restore
 script:
+ - dotnet build
  - docker build --tag steinhoem/nbicreferences -f "Nbic.References/Dockerfile" . 
 deploy:
   skip_cleanup: true
