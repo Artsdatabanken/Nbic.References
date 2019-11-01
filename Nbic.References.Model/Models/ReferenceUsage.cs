@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Nbic.References.Public.Models
 {
@@ -9,6 +10,8 @@ namespace Nbic.References.Public.Models
         public int ApplicationId { get; set; }
         public int UserId { get; set; }
 
+        
+        [JsonIgnore]
         public virtual Reference Reference { get; set; }
     }
 }

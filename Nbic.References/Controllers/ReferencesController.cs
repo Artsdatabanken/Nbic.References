@@ -120,7 +120,7 @@ namespace Nbic.References.Controllers
                 return BadRequest("No reference to put");
             }
 
-            var r = await this._referencesDbContext.Reference.FirstOrDefaultAsync(x => x.Id == id).ConfigureAwait(false);
+            var r = await this._referencesDbContext.Reference.Include(x => x.ReferenceUsage).FirstOrDefaultAsync(x => x.Id == id).ConfigureAwait(false);
             if (r == null)
             {
                 return NotFound();
@@ -128,8 +128,8 @@ namespace Nbic.References.Controllers
             // transfer values
             // these first three should never be changed
             //if (r.PkReferenceId != value.PkReferenceId) r.PkReferenceId = value.PkReferenceId;
-            //if (r.ApplicationId != value.ApplicationId) r.ApplicationId = value.ApplicationId;
-            //if (r.FkUserId != value.FkUserId) r.FkUserId = value.FkUserId;
+            if (r.ApplicationId != value.ApplicationId) r.ApplicationId = value.ApplicationId;
+            if (r.UserId != value.UserId) r.UserId = value.UserId;
             if (r.Author != value.Author) r.Author = value.Author;
             if (r.Bibliography != value.Bibliography) r.Bibliography = value.Bibliography;
             if (r.Firstname != value.Firstname) r.Firstname = value.Firstname;
@@ -144,10 +144,16 @@ namespace Nbic.References.Controllers
             if (r.Title != value.Title) r.Title = value.Title;
             if (r.Volume != value.Volume) r.Volume = value.Volume;
             if (r.Year != value.Year) r.Year = value.Year;
-            //if (r.ReferenceUsage)
-            //{
-                
-            //}
+            if (value.ReferenceUsage.Any())
+            {
+                r.ReferenceUsage.Clear();
+                foreach (var item in value.ReferenceUsage)
+                {
+                    item.Reference = r;
+                    item.ReferenceId = r.Id;
+                    r.ReferenceUsage.Add(item);
+                }
+            }
 
             r.EditDate = DateTime.Now;
             
@@ -159,12 +165,16 @@ namespace Nbic.References.Controllers
 
         [Authorize]
         [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(Guid id)
+        public ActionResult Delete(Guid id)
         {
-            var item = await this._referencesDbContext.Reference.FirstOrDefaultAsync(x => x.Id == id).ConfigureAwait(false);
+            var item = this._referencesDbContext.Reference.Include(x => x.ReferenceUsage).FirstOrDefault(x => x.Id == id);
             if (item == null) return NotFound();
+            if (item.ReferenceUsage.Any())
+            {
+                throw  new InvalidOperationException("Can not delete reference with referenceusages. Remove them first.");
+            }
             _referencesDbContext.Reference.Remove(item);
-            await this._referencesDbContext.SaveChangesAsync().ConfigureAwait(false);
+            this._referencesDbContext.SaveChanges();
             return Ok();
 
         }

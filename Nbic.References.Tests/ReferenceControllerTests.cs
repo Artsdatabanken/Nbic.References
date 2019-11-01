@@ -10,6 +10,8 @@ using Xunit;
 
 namespace Nbic.References.Tests
 {
+    using System.Collections.Generic;
+
     public class ReferenceControllerTests
     {
         [Fact]
@@ -44,6 +46,102 @@ namespace Nbic.References.Tests
             }
         }
 
+        [Fact]
+        public async Task CanDeleteReference()
+        {
+            GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
+
+            try
+            {
+                var id = Guid.NewGuid();
+                using (var context = new ReferencesDbContext(options))
+                {
+                    var service = new ReferencesController(context);
+                    var result = await service.PostAsync(new Reference() { Id = id }).ConfigureAwait(false);
+                }
+
+                // Use a separate instance of the context to verify correct data was saved to database
+                using (var context = new ReferencesDbContext(options))
+                {
+                    var service = new ReferencesController(context);
+                    var result = await service.Get(id).ConfigureAwait(false);
+                    Assert.Equal(id, result.Value.Id);
+                    service.Delete(id);
+                    
+                    var all = await service.GetAll(0, 10).ConfigureAwait(false);
+                    Assert.Empty(all);
+                }
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
+
+        [Fact]
+        public async Task CanNotDeleteReferenceIfUsed()
+        {
+            GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
+
+            try
+            {
+                var id = Guid.NewGuid();
+                using (var context = new ReferencesDbContext(options))
+                {
+                    var service = new ReferencesController(context);
+                    var result = await service.PostAsync(new Reference() { Id = id, ReferenceUsage = new List<ReferenceUsage>(){new ReferenceUsage(){ApplicationId = 1, UserId = 1}}}).ConfigureAwait(false);
+                }
+
+                // Use a separate instance of the context to verify correct data was saved to database
+                using (var context = new ReferencesDbContext(options))
+                {
+                    var service = new ReferencesController(context);
+                    var result = await service.Get(id).ConfigureAwait(false);
+                    Assert.Equal(id, result.Value.Id);
+                    
+                    Assert.Throws<System.InvalidOperationException>(() => service.Delete(id));
+                    
+                    var all = await service.GetAll(0, 10).ConfigureAwait(false);
+                    Assert.Single(all);
+                }
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
+        [Fact]
+        public async Task CanDeleteReferenceAfterDeletingUsages()
+        {
+            GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
+
+            try
+            {
+                var id = Guid.NewGuid();
+                using (var context = new ReferencesDbContext(options))
+                {
+                    var service = new ReferencesController(context);
+                    var result = await service.PostAsync(new Reference() { Id = id, ReferenceUsage = new List<ReferenceUsage>() { new ReferenceUsage() { ApplicationId = 1, UserId = 1 } } }).ConfigureAwait(false);
+                }
+
+                // Use a separate instance of the context to verify correct data was saved to database
+                using (var context = new ReferencesDbContext(options))
+                {
+                    var service = new ReferencesController(context);
+                    var result = await service.Get(id).ConfigureAwait(false);
+                    Assert.Equal(id, result.Value.Id);
+
+                    Assert.Throws<System.InvalidOperationException>(() => service.Delete(id));
+
+                    var all = await service.GetAll(0, 10).ConfigureAwait(false);
+                    Assert.Single(all);
+                }
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
         [Fact]
         public async Task CanPostAndReadCompleteReference()
         {

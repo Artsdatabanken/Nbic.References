@@ -1,4 +1,7 @@
-﻿language: ruby
+﻿language: csharp
+mono: none
+dist: xenial
+dotnet: 3.0.100
 script:
  - docker build --tag steinhoem/nbicreferences -f "Nbic.References/Dockerfile" . 
 deploy:
