@@ -25,7 +25,7 @@ namespace Nbic.References.Tests
                 using (var context = new ReferencesDbContext(options))
                 {
                     var service = new ReferencesController(context);
-                    var result = await service.PostAsync(new Reference() {Id = id}).ConfigureAwait(false);
+                    var result = await service.Post(new Reference() {Id = id}).ConfigureAwait(false);
                 }
 
                 // Use a separate instance of the context to verify correct data was saved to database
@@ -57,7 +57,7 @@ namespace Nbic.References.Tests
                 using (var context = new ReferencesDbContext(options))
                 {
                     var service = new ReferencesController(context);
-                    var result = await service.PostAsync(new Reference() { Id = id }).ConfigureAwait(false);
+                    var result = await service.Post(new Reference() { Id = id }).ConfigureAwait(false);
                 }
 
                 // Use a separate instance of the context to verify correct data was saved to database
@@ -89,7 +89,7 @@ namespace Nbic.References.Tests
                 using (var context = new ReferencesDbContext(options))
                 {
                     var service = new ReferencesController(context);
-                    var result = await service.PostAsync(new Reference() { Id = id, ReferenceUsage = new List<ReferenceUsage>(){new ReferenceUsage(){ApplicationId = 1, UserId = 1}}}).ConfigureAwait(false);
+                    var result = await service.Post(new Reference() { Id = id, ReferenceUsage = new List<ReferenceUsage>(){new ReferenceUsage(){ApplicationId = 1, UserId = 1}}}).ConfigureAwait(false);
                 }
 
                 // Use a separate instance of the context to verify correct data was saved to database
@@ -121,7 +121,7 @@ namespace Nbic.References.Tests
                 using (var context = new ReferencesDbContext(options))
                 {
                     var service = new ReferencesController(context);
-                    var result = await service.PostAsync(new Reference() { Id = id, ReferenceUsage = new List<ReferenceUsage>() { new ReferenceUsage() { ApplicationId = 1, UserId = 1 } } }).ConfigureAwait(false);
+                    var result = await service.Post(new Reference() { Id = id, ReferenceUsage = new List<ReferenceUsage>() { new ReferenceUsage() { ApplicationId = 1, UserId = 1 } } }).ConfigureAwait(false);
                 }
 
                 // Use a separate instance of the context to verify correct data was saved to database
@@ -177,7 +177,7 @@ namespace Nbic.References.Tests
                 using (var context = new ReferencesDbContext(options))
                 {
                     var service = new ReferencesController(context);
-                    var result = await service.PostAsync(reference).ConfigureAwait(false);
+                    var result = await service.Post(reference).ConfigureAwait(false);
                 }
 
                 // Use a separate instance of the context to verify correct data was saved to database
@@ -247,7 +247,7 @@ namespace Nbic.References.Tests
                 using (var context = new ReferencesDbContext(options))
                 {
                     var service = new ReferencesController(context);
-                    await service.PostAsync(reference).ConfigureAwait(false);
+                    await service.Post(reference).ConfigureAwait(false);
                 }
                 var replacementReference = new Reference()
                                           {
@@ -368,8 +368,8 @@ namespace Nbic.References.Tests
                 {
                     var id = Guid.NewGuid();
                     var service = new ReferencesController(context);
-                    await service.PostAsync(new Reference() {Id = id }).ConfigureAwait(false);
-                    await Assert.ThrowsAsync<InvalidOperationException>(() => service.PostAsync( new Reference() { Id = id, Summary = "Ref1" })).ConfigureAwait(false);
+                    await service.Post(new Reference() {Id = id }).ConfigureAwait(false);
+                    await Assert.ThrowsAsync<InvalidOperationException>(() => service.Post( new Reference() { Id = id, Summary = "Ref1" })).ConfigureAwait(false);
                 }
             }
             finally

@@ -51,7 +51,7 @@ namespace Nbic.References.Controllers
 
         [Authorize]
         [HttpPost]
-        public async Task<ActionResult<Reference>> PostAsync([FromBody] Reference value)
+        public async Task<ActionResult<Reference>> Post([FromBody] Reference value)
         {
             if (value == null)
             {
