@@ -19,17 +19,23 @@ namespace Nbic.References.Tests
 
             try
             {
-                
+                var id = Guid.NewGuid();
                 using (var context = new ReferencesDbContext(options))
                 {
                     var service = new ReferencesController(context);
-                    var result = service.Post(new Reference() {});
+                    var result = await service.PostAsync(new Reference() {Id = id}).ConfigureAwait(false);
                 }
 
                 // Use a separate instance of the context to verify correct data was saved to database
                 using (var context = new ReferencesDbContext(options))
                 {
-                    Assert.Equal(1, context.Reference.Count());
+                    var service = new ReferencesController(context);
+                    var result = await service.Get(id).ConfigureAwait(false);
+                    Assert.Equal(id, result.Value.Id);
+                    var count = (await service.GetCount().ConfigureAwait(false)).Value;
+                    Assert.Equal(1, count);
+                    var all = await service.GetAll(0, 10).ConfigureAwait(false);
+                    Assert.Single(all);
                 }
             }
             finally
@@ -39,7 +45,7 @@ namespace Nbic.References.Tests
         }
 
         [Fact]
-        public void CanPostAndReadCompleteReference()
+        public async Task CanPostAndReadCompleteReference()
         {
             GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
             try
@@ -73,7 +79,7 @@ namespace Nbic.References.Tests
                 using (var context = new ReferencesDbContext(options))
                 {
                     var service = new ReferencesController(context);
-                    var result = await service.PostAsync(new Reference() {}).ConfigureAwait(false);
+                    var result = await service.PostAsync(reference).ConfigureAwait(false);
                 }
 
                 // Use a separate instance of the context to verify correct data was saved to database
@@ -108,19 +114,102 @@ namespace Nbic.References.Tests
             }
         }
 
-        private static void GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options)
+        [Fact]
+        public async Task CanPostUpdateAndDeleteCompleteReference()
         {
-            // In-memory database only exists while the connection is open
-            connection = new SqliteConnection("DataSource=:memory:");
-            connection.Open();
-            options = new DbContextOptionsBuilder<ReferencesDbContext>()
-                                 .UseSqlite(connection)
-                                 .Options;
-
-            // Create the schema in the database
-            using (var context = new ReferencesDbContext(options))
+            GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
+            try
             {
-                context.Database.EnsureCreated();
+
+
+                Reference reference = new Reference()
+                {
+                    Id = Guid.NewGuid(),
+                    ApplicationId = 1,
+                    Author = "Theps",
+                    Bibliography = "tri",
+                    EditDate = DateTime.Now,
+                    Firstname = "stein",
+                    ImportXml = "no",
+                    Journal = "the",
+                    Keywords = "natur,nett",
+                    Lastname = "hoem",
+                    Middlename = "Ari",
+                    Pages = "1-3",
+                    ReferenceUsage = new[] { new ReferenceUsage() { UserId = 1, ApplicationId = 1 } },
+                    Summary = "Sum",
+                    Title = "Tiii",
+                    Url = "http://vg.no",
+                    UserId = 1,
+                    Volume = "1",
+                    Year = "1901"
+                };
+
+                // Run the test against one instance of the context
+                using (var context = new ReferencesDbContext(options))
+                {
+                    var service = new ReferencesController(context);
+                    await service.PostAsync(reference).ConfigureAwait(false);
+                }
+                var replacementReference = new Reference()
+                                          {
+                                              ApplicationId = 2,
+                                              Author = "Theps2",
+                                              Bibliography = "tri2",
+                                              EditDate = DateTime.Now,
+                                              Firstname = "stein2",
+                                              ImportXml = "no2",
+                                              Journal = "the2",
+                                              Keywords = "natur,nett2",
+                                              Lastname = "hoem2",
+                                              Middlename = "Ari2",
+                                              Pages = "1-32",
+                                              ReferenceUsage = new[] { new ReferenceUsage() { UserId = 2, ApplicationId = 2 } },
+                                              Summary = "Sum2",
+                                              Title = "Tiii2",
+                                              Url = "http://vg.no2",
+                                              UserId = 2,
+                                              Volume = "2",
+                                              Year = "1902"
+                                          };
+                using (var context = new ReferencesDbContext(options))
+                {
+                    var service = new ReferencesController(context);
+                    await service.Put(reference.Id, replacementReference).ConfigureAwait(false);
+                }
+
+                // Use a separate instance of the context to verify correct data was saved to database
+                using (var context = new ReferencesDbContext(options))
+                {
+                    Assert.Equal(1, context.Reference.Count());
+                    var service = new ReferencesController(context);
+                    var getit = await service.Get(reference.Id).ConfigureAwait(false);
+                    var it = getit.Value;
+                    
+                    Assert.Equal(it.Year, replacementReference.Year);
+                    Assert.Equal(it.Volume, replacementReference.Volume);
+                    //Assert.Equal(it.ApplicationId, replacementReference.ApplicationId);
+                    Assert.Equal(it.Author, replacementReference.Author);
+                    Assert.Equal(it.Bibliography, replacementReference.Bibliography);
+                    //Assert.Equal(it.EditDate, replacementReference.EditDate);
+                    Assert.Equal(it.Firstname, replacementReference.Firstname);
+                    //Assert.Equal(it.Id, replacementReference.Id);
+                    Assert.Equal(it.ImportXml, replacementReference.ImportXml);
+                    Assert.Equal(it.Journal, replacementReference.Journal);
+                    Assert.Equal(it.Lastname, replacementReference.Lastname);
+                    Assert.Equal(it.Middlename, replacementReference.Middlename);
+                    Assert.Equal(it.Pages, replacementReference.Pages);
+                    Assert.Single(it.ReferenceUsage);
+                    Assert.Equal(it.ReferenceUsage.First().ApplicationId, replacementReference.ReferenceUsage.First().ApplicationId);
+                    Assert.Equal(it.Summary, replacementReference.Summary);
+                    Assert.Equal(it.Title, replacementReference.Title);
+                    Assert.Equal(it.Url, replacementReference.Url);
+                    Assert.Equal(it.UserId, replacementReference.UserId);
+                }
+            }
+            finally
+            {
+                connection.Close();
             }
         }
 
@@ -171,7 +260,7 @@ namespace Nbic.References.Tests
             }
         }
         [Fact]
-        public void CanNotPostReferencesWithIdenticalId()
+        public async void CanNotPostReferencesWithIdenticalId()
         {
             GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
 
@@ -181,13 +270,29 @@ namespace Nbic.References.Tests
                 {
                     var id = Guid.NewGuid();
                     var service = new ReferencesController(context);
-                    var result = service.Post(new Reference() {Id = id });
-                    Assert.Throws<System.InvalidOperationException>(() => service.Post( new Reference() { Id = id, Summary = "Ref1" }));
+                    await service.PostAsync(new Reference() {Id = id }).ConfigureAwait(false);
+                    await Assert.ThrowsAsync<InvalidOperationException>(() => service.PostAsync( new Reference() { Id = id, Summary = "Ref1" })).ConfigureAwait(false);
                 }
             }
             finally
             {
                 connection.Close();
+            }
+        }
+
+        private static void GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options)
+        {
+            // In-memory database only exists while the connection is open
+            connection = new SqliteConnection("DataSource=:memory:");
+            connection.Open();
+            options = new DbContextOptionsBuilder<ReferencesDbContext>()
+                .UseSqlite(connection)
+                .Options;
+
+            // Create the schema in the database
+            using (var context = new ReferencesDbContext(options))
+            {
+                context.Database.EnsureCreated();
             }
         }
     }

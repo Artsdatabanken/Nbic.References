@@ -97,6 +97,7 @@ namespace Nbic.References
             });
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>")]
         private void AddSqlServerContext(IServiceCollection services)
         {
             Console.WriteLine("Adding SqlServerContext");
@@ -117,6 +118,7 @@ namespace Nbic.References
             Console.WriteLine("Added SqlServerContext");
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
         private void AddSqliteContext(IServiceCollection services)
         {
             Console.WriteLine("Adding SqliteContext");
@@ -134,7 +136,7 @@ namespace Nbic.References
                 // if database is empty - initiate
 
                 if (!System.IO.Directory.Exists("Data")) System.IO.Directory.CreateDirectory("Data");
-                var dbConnectionString = _dbConnectionString.Contains('/') ? _dbConnectionString : _dbConnectionString.Replace("Data Source=", "Data Source=./Data/");
+                var dbConnectionString = _dbConnectionString.Contains('/', StringComparison.InvariantCulture) ? _dbConnectionString : _dbConnectionString.Replace("Data Source=", "Data Source=./Data/", StringComparison.InvariantCulture);
                 Console.WriteLine("SqliteContext - ConnectionString:" + dbConnectionString);
                 using (var context = new SqliteReferencesDbContext(dbConnectionString))
                 {
@@ -144,7 +146,7 @@ namespace Nbic.References
                     }
                     catch (Microsoft.Data.Sqlite.SqliteException ex)
                     {
-                        if (ex.Message.Contains("SQLite Error 1: 'no such table"))
+                        if (ex.Message.Contains("SQLite Error 1: 'no such table", StringComparison.CurrentCulture))
                         {
                             context.Database.Migrate();
                             Console.WriteLine("Empty Schema - initial create - after exception " + ex.Message);

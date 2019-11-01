@@ -11,6 +11,7 @@ namespace Nbic.References.Swagger
     /// </summary>
     public class SecurityRequirementsOperationFilter : IOperationFilter
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "<Pending>")]
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
             // Policy names map to scopes

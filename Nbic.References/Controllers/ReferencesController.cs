@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Nbic.References.EFCore;
 using Nbic.References.Public.Models;
 
@@ -22,23 +23,24 @@ namespace Nbic.References.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Reference>> GetAll(int offset = 0, int limit = 10)
+        public async Task<List<Reference>> GetAll(int offset = 0, int limit = 10)
         {
-            return _referencesDbContext.Reference.OrderBy(x => x.Id)
-                .Skip(offset).Take(limit).ToArray(); // new RfReference[] { new RfReference(){ApplicationId = 1}, new RfReference() { ApplicationId = 2 } };
+            return await this._referencesDbContext.Reference.Include(x => x.ReferenceUsage).OrderBy(x => x.Id)
+                       .Skip(offset).Take(limit).ToListAsync().ConfigureAwait(false);
         }
 
         [HttpGet]
         [Route("Count")]
-        public ActionResult<int> GetCount()
+        public async Task<ActionResult<int>> GetCount()
         {
-            return _referencesDbContext.Reference.Count(); // new RfReference[] { new RfReference(){ApplicationId = 1}, new RfReference() { ApplicationId = 2 } };
+            return await this._referencesDbContext.Reference.CountAsync().ConfigureAwait(false);
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Reference> Get(Guid id)
+        public async Task<ActionResult<Reference>> Get(Guid id)
         {
-            var reference = _referencesDbContext.Reference.FirstOrDefault(x=>x.Id == id);
+            var reference = await _referencesDbContext.Reference.Include(x => x.ReferenceUsage)
+                                .FirstOrDefaultAsync(x => x.Id == id).ConfigureAwait(false);
             if (reference == null)
             {
                 return NotFound();
@@ -64,11 +66,11 @@ namespace Nbic.References.Controllers
             _referencesDbContext.Reference.Add(value);
             try
             {
-                var recordsSaved = await _referencesDbContext.SaveChangesAsync().ConfigureAwait(false);
+                await this._referencesDbContext.SaveChangesAsync().ConfigureAwait(false);
             }
             catch (SqlException e)
             {
-                if (e.Message.Contains("Violation of PRIMARY KEY constraint"))
+                if (e.Message.Contains("Violation of PRIMARY KEY constraint", StringComparison.InvariantCulture))
                 {
                     return BadRequest("Violation of PRIMARY KEY constraint. Key exists!");
                 }
@@ -101,20 +103,24 @@ namespace Nbic.References.Controllers
             }
             catch (SqlException e)
             {
-                if (e.Message.Contains("Violation of PRIMARY KEY constraint"))
+                if (e.Message.Contains("Violation of PRIMARY KEY constraint", StringComparison.InvariantCulture))
                 {
                     return BadRequest("Violation of PRIMARY KEY constraint. Key exists!");
                 }
             }
             return Ok();
-//            return value;
         }
 
         [Authorize]
         [HttpPut("{id}")]
-        public ActionResult Put(Guid id, [FromBody] Reference value)
+        public async Task<ActionResult> Put(Guid id, [FromBody] Reference value)
         {
-            var r = _referencesDbContext.Reference.FirstOrDefault(x => x.Id == id);
+            if (value == null)
+            {
+                return BadRequest("No reference to put");
+            }
+
+            var r = await this._referencesDbContext.Reference.FirstOrDefaultAsync(x => x.Id == id).ConfigureAwait(false);
             if (r == null)
             {
                 return NotFound();
@@ -138,23 +144,27 @@ namespace Nbic.References.Controllers
             if (r.Title != value.Title) r.Title = value.Title;
             if (r.Volume != value.Volume) r.Volume = value.Volume;
             if (r.Year != value.Year) r.Year = value.Year;
+            //if (r.ReferenceUsage)
+            //{
+                
+            //}
 
             r.EditDate = DateTime.Now;
             
             // todo usages
 
-            _referencesDbContext.SaveChanges();
+            await this._referencesDbContext.SaveChangesAsync().ConfigureAwait(false);
             return Ok();
         }
 
         [Authorize]
         [HttpDelete("{id}")]
-        public ActionResult Delete(Guid id)
+        public async Task<ActionResult> Delete(Guid id)
         {
-            var item = _referencesDbContext.Reference.FirstOrDefault(x => x.Id == id);
+            var item = await this._referencesDbContext.Reference.FirstOrDefaultAsync(x => x.Id == id).ConfigureAwait(false);
             if (item == null) return NotFound();
             _referencesDbContext.Reference.Remove(item);
-            _referencesDbContext.SaveChanges();
+            await this._referencesDbContext.SaveChangesAsync().ConfigureAwait(false);
             return Ok();
 
         }
