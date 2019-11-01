@@ -6,6 +6,7 @@ install:
  - dotnet restore
 script:
  - dotnet build
+ - dotnet test Nbic.References.Tests\Nbic.References.Tests.csproj
  - docker build --tag steinhoem/nbicreferences -f "Nbic.References/Dockerfile" . 
 deploy:
   skip_cleanup: true
