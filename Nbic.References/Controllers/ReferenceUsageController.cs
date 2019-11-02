@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Nbic.References.Controllers
 {
@@ -15,6 +16,7 @@ namespace Nbic.References.Controllers
 
     [Route("api/[controller]")]
     [ApiController]
+    [SwaggerTag("Read, add or delete ReferencesUsages")]
     public class ReferenceUsageController : ControllerBase
     {
         private readonly ReferencesDbContext _referencesDbContext;

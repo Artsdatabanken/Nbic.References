@@ -190,6 +190,7 @@ namespace Nbic.References
                     }
                 });
                 c.OperationFilter<SecurityRequirementsOperationFilter>();
+                c.EnableAnnotations();
             });
         }
 

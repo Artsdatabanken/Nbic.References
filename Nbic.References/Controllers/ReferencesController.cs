@@ -8,11 +8,13 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Nbic.References.EFCore;
 using Nbic.References.Public.Models;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Nbic.References.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [SwaggerTag("Create, read, update and delete References")]
     public class ReferencesController : ControllerBase
     {
         private readonly ReferencesDbContext _referencesDbContext;
