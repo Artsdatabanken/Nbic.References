@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Lucene.Net" Version="4.8.0-beta00006" />
+    <PackageReference Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00006" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Nbic.References.Model\Nbic.References.Public.csproj" />
+  </ItemGroup>
+
+</Project>

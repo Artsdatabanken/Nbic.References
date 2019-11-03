@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Nbic.Indexer\Nbic.Indexer.csproj" />
     <ProjectReference Include="..\Nbic.References.EFCore\Nbic.References.EFCore.csproj" />
     <ProjectReference Include="..\Nbic.References\Nbic.References.csproj" />
   </ItemGroup>

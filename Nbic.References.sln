@@ -16,7 +16,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nbic.References.Public", "N
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nbic.References.EFCore", "Nbic.References.EFCore\Nbic.References.EFCore.csproj", "{BC6E3FB5-4F74-4CF3-B667-791543AD105E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nbic.References.Tests", "Nbic.References.Tests\Nbic.References.Tests.csproj", "{9DD48F8F-28B8-4C33-9C4C-339C0B360028}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nbic.References.Tests", "Nbic.References.Tests\Nbic.References.Tests.csproj", "{9DD48F8F-28B8-4C33-9C4C-339C0B360028}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nbic.Indexer", "Nbic.Indexer\Nbic.Indexer.csproj", "{D72460C7-500D-44FD-A48C-B765063E6413}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -40,6 +42,10 @@ Global
 		{9DD48F8F-28B8-4C33-9C4C-339C0B360028}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9DD48F8F-28B8-4C33-9C4C-339C0B360028}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9DD48F8F-28B8-4C33-9C4C-339C0B360028}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D72460C7-500D-44FD-A48C-B765063E6413}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D72460C7-500D-44FD-A48C-B765063E6413}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D72460C7-500D-44FD-A48C-B765063E6413}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D72460C7-500D-44FD-A48C-B765063E6413}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
