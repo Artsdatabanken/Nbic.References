@@ -1,3 +1,3 @@
 ﻿#!/bin/bash
 echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-docker push steinhoem/nbicreferences
+docker push artsdatabanken/nbicreferences
