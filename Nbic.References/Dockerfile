@@ -26,4 +26,5 @@ FROM base AS final
 RUN groupadd -r --gid 1007 dockerrunner && useradd -r -g dockerrunner dockerrunner
 WORKDIR /app
 COPY --from=publish /app/publish .
+USER dockerrunner
 ENTRYPOINT ["dotnet", "Nbic.References.dll"]
