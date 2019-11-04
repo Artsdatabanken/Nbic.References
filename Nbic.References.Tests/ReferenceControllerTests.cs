@@ -3,10 +3,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Nbic.Indexer;
 using Nbic.References.Controllers;
 using Nbic.References.EFCore;
 using Nbic.References.Public.Models;
 using Xunit;
+using Index = Nbic.Indexer.Index;
 
 namespace Nbic.References.Tests
 {
@@ -18,20 +20,20 @@ namespace Nbic.References.Tests
         public async Task CanPostReference()
         {
             GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
-
+            using var index = new Index();
             try
             {
                 var id = Guid.NewGuid();
                 using (var context = new ReferencesDbContext(options))
                 {
-                    var service = new ReferencesController(context);
+                    var service = new ReferencesController(context, index);
                     var result = await service.Post(new Reference() {Id = id}).ConfigureAwait(false);
                 }
 
                 // Use a separate instance of the context to verify correct data was saved to database
                 using (var context = new ReferencesDbContext(options))
                 {
-                    var service = new ReferencesController(context);
+                    var service = new ReferencesController(context, index);
                     var result = await service.Get(id).ConfigureAwait(false);
                     Assert.Equal(id, result.Value.Id);
                     var count = (await service.GetCount().ConfigureAwait(false)).Value;
@@ -50,20 +52,20 @@ namespace Nbic.References.Tests
         public async Task CanDeleteReference()
         {
             GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
-
+            using var index = new Index();
             try
             {
                 var id = Guid.NewGuid();
                 using (var context = new ReferencesDbContext(options))
                 {
-                    var service = new ReferencesController(context);
+                    var service = new ReferencesController(context, index);
                     var result = await service.Post(new Reference() { Id = id }).ConfigureAwait(false);
                 }
 
                 // Use a separate instance of the context to verify correct data was saved to database
                 using (var context = new ReferencesDbContext(options))
                 {
-                    var service = new ReferencesController(context);
+                    var service = new ReferencesController(context, index);
                     var result = await service.Get(id).ConfigureAwait(false);
                     Assert.Equal(id, result.Value.Id);
                     service.Delete(id);
@@ -83,19 +85,20 @@ namespace Nbic.References.Tests
         {
             GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
 
+            using var index = new Index();
             try
             {
                 var id = Guid.NewGuid();
                 using (var context = new ReferencesDbContext(options))
                 {
-                    var service = new ReferencesController(context);
+                    var service = new ReferencesController(context, index);
                     var result = await service.Post(new Reference() { Id = id, ReferenceUsage = new List<ReferenceUsage>(){new ReferenceUsage(){ApplicationId = 1, UserId = 1}}}).ConfigureAwait(false);
                 }
 
                 // Use a separate instance of the context to verify correct data was saved to database
                 using (var context = new ReferencesDbContext(options))
                 {
-                    var service = new ReferencesController(context);
+                    var service = new ReferencesController(context, index);
                     var result = await service.Get(id).ConfigureAwait(false);
                     Assert.Equal(id, result.Value.Id);
                     
@@ -115,19 +118,20 @@ namespace Nbic.References.Tests
         {
             GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
 
+            using var index = new Index();
             try
             {
                 var id = Guid.NewGuid();
                 using (var context = new ReferencesDbContext(options))
                 {
-                    var service = new ReferencesController(context);
+                    var service = new ReferencesController(context, index);
                     var result = await service.Post(new Reference() { Id = id, ReferenceUsage = new List<ReferenceUsage>() { new ReferenceUsage() { ApplicationId = 1, UserId = 1 } } }).ConfigureAwait(false);
                 }
 
                 // Use a separate instance of the context to verify correct data was saved to database
                 using (var context = new ReferencesDbContext(options))
                 {
-                    var service = new ReferencesController(context);
+                    var service = new ReferencesController(context,index);
                     var result = await service.Get(id).ConfigureAwait(false);
                     Assert.Equal(id, result.Value.Id);
 
@@ -146,6 +150,8 @@ namespace Nbic.References.Tests
         public async Task CanPostAndReadCompleteReference()
         {
             GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
+
+            using var index = new Index();
             try
             {
 
@@ -176,7 +182,7 @@ namespace Nbic.References.Tests
                 // Run the test against one instance of the context
                 using (var context = new ReferencesDbContext(options))
                 {
-                    var service = new ReferencesController(context);
+                    var service = new ReferencesController(context, index);
                     var result = await service.Post(reference).ConfigureAwait(false);
                 }
 
@@ -216,6 +222,8 @@ namespace Nbic.References.Tests
         public async Task CanPostUpdateAndDeleteCompleteReference()
         {
             GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
+
+            using var index = new Index();
             try
             {
 
@@ -246,7 +254,7 @@ namespace Nbic.References.Tests
                 // Run the test against one instance of the context
                 using (var context = new ReferencesDbContext(options))
                 {
-                    var service = new ReferencesController(context);
+                    var service = new ReferencesController(context, index);
                     await service.Post(reference).ConfigureAwait(false);
                 }
                 var replacementReference = new Reference()
@@ -272,7 +280,7 @@ namespace Nbic.References.Tests
                                           };
                 using (var context = new ReferencesDbContext(options))
                 {
-                    var service = new ReferencesController(context);
+                    var service = new ReferencesController(context, index);
                     await service.Put(reference.Id, replacementReference).ConfigureAwait(false);
                 }
 
@@ -280,7 +288,7 @@ namespace Nbic.References.Tests
                 using (var context = new ReferencesDbContext(options))
                 {
                     Assert.Equal(1, context.Reference.Count());
-                    var service = new ReferencesController(context);
+                    var service = new ReferencesController(context, index);
                     var getit = await service.Get(reference.Id).ConfigureAwait(false);
                     var it = getit.Value;
                     
@@ -316,13 +324,14 @@ namespace Nbic.References.Tests
         {
             GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
 
+            using var index = new Index();
             try
             {
 
                 // Run the test against one instance of the context
                 using (var context = new ReferencesDbContext(options))
                 {
-                    var service = new ReferencesController(context);
+                    var service = new ReferencesController(context, index);
                     var result = service.PostMany(new[] {new Reference() {Summary = "Ref1"}, new Reference() { Summary = "Ref2" } });
                 }
 
@@ -343,12 +352,13 @@ namespace Nbic.References.Tests
         {
             GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
 
+            using var index = new Index();
             try
             {
                 using (var context = new ReferencesDbContext(options))
                 {
                     var id = Guid.NewGuid();
-                    var service = new ReferencesController(context);
+                    var service = new ReferencesController(context, index);
                     Assert.Throws<System.InvalidOperationException>(() => service.PostMany(new[] { new Reference() { Id = id, Summary = "Ref1" }, new Reference() { Id = id, Summary = "Ref2" } }));
                 }
             }
@@ -362,12 +372,13 @@ namespace Nbic.References.Tests
         {
             GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
 
+            using var index = new Index();
             try
             {
                 using (var context = new ReferencesDbContext(options))
                 {
                     var id = Guid.NewGuid();
-                    var service = new ReferencesController(context);
+                    var service = new ReferencesController(context, index);
                     await service.Post(new Reference() {Id = id }).ConfigureAwait(false);
                     await Assert.ThrowsAsync<InvalidOperationException>(() => service.Post( new Reference() { Id = id, Summary = "Ref1" })).ConfigureAwait(false);
                 }

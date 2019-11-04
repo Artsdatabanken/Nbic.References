@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Net.Mime;
+using System.Text.RegularExpressions;
 using Lucene.Net.Analysis.Core;
 using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Documents;
@@ -13,15 +17,18 @@ namespace Nbic.Indexer
 {
     public class Index: IDisposable
     {
+        private const string Field_Id = "Id";
+        private const string Field_String = "Reference";
         private IndexWriter _writer;
-        private SimpleAnalyzer _idAnalyser;
 
         public Index()
         {
             // Ensures index backwards compatibility
             var AppLuceneVersion = LuceneVersion.LUCENE_48;
 
-            var indexLocation = @"C:\Index";
+            var applicationRoot = this.GetApplicationRoot();
+            var indexLocation = applicationRoot.Contains('\\') ? applicationRoot + @"\Data\Index" : applicationRoot + @"/Data/Index";
+            //var otherdir = AppDomain.CurrentDomain.BaseDirectory;
             var dir = FSDirectory.Open(indexLocation);
 
             //create an analyzer to process the text
@@ -35,18 +42,25 @@ namespace Nbic.Indexer
         }
         public void AddOrUpdate(Reference reference)
         {
-            Document doc = new Document
+            var IndexString = string.Join(' ',
+                new List<string>() {reference.Firstname, reference.Middlename, reference.Lastname, reference.Summary, reference.Author, reference.Bibliography, reference.Journal, reference.Keywords, reference.Pages, reference.Title, reference.Url, reference.Volume, reference.Year}
+                    .Where(x => !string.IsNullOrWhiteSpace(x)).ToArray());
+
+            if (IndexString.Length > 0)
             {
-                new StringField("Id", reference.Id.ToString(),Field.Store.YES),
-                // StringField indexes but doesn't tokenize
-                new TextField("name", reference.Title, Field.Store.YES),
-                //new TextField("favoritePhrase", source.FavoritePhrase, Field.Store.YES)
-            };
-//            var id = new Term("Id", reference.Id.ToString());
-//            _writer.DeleteDocuments(id);
-            _writer.UpdateDocument(new Term("Id", reference.Id.ToString()), doc);
-           // _writer.AddDocument(doc);
-            _writer.Flush(triggerMerge: false, applyAllDeletes: false);
+                Document doc = new Document
+                {
+                    new StringField(Field_Id, reference.Id.ToString(), Field.Store.YES),
+                    // StringField indexes but doesn't tokenize
+                    new TextField(Field_String, IndexString, Field.Store.YES),
+                    //new TextField("favoritePhrase", source.FavoritePhrase, Field.Store.YES)
+                };
+                //            var id = new Term("Id", reference.Id.ToString());
+                //            _writer.DeleteDocuments(id);
+                _writer.UpdateDocument(new Term(Field_Id, reference.Id.ToString()), doc);
+                // _writer.AddDocument(doc);
+                _writer.Flush(triggerMerge: false, applyAllDeletes: false);
+            }
         }
 
         public void Dispose()
@@ -54,31 +68,46 @@ namespace Nbic.Indexer
             _writer.Dispose();
         }
 
-        public Guid SearchReference(string terms)
+        public IEnumerable<Guid> SearchReference(string terms)
         {
-            Guid result = Guid.Empty;
             var lower = terms.ToLower();
             var items = lower.Split(' ', StringSplitOptions.RemoveEmptyEntries);
             var phrase = new PhraseQuery();
             foreach (var item in items)
             {
-                phrase.Add(new Term("name", item));
+                phrase.Add(new Term(Field_String, item));
             }
             var searcher = new IndexSearcher(_writer.GetReader(applyAllDeletes: true));
             var hits = searcher.Search(phrase, 20 /* top 20 */).ScoreDocs;
             foreach (var hit in hits)
             {
                 var foundDoc = searcher.Doc(hit.Doc);
-                result = Guid.Parse(foundDoc.Get("Id"));
+                yield return Guid.Parse(foundDoc.Get(Field_Id));
             }
-
-            return result;
         }
 
         public void Delete(Guid newGuid)
         {
-            _writer.DeleteDocuments(new Term("Id", newGuid.ToString()));
+            _writer.DeleteDocuments(new Term(Field_Id, newGuid.ToString()));
             _writer.Flush(triggerMerge: false, applyAllDeletes: false);
+        }
+
+        public int IndexCount()
+        {
+            return _writer.MaxDoc;
+        }
+        public void ClearIndex()
+        {
+            _writer.DeleteAll();
+            _writer.Commit();
+        }
+        public string GetApplicationRoot()
+        {
+            var exePath = Path.GetDirectoryName(System.Reflection
+                .Assembly.GetExecutingAssembly().CodeBase);
+            Regex appPathMatcher = new Regex(@"(?<!fil)[A-Za-z]:\\+[\S\s]*?(?=\\+bin)");
+            var appRoot = appPathMatcher.Match(exePath).Value;
+            return appRoot;
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Nbic.References.EFCore;
 using Nbic.References.Public.Models;
 using Swashbuckle.AspNetCore.Annotations;
+using Index = Nbic.Indexer.Index;
 
 namespace Nbic.References.Controllers
 {
@@ -18,15 +20,37 @@ namespace Nbic.References.Controllers
     public class ReferencesController : ControllerBase
     {
         private readonly ReferencesDbContext _referencesDbContext;
+        private readonly Indexer.Index _index;
 
-        public ReferencesController(ReferencesDbContext referencesDbContext)
+        public ReferencesController(ReferencesDbContext referencesDbContext, Index index)//, Index index)
         {
             _referencesDbContext = referencesDbContext;
+            _index = index;
+            //if (indexer.IndexCount() != dbContext.Reference.Count())
+            //{
+            //    indexer.ClearIndex();
+            //    foreach (var reference in dbContext.Reference)
+            //    {
+            //        indexer.AddOrUpdate(reference);
+            //    }
+            //}
         }
 
         [HttpGet]
-        public async Task<List<Reference>> GetAll(int offset = 0, int limit = 10)
+        public async Task<List<Reference>> GetAll(int offset = 0, int limit = 10, string search = null)
         {
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var searchresults = _index.SearchReference(search);
+                var guids = searchresults as Guid[] ?? searchresults.ToArray();
+                if (!guids.Any())
+                {
+                    return new List<Reference>();
+                }
+                return await this._referencesDbContext.Reference.Include(x => x.ReferenceUsage).Where(x=>guids.Contains(x.Id))
+                    .OrderBy(x => x.Id)
+                    .Skip(offset).Take(limit).ToListAsync().ConfigureAwait(false);
+            }
             return await this._referencesDbContext.Reference.Include(x => x.ReferenceUsage).OrderBy(x => x.Id)
                        .Skip(offset).Take(limit).ToListAsync().ConfigureAwait(false);
         }
@@ -69,6 +93,7 @@ namespace Nbic.References.Controllers
             try
             {
                 await this._referencesDbContext.SaveChangesAsync().ConfigureAwait(false);
+                _index.AddOrUpdate(value);
             }
             catch (SqlException e)
             {
@@ -99,6 +124,12 @@ namespace Nbic.References.Controllers
             }
             
             _referencesDbContext.Reference.AddRange(values);
+            foreach (var reference in values)
+            {
+                // todo - create batch version
+                _index.AddOrUpdate(reference);
+            }
+
             try
             {
                 var recordsSaved = _referencesDbContext.SaveChanges();
@@ -162,6 +193,7 @@ namespace Nbic.References.Controllers
             // todo usages
 
             await this._referencesDbContext.SaveChangesAsync().ConfigureAwait(false);
+            _index.AddOrUpdate(r);
             return Ok();
         }
 
@@ -177,6 +209,7 @@ namespace Nbic.References.Controllers
             }
             _referencesDbContext.Reference.Remove(item);
             this._referencesDbContext.SaveChanges();
+            _index.Delete(item.Id);
             return Ok();
 
         }

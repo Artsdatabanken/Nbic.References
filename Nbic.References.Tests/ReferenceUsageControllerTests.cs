@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Nbic.References.Controllers;
 using Nbic.References.EFCore;
 using Nbic.References.Public.Models;
+using Nbic.Indexer;
 using Xunit;
 
 namespace Nbic.References.Tests
@@ -13,6 +14,7 @@ namespace Nbic.References.Tests
     using System.Collections.Generic;
 
     using Microsoft.AspNetCore.Mvc;
+    using Index = Indexer.Index;
 
     public class ReferenceUsageControllerTests
     {
@@ -20,13 +22,14 @@ namespace Nbic.References.Tests
         public async Task CanPostReferenceAndGetReferenceUsages()
         {
             GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
+            using var index = new Index();
 
             try
             {
                 var id = Guid.NewGuid();
                 using (var context = new ReferencesDbContext(options))
                 {
-                    var service = new ReferencesController(context);
+                    var service = new ReferencesController(context, index);
                     await service.Post(new Reference() {Id = id, ReferenceUsage = new List<ReferenceUsage>() { new ReferenceUsage() { ApplicationId = 1, UserId = 1 } } }).ConfigureAwait(false);
                 }
 
@@ -53,20 +56,21 @@ namespace Nbic.References.Tests
         public async Task CanDeleteReferenceIfUsageReferencesIsDeletedFirst()
         {
             GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
+            using var index = new Index();
 
             try
             {
                 var id = Guid.NewGuid();
                 using (var context = new ReferencesDbContext(options))
                 {
-                    var service = new ReferencesController(context);
+                    var service = new ReferencesController(context, index);
                     await service.Post(new Reference() { Id = id, ReferenceUsage = new List<ReferenceUsage>() { new ReferenceUsage() { ApplicationId = 1, UserId = 1 } } }).ConfigureAwait(false);
                 }
 
                 // Use a separate instance of the context to verify correct data was saved to database
                 using (var context = new ReferencesDbContext(options))
                 {
-                    var service = new ReferencesController(context);
+                    var service = new ReferencesController(context, index);
                     var usageService = new ReferenceUsageController(context);
                     usageService.DeleteAllUsages(id);
                     var all = await usageService.GetAll(0, 10).ConfigureAwait(false);
@@ -91,20 +95,21 @@ namespace Nbic.References.Tests
         public async Task CanDeleteSingleReferenceUsage()
         {
             GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
+            using var index = new Index();
 
             try
             {
                 var id = Guid.NewGuid();
                 using (var context = new ReferencesDbContext(options))
                 {
-                    var service = new ReferencesController(context);
+                    var service = new ReferencesController(context, index);
                     await service.Post(new Reference() { Id = id, ReferenceUsage = new List<ReferenceUsage>() { new ReferenceUsage() { ApplicationId = 1, UserId = 1 }, new ReferenceUsage() { ApplicationId = 2, UserId = 1 } } }).ConfigureAwait(false);
                 }
 
                 // Use a separate instance of the context to verify correct data was saved to database
                 using (var context = new ReferencesDbContext(options))
                 {
-                    var service = new ReferencesController(context);
+                    var service = new ReferencesController(context, index);
                     var usageService = new ReferenceUsageController(context);
                     usageService.DeleteUsage(id, 1,1);
                     var all = await usageService.GetAll(0, 10).ConfigureAwait(false);
@@ -128,19 +133,20 @@ namespace Nbic.References.Tests
         {
             GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
 
+            using var index = new Index();
             try
             {
                 var id = Guid.NewGuid();
                 using (var context = new ReferencesDbContext(options))
                 {
-                    var service = new ReferencesController(context);
+                    var service = new ReferencesController(context, index);
                     await service.Post(new Reference() { Id = id, ReferenceUsage = new List<ReferenceUsage>() { new ReferenceUsage() { ApplicationId = 1, UserId = 1 }, new ReferenceUsage() { ApplicationId = 2, UserId = 1 } } }).ConfigureAwait(false);
                 }
 
                 // Use a separate instance of the context to verify correct data was saved to database
                 using (var context = new ReferencesDbContext(options))
                 {
-                    var service = new ReferencesController(context);
+                    var service = new ReferencesController(context, index);
                     var usageService = new ReferenceUsageController(context);
                     await usageService.Post(new ReferenceUsage() { ApplicationId = 3, ReferenceId = id, UserId = 1 }).ConfigureAwait(false);
                     var all = await usageService.GetAll(0, 10).ConfigureAwait(false);
@@ -159,20 +165,21 @@ namespace Nbic.References.Tests
         public async Task CanAddSingleDuplicateReferenceUsage()
         {
             GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
+            using var index = new Index();
 
             try
             {
                 var id = Guid.NewGuid();
                 using (var context = new ReferencesDbContext(options))
                 {
-                    var service = new ReferencesController(context);
+                    var service = new ReferencesController(context, index);
                     await service.Post(new Reference() { Id = id, ReferenceUsage = new List<ReferenceUsage>() { new ReferenceUsage() { ApplicationId = 1, UserId = 1 }, new ReferenceUsage() { ApplicationId = 2, UserId = 1 } } }).ConfigureAwait(false);
                 }
 
                 // Use a separate instance of the context to verify correct data was saved to database
                 using (var context = new ReferencesDbContext(options))
                 {
-                    var service = new ReferencesController(context);
+                    var service = new ReferencesController(context, index);
                     var usageService = new ReferenceUsageController(context);
                     await usageService.Post(new ReferenceUsage() { ApplicationId = 1, ReferenceId = id, UserId = 1 }).ConfigureAwait(false);
                     var all = await usageService.GetAll(0, 10).ConfigureAwait(false);
