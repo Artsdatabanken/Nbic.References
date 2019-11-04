@@ -1,13 +1,13 @@
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.0-buster-slim AS base
 WORKDIR /app
-EXPOSE 80
-EXPOSE 443
+EXPOSE 8000
 ENV AuthAuthority=https://demo.identityserver.io
 ENV AuthAuthorityEndPoint=https://demo.identityserver.io/connect/authorize
 ENV AuthApiSecret="test-secret"
 ENV ApiName=api
 ENV DbProvider=Sqlite
 ENV DbConnectionString="Data Source=references.db"
+ENV ASPNETCORE_URLS="http://+:8000"
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.0-buster AS build
 WORKDIR /src
@@ -23,6 +23,8 @@ FROM build AS publish
 RUN dotnet publish "Nbic.References.csproj" -c Release -o /app/publish
 
 FROM base AS final
+RUN groupadd -r --gid 1007 dockerrunner && useradd -r -g dockerrunner dockerrunner
 WORKDIR /app
 COPY --from=publish /app/publish .
+USER dockerrunner
 ENTRYPOINT ["dotnet", "Nbic.References.dll"]
