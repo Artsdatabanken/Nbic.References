@@ -1,9 +1,9 @@
 # Nbic.References
-Reference database that handles litterature references, person and url references. Also track usage by userid and applicationid if needed.
+Reference database that handles literature references, person and url references. Also tracks usage by userid and applicationid if needed.
 
-Why: Converted an old reference database from class library to Rest APi 
+Why: Converted an old reference database from class library to REST API
 
-Api documented with Swagger at root url
+API documented with Swagger at root URL
 
 
 ## Test with docker
@@ -26,7 +26,7 @@ This configuration not recommended for production - alter as needed.
 ENV DbProvider=Sqlite or SqlServer
 Schema will be created on first run.
 
-If using sqllite - map volume /app/Data/ for persistence and backup 
+If using SQLite - map volume /app/Data/ for persistence and backup 
 
 Feel free to fork!
 
