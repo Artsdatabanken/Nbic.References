@@ -26,14 +26,26 @@ namespace Nbic.References.Controllers
         {
             _referencesDbContext = referencesDbContext;
             _index = index;
-            //if (indexer.IndexCount() != dbContext.Reference.Count())
-            //{
-            //    indexer.ClearIndex();
-            //    foreach (var reference in dbContext.Reference)
-            //    {
-            //        indexer.AddOrUpdate(reference);
-            //    }
-            //}
+            IndexSanityCheck();
+            
+        }
+
+        private void IndexSanityCheck()
+        {
+            Index index;
+            if (_index.FirstUse)
+            {
+                if (_index.IndexCount() != _referencesDbContext.Reference.Count())
+                {
+                    _index.ClearIndex();
+                    foreach (var reference in _referencesDbContext.Reference)
+                    {
+                        _index.AddOrUpdate(reference);
+                    }
+                }
+
+                _index.FirstUse = false;
+            }
         }
 
         [HttpGet]

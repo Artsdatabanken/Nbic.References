@@ -21,6 +21,8 @@ namespace Nbic.Indexer
         private const string Field_String = "Reference";
         private IndexWriter _writer;
 
+        private bool firstUse = true;
+
         public Index()
         {
             // Ensures index backwards compatibility
@@ -45,6 +47,13 @@ namespace Nbic.Indexer
             _writer = new IndexWriter(dir, indexConfig);
 
         }
+
+        public bool FirstUse
+        {
+            get => firstUse;
+            set => firstUse = value;
+        }
+
         public void AddOrUpdate(Reference reference)
         {
             var IndexString = string.Join(' ',

@@ -60,7 +60,8 @@ namespace Nbic.References
                     AddSqlServerContext(services);
                     break;
             }
-           
+
+            services.AddSingleton<Indexer.Index>(new Indexer.Index());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
