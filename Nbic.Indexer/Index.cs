@@ -27,7 +27,12 @@ namespace Nbic.Indexer
             var AppLuceneVersion = LuceneVersion.LUCENE_48;
 
             var applicationRoot = this.GetApplicationRoot();
+            if (string.IsNullOrWhiteSpace(applicationRoot))
+            {
+                applicationRoot = AppDomain.CurrentDomain.BaseDirectory;
+            }
             var indexLocation = applicationRoot.Contains('\\') ? applicationRoot + @"\Data\Index" : applicationRoot + @"/Data/Index";
+            
             //var otherdir = AppDomain.CurrentDomain.BaseDirectory;
             var dir = FSDirectory.Open(indexLocation);
 
