@@ -3,6 +3,7 @@ using SandBox.DbContextSource;
 using System.Linq;
 namespace SandBox
 {
+    using System.Collections.Generic;
     using System.Net.Http;
     using System.Threading.Tasks;
     using IdentityModel;
@@ -41,14 +42,24 @@ namespace SandBox
 
             //migrate references
             var api = new ApiContext.Client(apiEndPoint, _apiClient);
-            
+            var batch = new List<Reference>();
             foreach (var item in db.RfReference.Include(Reference => Reference.RfReferenceUsage))
             {
                 Console.Write(item.PkReferenceId + ",");
                 var reference = MapToReference(item);
-                var post = api.PostAsync(reference);
-                post.Wait();
+                batch.Add(reference);
+                if (batch.Count() > 50)
+                {
+                    var post = api.BulkAsync(batch);
+                    post.Wait();
+                    batch = new List<Reference>();
+                }
             }
+            if (batch.Count() > 0)
+                {
+                    var post = api.BulkAsync(batch);
+                    post.Wait();
+                }
         }
 
         private static ApiContext.Reference MapToReference(RfReference item)

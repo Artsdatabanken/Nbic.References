@@ -56,25 +56,57 @@ namespace Nbic.Indexer
 
         public void AddOrUpdate(Reference reference)
         {
-            var IndexString = string.Join(' ',
-                new List<string>() {reference.Firstname, reference.Middlename, reference.Lastname, reference.Summary, reference.Author, reference.Bibliography, reference.Journal, reference.Keywords, reference.Pages, reference.Title, reference.Url, reference.Volume, reference.Year}
-                    .Where(x => !string.IsNullOrWhiteSpace(x)).ToArray());
+            var indexString = GetIndexString(reference);
 
-            if (IndexString.Length > 0)
+            if (indexString.Length > 0)
             {
                 Document doc = new Document
                 {
                     new StringField(Field_Id, reference.Id.ToString(), Field.Store.YES),
                     // StringField indexes but doesn't tokenize
-                    new TextField(Field_String, IndexString, Field.Store.YES),
+                    new TextField(Field_String, indexString, Field.Store.YES),
                     //new TextField("favoritePhrase", source.FavoritePhrase, Field.Store.YES)
                 };
                 //            var id = new Term("Id", reference.Id.ToString());
                 //            _writer.DeleteDocuments(id);
                 _writer.UpdateDocument(new Term(Field_Id, reference.Id.ToString()), doc);
                 // _writer.AddDocument(doc);
-                _writer.Flush(triggerMerge: false, applyAllDeletes: false);
+                //_writer.Flush(triggerMerge: false, applyAllDeletes: false);
+                _writer.Commit();
             }
+        }
+
+        private static string GetIndexString(Reference reference)
+        {
+            return string.Join(' ',
+                new List<string>() {reference.Firstname, reference.Middlename, reference.Lastname, reference.Summary, reference.Author, reference.Bibliography, reference.Journal, reference.Keywords, reference.Pages, reference.Title, reference.Url, reference.Volume, reference.Year}
+                    .Where(x => !string.IsNullOrWhiteSpace(x)).ToArray());
+        }
+
+        public void AddOrUpdate(IEnumerable<Reference> refs)
+        {
+            foreach (var reference in refs)
+            {
+                var indexString = GetIndexString(reference);
+
+                //if (indexString.Length <= 0) continue;
+                Document doc = new Document
+                                   {
+                                       new StringField(Field_Id, reference.Id.ToString(), Field.Store.YES),
+                                       // StringField indexes but doesn't tokenize
+                                       new TextField(Field_String, indexString, Field.Store.YES),
+                                       //new TextField("favoritePhrase", source.FavoritePhrase, Field.Store.YES)
+                                   };
+                //            var id = new Term("Id", reference.Id.ToString());
+                //            _writer.DeleteDocuments(id);
+                _writer.UpdateDocument(new Term(Field_Id, reference.Id.ToString()), doc);
+
+                // _writer.AddDocument(doc);
+                
+            }
+            
+            //_writer.Flush(triggerMerge: false, applyAllDeletes: false);
+            _writer.Commit();
         }
 
         public void Dispose()
@@ -82,7 +114,7 @@ namespace Nbic.Indexer
             _writer.Dispose();
         }
 
-        public IEnumerable<Guid> SearchReference(string terms)
+        public IEnumerable<Guid> SearchReference(string terms, int offset, int limit)
         {
             var lower = terms.ToLower();
             var items = lower.Split(' ', StringSplitOptions.RemoveEmptyEntries);
@@ -92,9 +124,13 @@ namespace Nbic.Indexer
                 phrase.Add(new Term(Field_String, item));
             }
             var searcher = new IndexSearcher(_writer.GetReader(applyAllDeletes: true));
-            var hits = searcher.Search(phrase, 20 /* top 20 */).ScoreDocs;
+            var startAt = (offset * limit);
+            var hits = searcher.Search(phrase, startAt + limit /* top 20 */).ScoreDocs;
+            var count = 0;
             foreach (var hit in hits)
             {
+                count++;
+                if (count <= startAt) continue;
                 var foundDoc = searcher.Doc(hit.Doc);
                 yield return Guid.Parse(foundDoc.Get(Field_Id));
             }
@@ -103,7 +139,8 @@ namespace Nbic.Indexer
         public void Delete(Guid newGuid)
         {
             _writer.DeleteDocuments(new Term(Field_Id, newGuid.ToString()));
-            _writer.Flush(triggerMerge: false, applyAllDeletes: false);
+            //_writer.Flush(triggerMerge: false, applyAllDeletes: true);
+            _writer.Commit();
         }
 
         public int IndexCount()
@@ -113,6 +150,7 @@ namespace Nbic.Indexer
         public void ClearIndex()
         {
             _writer.DeleteAll();
+            //_writer.Flush(true,true);
             _writer.Commit();
         }
         public string GetApplicationRoot()
@@ -123,5 +161,6 @@ namespace Nbic.Indexer
             var appRoot = appPathMatcher.Match(exePath).Value;
             return appRoot;
         }
+
     }
 }

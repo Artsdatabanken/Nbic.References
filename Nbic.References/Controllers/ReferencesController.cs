@@ -32,15 +32,23 @@ namespace Nbic.References.Controllers
 
         private void IndexSanityCheck()
         {
-            Index index;
             if (_index.FirstUse)
             {
                 if (_index.IndexCount() != _referencesDbContext.Reference.Count())
                 {
                     _index.ClearIndex();
+                    var batch = new List<Reference>();
                     foreach (var reference in _referencesDbContext.Reference)
                     {
-                        _index.AddOrUpdate(reference);
+                        batch.Add(reference);
+                        if (batch.Count <= 20) continue;
+
+                        _index.AddOrUpdate(batch);
+                        batch = new List<Reference>();
+                    }
+                    if (batch.Count > 0)
+                    {
+                        _index.AddOrUpdate(batch);
                     }
                 }
 
@@ -53,15 +61,15 @@ namespace Nbic.References.Controllers
         {
             if (!string.IsNullOrWhiteSpace(search))
             {
-                var searchresults = _index.SearchReference(search);
+                var searchresults = _index.SearchReference(search, offset, limit);
                 var guids = searchresults as Guid[] ?? searchresults.ToArray();
                 if (!guids.Any())
                 {
                     return new List<Reference>();
                 }
                 return await this._referencesDbContext.Reference.Include(x => x.ReferenceUsage).Where(x=>guids.Contains(x.Id))
-                    .OrderBy(x => x.Id)
-                    .Skip(offset).Take(limit).ToListAsync().ConfigureAwait(false);
+                    .OrderBy(x => x.Id).
+                    Take(limit).ToListAsync().ConfigureAwait(false);
             }
             return await this._referencesDbContext.Reference.Include(x => x.ReferenceUsage).OrderBy(x => x.Id)
                        .Skip(offset).Take(limit).ToListAsync().ConfigureAwait(false);
@@ -101,9 +109,10 @@ namespace Nbic.References.Controllers
                 value.Id = Guid.NewGuid();
             }
 
-            _referencesDbContext.Reference.Add(value);
+            
             try
             {
+                _referencesDbContext.Reference.Add(value);
                 await this._referencesDbContext.SaveChangesAsync().ConfigureAwait(false);
                 _index.AddOrUpdate(value);
             }
@@ -134,16 +143,12 @@ namespace Nbic.References.Controllers
                     value.Id = Guid.NewGuid();
                 }
             }
-            
-            _referencesDbContext.Reference.AddRange(values);
-            foreach (var reference in values)
-            {
-                // todo - create batch version
-                _index.AddOrUpdate(reference);
-            }
+
 
             try
             {
+                _referencesDbContext.Reference.AddRange(values);
+                _index.AddOrUpdate(values);
                 var recordsSaved = _referencesDbContext.SaveChanges();
             }
             catch (SqlException e)
@@ -153,6 +158,7 @@ namespace Nbic.References.Controllers
                     return BadRequest("Violation of PRIMARY KEY constraint. Key exists!");
                 }
             }
+
             return Ok();
         }
 
