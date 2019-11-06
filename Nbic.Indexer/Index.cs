@@ -117,15 +117,26 @@ namespace Nbic.Indexer
         public IEnumerable<Guid> SearchReference(string terms, int offset, int limit)
         {
             var lower = terms.ToLower();
+            lower = Regex.Replace(lower, @"[,.;:]+", ""); // fjern noen ikke analyserte saker
+            lower = Regex.Replace(lower, @"(\s{2,})", "");
             var items = lower.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            var phrase = new PhraseQuery();
-            foreach (var item in items)
+            Query query;
+            if (items.Length == 1)
             {
-                phrase.Add(new Term(Field_String, item));
+                query = new TermQuery(new Term(Field_String, items[0]));
             }
+            else
+            {
+                query = new BooleanQuery();
+                foreach (var item in items)
+                {
+                    ((BooleanQuery)query).Add(new BooleanClause(new TermQuery(new Term(Field_String, item)), Occur.SHOULD));
+                }
+            }
+
             var searcher = new IndexSearcher(_writer.GetReader(applyAllDeletes: true));
             var startAt = (offset * limit);
-            var hits = searcher.Search(phrase, startAt + limit /* top 20 */).ScoreDocs;
+            var hits = searcher.Search(query, startAt + limit /* top 20 */).ScoreDocs;
             var count = 0;
             foreach (var hit in hits)
             {
