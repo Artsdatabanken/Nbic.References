@@ -33,7 +33,7 @@ namespace Nbic.Indexer
             {
                 applicationRoot = AppDomain.CurrentDomain.BaseDirectory;
             }
-            var indexLocation = applicationRoot.Contains('\\') ? applicationRoot + @"\Data\Index" : applicationRoot + @"/Data/Index";
+            var indexLocation = applicationRoot.Contains('\\') ? applicationRoot + @"\Data\index" : applicationRoot + @"/Data/index";
             
             //var otherdir = AppDomain.CurrentDomain.BaseDirectory;
             var dir = FSDirectory.Open(indexLocation);
