@@ -14,6 +14,7 @@ WORKDIR /src
 COPY ["Nbic.References/Nbic.References.csproj", "Nbic.References/"]
 COPY ["Nbic.References.Model/Nbic.References.Public.csproj", "Nbic.References.Model/"]
 COPY ["Nbic.References.EFCore/Nbic.References.EFCore.csproj", "Nbic.References.EFCore/"]
+COPY ["Nbic.Indexer/Nbic.Indexer.csproj", "Nbic.Indexer/"]
 RUN dotnet restore "Nbic.References/Nbic.References.csproj"
 COPY . .
 WORKDIR "/src/Nbic.References"
