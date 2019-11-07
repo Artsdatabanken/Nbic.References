@@ -116,7 +116,7 @@ namespace Nbic.References.Public.Models
             {
                 type = "Person";
             }
-            else if (!String.IsNullOrEmpty(reference.URL))
+            else if (!String.IsNullOrEmpty(reference.Url))
             {
                 type = "Url";
             }
