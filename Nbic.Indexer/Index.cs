@@ -130,7 +130,7 @@ namespace Nbic.Indexer
                 query = new BooleanQuery();
                 foreach (var item in items)
                 {
-                    ((BooleanQuery)query).Add(new BooleanClause(new TermQuery(new Term(Field_String, item)), Occur.SHOULD));
+                    ((BooleanQuery)query).Add(new BooleanClause(new TermQuery(new Term(Field_String, item)), Occur.MUST));
                 }
             }
 
