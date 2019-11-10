@@ -260,3 +260,5 @@ paket-files/
 __pycache__/
 *.pyc
 /SandBox/Properties/launchSettings.json
+/Nbic.References/Data
+/Nbic.References.Tests/Data/index
