@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging;
 using Nbic.References.EFCore;
 using Microsoft.OpenApi.Models;
 using Nbic.References.Swagger;
+using Index = Nbic.Indexer.Index;
 
 namespace Nbic.References
 {
@@ -44,7 +45,9 @@ namespace Nbic.References
 
         public IConfiguration Configuration { get; }
 
+
         // This method gets called by the runtime. Use this method to add services to the container.
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
@@ -63,6 +66,7 @@ namespace Nbic.References
 
             services.AddSingleton<Indexer.Index>(new Indexer.Index());
         }
+
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
