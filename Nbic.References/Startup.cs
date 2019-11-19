@@ -85,9 +85,7 @@ namespace Nbic.References
             AddSwaggerMiddleware(app);
             app.UseCors(policy =>
             {
-                policy.WithOrigins(
-                    "http://localhost:28895",
-                    "http://localhost:7017");
+                policy.AllowAnyOrigin(); //.WithOrigins("http://localhost:28895","http://localhost:7017");
 
                 policy.AllowAnyHeader();
                 policy.AllowAnyMethod();
