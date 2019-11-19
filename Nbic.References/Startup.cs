@@ -65,6 +65,17 @@ namespace Nbic.References
             }
 
             services.AddSingleton<Indexer.Index>(new Indexer.Index());
+            services.AddCors(options =>
+                {
+                    options.AddPolicy("AllowAll",
+                        builder =>
+                            {
+                                builder.AllowAnyOrigin()
+                                    .AllowAnyHeader()
+                                    .AllowAnyMethod()
+                                    .WithExposedHeaders("WWW-Authenticate");
+                            });
+                });
         }
 
 
@@ -83,14 +94,7 @@ namespace Nbic.References
             app.UseRouting();
 
             AddSwaggerMiddleware(app);
-            app.UseCors(policy =>
-            {
-                policy.AllowAnyOrigin(); //.WithOrigins("http://localhost:28895","http://localhost:7017");
-
-                policy.AllowAnyHeader();
-                policy.AllowAnyMethod();
-                policy.WithExposedHeaders("WWW-Authenticate");
-            });
+            app.UseCors("AllowAll");
 
             app.UseAuthentication();
             app.UseAuthorization();
