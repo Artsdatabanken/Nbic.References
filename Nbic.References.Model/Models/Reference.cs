@@ -36,6 +36,13 @@ namespace Nbic.References.Public.Models
                 return FormatReference(this);
             }
         }
+        public string ReferenceType
+        {
+            get
+            {
+                return GetReferenceType(this);
+            }
+        }
 
         public virtual ICollection<ReferenceUsage> ReferenceUsage { get; set; }
 
