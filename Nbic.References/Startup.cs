@@ -121,7 +121,16 @@ namespace Nbic.References
             services.AddAuthorization();
             services.AddCors();
 
-            services.AddAuthentication("token").AddIdentityServerAuthentication(
+            services.AddAuthentication("token")
+                .AddJwtBearer("Bearer", options =>
+                    {
+                        options.Authority = authAuthority;
+                        options.RequireHttpsMetadata = false;
+                        
+                        options.Audience = apiName;
+                    }
+                    )
+                .AddIdentityServerAuthentication(
                 "token",
                 options =>
                     {
