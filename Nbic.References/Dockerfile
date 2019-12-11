@@ -3,7 +3,6 @@ WORKDIR /app
 EXPOSE 8000
 ENV AuthAuthority=https://demo.identityserver.io
 ENV AuthAuthorityEndPoint=https://demo.identityserver.io/connect/authorize
-ENV AuthApiSecret="test-secret"
 ENV ApiName=api
 ENV DbProvider=Sqlite
 ENV DbConnectionString="Data Source=references.db"

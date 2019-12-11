@@ -15,7 +15,6 @@ Default configuration:
 ```<language>
 ENV AuthAuthority=https://demo.identityserver.io
 ENV AuthAuthorityEndPoint=https://demo.identityserver.io/connect/authorize
-ENV AuthApiSecret="test-secret"
 ENV ApiName=api
 ENV DbProvider=Sqlite
 ENV DbConnectionString="Data Source=referencesdb.db"

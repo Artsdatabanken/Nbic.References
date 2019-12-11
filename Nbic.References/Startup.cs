@@ -19,6 +19,7 @@ namespace Nbic.References
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Microsoft.OpenApi.Models;
+    using Microsoft.IdentityModel.Logging;
 
     using Nbic.References.EFCore;
     using Nbic.References.Swagger;
@@ -28,8 +29,6 @@ namespace Nbic.References
     public class Startup
     {
         private readonly string apiName;
-
-        private readonly string authApiSecret;
 
         private readonly string authAuthority;
 
@@ -51,7 +50,6 @@ namespace Nbic.References
                 "AuthAuthorityEndPoint",
                 "https://demo.identityserver.io/connect/authorize");
             apiName = Configuration.GetValue("ApiName", "api");
-            authApiSecret = Configuration.GetValue("AuthApiSecret", "test-secret");
 
             provider = Configuration.GetValue("DbProvider", "Sqlite");
             connectionString = Configuration.GetValue("DbConnectionString", "DataSource=:memory:");
@@ -67,6 +65,8 @@ namespace Nbic.References
             {
                 app.UseDeveloperExceptionPage();
                 logger.LogInformation("In Development environment");
+                
+                IdentityModelEventSource.ShowPII = true;
             }
 
             app.UseHttpsRedirection();
@@ -136,9 +136,8 @@ namespace Nbic.References
                     {
                         options.Authority = authAuthority;
                         options.RequireHttpsMetadata = false;
-
+                        
                         options.ApiName = apiName;
-                        options.ApiSecret = authApiSecret;
 
                         options.JwtBearerEvents = new JwtBearerEvents
                                                       {
@@ -284,9 +283,6 @@ namespace Nbic.References
                     {
                         c.SwaggerEndpoint("/swagger/v1/swagger.json", "Nbic References API V1");
 
-                        c.OAuthClientId("implicit");
-                        c.OAuthClientSecret(authApiSecret);
-                        c.OAuthRealm("test-realm");
                         c.OAuthAppName(apiName);
                         c.OAuthScopeSeparator(" ");
 
