@@ -46,7 +46,7 @@ namespace Nbic.References.Controllers
             return await this._referencesDbContext.ReferenceUsage.CountAsync().ConfigureAwait(false);
         }
 
-        [Authorize]
+        [Authorize("WriteAccess")]
         [HttpDelete("{id}")]
         public ActionResult DeleteAllUsages(Guid id)
         {
@@ -58,7 +58,7 @@ namespace Nbic.References.Controllers
             return Ok();
 
         }
-        [Authorize]
+        [Authorize("WriteAccess")]
         [HttpDelete("{id},{applicationId},{userId}")]
         public ActionResult DeleteUsage(Guid id, int applicationId, int userId)
         {
@@ -71,7 +71,7 @@ namespace Nbic.References.Controllers
 
         }
 
-        [Authorize]
+        [Authorize("WriteAccess")]
         [HttpPost]
         public async Task<ActionResult<ReferenceUsage>> Post([FromBody] ReferenceUsage value)
         {

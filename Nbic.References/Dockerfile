@@ -4,6 +4,8 @@ EXPOSE 8000
 ENV AuthAuthority=https://demo.identityserver.io
 ENV AuthAuthorityEndPoint=https://demo.identityserver.io/connect/authorize
 ENV ApiName=api
+ENV WriteAccessRole="my_write_access_role"
+ENV SwaggerClientId="implicit"
 ENV DbProvider=Sqlite
 ENV DbConnectionString="Data Source=references.db"
 ENV ASPNETCORE_URLS="http://+:8000"

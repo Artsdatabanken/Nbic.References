@@ -29,14 +29,12 @@ namespace Nbic.References
     public class Startup
     {
         private readonly string apiName;
-
         private readonly string authAuthority;
-
         private readonly string authAuthorityEndPoint;
-
         private readonly string connectionString;
-
         private readonly string provider;
+        private readonly string writeAccessRole;
+        private readonly string swaggerClientId;
 
         private ILogger logger;
 
@@ -53,6 +51,9 @@ namespace Nbic.References
 
             provider = Configuration.GetValue("DbProvider", "Sqlite");
             connectionString = Configuration.GetValue("DbConnectionString", "DataSource=:memory:");
+
+            writeAccessRole = Configuration.GetValue("WriteAccessRole", "my_write_access_role");
+            swaggerClientId = Configuration.GetValue("SwaggerClientId", "implicit");
         }
 
         public IConfiguration Configuration { get; }
@@ -118,7 +119,19 @@ namespace Nbic.References
 
         private void AddIdentityServerAuthentication(IServiceCollection services)
         {
-            services.AddAuthorization();
+            // Users defined at https://demo.identityserver.io has no roles.
+            // Using the Issuer-claim (iss) as a substitute to allow authorization with Swagger when testing
+            if (authAuthority == "https://demo.identityserver.io")
+            {
+                services.AddAuthorization(options =>
+                    options.AddPolicy("WriteAccess", policy => policy.RequireClaim("iss", "https://demo.identityserver.io")));
+            }
+            else
+            {
+                services.AddAuthorization(options =>
+                    options.AddPolicy("WriteAccess", policy => policy.RequireClaim("role", writeAccessRole)));
+            }
+
             services.AddCors();
 
             services.AddAuthentication("token")
@@ -161,7 +174,7 @@ namespace Nbic.References
                                                                   // _logger.LogTrace("JWT: challenge");
                                                                   return Task.CompletedTask;
                                                               }
-                                                      };
+                        };
                     });
         }
 
@@ -282,7 +295,7 @@ namespace Nbic.References
                 c =>
                     {
                         c.SwaggerEndpoint("/swagger/v1/swagger.json", "Nbic References API V1");
-
+                        c.OAuthClientId(swaggerClientId);
                         c.OAuthAppName(apiName);
                         c.OAuthScopeSeparator(" ");
 

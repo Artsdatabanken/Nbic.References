@@ -16,6 +16,8 @@ Default configuration:
 ENV AuthAuthority=https://demo.identityserver.io
 ENV AuthAuthorityEndPoint=https://demo.identityserver.io/connect/authorize
 ENV ApiName=api
+ENV WriteAccessRole="my_write_access_role"
+ENV SwaggerClientId="implicit"
 ENV DbProvider=Sqlite
 ENV DbConnectionString="Data Source=referencesdb.db"
 ```

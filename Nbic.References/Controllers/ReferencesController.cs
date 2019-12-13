@@ -95,7 +95,7 @@ namespace Nbic.References.Controllers
             return reference;
         }
 
-        [Authorize]
+        [Authorize("WriteAccess")]
         [HttpPost]
         public async Task<ActionResult<Reference>> Post([FromBody] Reference value)
         {
@@ -126,7 +126,7 @@ namespace Nbic.References.Controllers
         
             return value;
         }
-        [Authorize]
+        [Authorize("WriteAccess")]
         [HttpPost]
         [Route("Bulk")]
         public ActionResult PostMany([FromBody] Reference[] values)
@@ -162,7 +162,7 @@ namespace Nbic.References.Controllers
             return Ok();
         }
 
-        [Authorize]
+        [Authorize("WriteAccess")]
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(Guid id, [FromBody] Reference value)
         {
@@ -215,7 +215,7 @@ namespace Nbic.References.Controllers
             return Ok();
         }
 
-        [Authorize]
+        [Authorize("WriteAccess")]
         [HttpDelete("{id}")]
         public ActionResult Delete(Guid id)
         {
