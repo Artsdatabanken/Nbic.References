@@ -119,18 +119,19 @@ namespace Nbic.References
 
         private void AddIdentityServerAuthentication(IServiceCollection services)
         {
+            var roleClaim = "role";
+            var roleClaimValue = writeAccessRole;
+
             // Users defined at https://demo.identityserver.io has no roles.
             // Using the Issuer-claim (iss) as a substitute to allow authorization with Swagger when testing
             if (authAuthority == "https://demo.identityserver.io")
             {
-                services.AddAuthorization(options =>
-                    options.AddPolicy("WriteAccess", policy => policy.RequireClaim("iss", "https://demo.identityserver.io")));
+                roleClaim = "iss";
+                roleClaimValue = "https://demo.identityserver.io";
             }
-            else
-            {
-                services.AddAuthorization(options =>
-                    options.AddPolicy("WriteAccess", policy => policy.RequireClaim("role", writeAccessRole)));
-            }
+
+            services.AddAuthorization(options =>
+                options.AddPolicy("WriteAccess", policy => policy.RequireClaim(roleClaim, roleClaimValue)));
 
             services.AddCors();
 
