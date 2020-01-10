@@ -1,5 +1,7 @@
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.0-buster-slim AS base
 WORKDIR /app
+RUN sed -i 's/DEFAULT@SECLEVEL=2/DEFAULT@SECLEVEL=1/g' /etc/ssl/openssl.cnf
+RUN sed -i 's/DEFAULT@SECLEVEL=2/DEFAULT@SECLEVEL=1/g' /usr/lib/ssl/openssl.cnf
 EXPOSE 8000
 ENV AuthAuthority=https://demo.identityserver.io
 ENV AuthAuthorityEndPoint=https://demo.identityserver.io/connect/authorize
