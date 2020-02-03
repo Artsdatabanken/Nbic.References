@@ -71,8 +71,8 @@ namespace SandBox
                                       Bibliography = item.Bibliography,
                                       EditDate = item.EditDate,
                                       Firstname = item.Firstname,
-                                      UserId = item.FkUserId,
-                                      ImportXml = item.ImportXml,
+                                      UserId = CreateGuid(item.FkUserId),
+                                    //   ImportXml = item.ImportXml,
                                       Journal = item.Journal,
                                       Keywords = item.Keywords,
                                       Lastname = item.Lastname,
@@ -86,10 +86,16 @@ namespace SandBox
                                      Year = item.Year,
                                      ReferenceUsage = item.RfReferenceUsage.Select(ru => 
                                      new ReferenceUsage(){
-                                         ReferenceId = ru.FkReferenceId, ApplicationId = ru.FkApplicationId, UserId = ru.FkUserId
+                                         ReferenceId = ru.FkReferenceId, ApplicationId = ru.FkApplicationId, UserId = CreateGuid(ru.FkUserId)
                                          }).ToArray()
                                   };
             return reference;
+        }
+
+        private static Guid CreateGuid(int? fkUserId)
+        {
+            if(fkUserId.HasValue == false) return new Guid("00000000-0000-0000-0000-000000000000");
+            return new Guid("00000000-0000-0000-0000-000000000000".Substring(0, 36 - fkUserId.ToString().Length) + fkUserId.ToString() );
         }
 
         private static void GetApiToken()
@@ -97,7 +103,7 @@ namespace SandBox
             // discover endpoints from metadata
             using (var client = new HttpClient())
             {
-                var discoveryDocumentAsync = client.GetDiscoveryDocumentAsync("https://demo.identityserver.io/");
+                var discoveryDocumentAsync = client.GetDiscoveryDocumentAsync("https://id.artsdatabanken.no/");
                 discoveryDocumentAsync.Wait();
                 var discoveryResponse = discoveryDocumentAsync.Result;
 
@@ -112,7 +118,7 @@ namespace SandBox
                 var requestClientCredentialsTokenAsync = client.RequestClientCredentialsTokenAsync(
                     new ClientCredentialsTokenRequest
                         {
-                            Address = discoveryResponse.TokenEndpoint, ClientId = "client", ClientSecret = "secret", Scope = "api"
+                            Address = discoveryResponse.TokenEndpoint, ClientId = "references_sandbox_client", ClientSecret = "*", Scope = "references_api"
                         });
                 requestClientCredentialsTokenAsync.Wait();
                 var tokenResponse = requestClientCredentialsTokenAsync.Result;
