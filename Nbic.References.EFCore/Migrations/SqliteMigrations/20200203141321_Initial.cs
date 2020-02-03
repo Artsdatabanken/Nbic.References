@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Nbic.References.EFCore.Migrations.SqliteMigrations
 {
-    public partial class InitialCreate : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -13,7 +13,7 @@ namespace Nbic.References.EFCore.Migrations.SqliteMigrations
                 {
                     Id = table.Column<Guid>(nullable: false),
                     ApplicationId = table.Column<int>(nullable: true),
-                    UserId = table.Column<int>(nullable: true),
+                    UserId = table.Column<Guid>(nullable: false),
                     Author = table.Column<string>(unicode: false, nullable: true),
                     Year = table.Column<string>(unicode: false, nullable: true),
                     Title = table.Column<string>(unicode: false, nullable: true),
@@ -25,10 +25,10 @@ namespace Nbic.References.EFCore.Migrations.SqliteMigrations
                     Lastname = table.Column<string>(unicode: false, nullable: true),
                     Middlename = table.Column<string>(unicode: false, nullable: true),
                     Firstname = table.Column<string>(unicode: false, nullable: true),
-                    URL = table.Column<string>(unicode: false, nullable: true),
+                    Url = table.Column<string>(unicode: false, nullable: true),
                     Keywords = table.Column<string>(unicode: false, nullable: true),
-                    ImportXML = table.Column<string>(type: "xml", nullable: true),
-                    EditDate = table.Column<DateTime>(type: "datetime", nullable: false, defaultValueSql: "(getdate())")
+                    ReferenceString = table.Column<string>(nullable: true),
+                    EditDate = table.Column<DateTime>(type: "datetime", nullable: false, defaultValueSql: "date('now')")
                 },
                 constraints: table =>
                 {
@@ -41,11 +41,11 @@ namespace Nbic.References.EFCore.Migrations.SqliteMigrations
                 {
                     ReferenceId = table.Column<Guid>(nullable: false),
                     ApplicationId = table.Column<int>(nullable: false),
-                    UserId = table.Column<int>(nullable: false)
+                    UserId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RF_Reference_Usage", x => new { x.ReferenceId, x.ApplicationId, x.UserId });
+                    table.PrimaryKey("PK_ReferenceUsage", x => new { x.ReferenceId, x.ApplicationId, x.UserId });
                     table.ForeignKey(
                         name: "FK_ReferenceUsage_Reference",
                         column: x => x.ReferenceId,

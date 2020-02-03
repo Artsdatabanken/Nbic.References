@@ -119,6 +119,10 @@ namespace Nbic.References.EFCore
         {
             _dbConnectionString = dbConnectionString;
         }
+        //public SqliteReferencesDbContext()
+        //{
+        //    _dbConnectionString = "Data Source=references.db";
+        //}
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
             => options.UseSqlite(_dbConnectionString);
@@ -131,6 +135,10 @@ namespace Nbic.References.EFCore
         {
             _dbConnectionString = dbConnectionString;
         }
+        //public SqlServerReferencesDbContext()
+        //{
+        //    _dbConnectionString = "Server = localhost; Database = ref2; Integrated Security = true; MultipleActiveResultSets = true";
+        //}
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
             => options.UseSqlServer(_dbConnectionString);

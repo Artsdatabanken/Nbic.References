@@ -22,61 +22,77 @@ namespace Nbic.References.EFCore.Migrations.SqlServerMigrations
             modelBuilder.Entity("Nbic.References.Public.Models.Reference", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnName("Id");
+                        .HasColumnName("Id")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int?>("ApplicationId")
-                        .HasColumnName("ApplicationId");
+                        .HasColumnName("ApplicationId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Author")
+                        .HasColumnType("varchar(max)")
                         .IsUnicode(false);
 
                     b.Property<string>("Bibliography")
+                        .HasColumnType("varchar(max)")
                         .IsUnicode(false);
 
                     b.Property<DateTime>("EditDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
-                        .HasDefaultValueSql("(getdate())");
+                        .HasDefaultValueSql("GetUtcDate()");
 
                     b.Property<string>("Firstname")
+                        .HasColumnType("varchar(max)")
                         .IsUnicode(false);
 
-                    b.Property<int?>("UserId")
-                        .HasColumnName("UserId");
-
-                    b.Property<string>("ImportXml")
-                        .HasColumnName("ImportXML")
-                        .HasColumnType("xml");
-
                     b.Property<string>("Journal")
+                        .HasColumnType("varchar(max)")
                         .IsUnicode(false);
 
                     b.Property<string>("Keywords")
+                        .HasColumnType("varchar(max)")
                         .IsUnicode(false);
 
                     b.Property<string>("Lastname")
+                        .HasColumnType("varchar(max)")
                         .IsUnicode(false);
 
                     b.Property<string>("Middlename")
+                        .HasColumnType("varchar(max)")
                         .IsUnicode(false);
 
                     b.Property<string>("Pages")
+                        .HasColumnType("varchar(max)")
                         .IsUnicode(false);
 
+                    b.Property<string>("ReferenceString")
+                        .HasColumnName("ReferenceString")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Summary")
+                        .HasColumnType("varchar(max)")
                         .IsUnicode(false);
 
                     b.Property<string>("Title")
+                        .HasColumnType("varchar(max)")
                         .IsUnicode(false);
 
                     b.Property<string>("Url")
                         .HasColumnName("Url")
+                        .HasColumnType("varchar(max)")
                         .IsUnicode(false);
 
+                    b.Property<Guid>("UserId")
+                        .HasColumnName("UserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Volume")
+                        .HasColumnType("varchar(max)")
                         .IsUnicode(false);
 
                     b.Property<string>("Year")
+                        .HasColumnType("varchar(max)")
                         .IsUnicode(false);
 
                     b.HasKey("Id")
@@ -91,13 +107,16 @@ namespace Nbic.References.EFCore.Migrations.SqlServerMigrations
             modelBuilder.Entity("Nbic.References.Public.Models.ReferenceUsage", b =>
                 {
                     b.Property<Guid>("ReferenceId")
-                        .HasColumnName("ReferenceId");
+                        .HasColumnName("ReferenceId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("ApplicationId")
-                        .HasColumnName("ApplicationId");
+                        .HasColumnName("ApplicationId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("UserId")
-                        .HasColumnName("UserId");
+                    b.Property<Guid>("UserId")
+                        .HasColumnName("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("ReferenceId", "ApplicationId", "UserId");
 
@@ -109,7 +128,8 @@ namespace Nbic.References.EFCore.Migrations.SqlServerMigrations
                     b.HasOne("Nbic.References.Public.Models.Reference", "Reference")
                         .WithMany("ReferenceUsage")
                         .HasForeignKey("ReferenceId")
-                        .HasConstraintName("FK_ReferenceUsage_Reference");
+                        .HasConstraintName("FK_ReferenceUsage_Reference")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

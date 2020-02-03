@@ -19,61 +19,77 @@ namespace Nbic.References.EFCore.Migrations.SqliteMigrations
             modelBuilder.Entity("Nbic.References.Public.Models.Reference", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnName("Id");
+                        .HasColumnName("Id")
+                        .HasColumnType("TEXT");
 
                     b.Property<int?>("ApplicationId")
-                        .HasColumnName("ApplicationId");
+                        .HasColumnName("ApplicationId")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Author")
+                        .HasColumnType("TEXT")
                         .IsUnicode(false);
 
                     b.Property<string>("Bibliography")
+                        .HasColumnType("TEXT")
                         .IsUnicode(false);
 
                     b.Property<DateTime>("EditDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
-                        .HasDefaultValueSql("(getdate())");
+                        .HasDefaultValueSql("date('now')");
 
                     b.Property<string>("Firstname")
+                        .HasColumnType("TEXT")
                         .IsUnicode(false);
 
-                    b.Property<int?>("UserId")
-                        .HasColumnName("UserId");
-
-                    b.Property<string>("ImportXml")
-                        .HasColumnName("ImportXML")
-                        .HasColumnType("xml");
-
                     b.Property<string>("Journal")
+                        .HasColumnType("TEXT")
                         .IsUnicode(false);
 
                     b.Property<string>("Keywords")
+                        .HasColumnType("TEXT")
                         .IsUnicode(false);
 
                     b.Property<string>("Lastname")
+                        .HasColumnType("TEXT")
                         .IsUnicode(false);
 
                     b.Property<string>("Middlename")
+                        .HasColumnType("TEXT")
                         .IsUnicode(false);
 
                     b.Property<string>("Pages")
+                        .HasColumnType("TEXT")
                         .IsUnicode(false);
 
+                    b.Property<string>("ReferenceString")
+                        .HasColumnName("ReferenceString")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Summary")
+                        .HasColumnType("TEXT")
                         .IsUnicode(false);
 
                     b.Property<string>("Title")
+                        .HasColumnType("TEXT")
                         .IsUnicode(false);
 
                     b.Property<string>("Url")
                         .HasColumnName("Url")
+                        .HasColumnType("TEXT")
                         .IsUnicode(false);
 
+                    b.Property<Guid>("UserId")
+                        .HasColumnName("UserId")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Volume")
+                        .HasColumnType("TEXT")
                         .IsUnicode(false);
 
                     b.Property<string>("Year")
+                        .HasColumnType("TEXT")
                         .IsUnicode(false);
 
                     b.HasKey("Id")
@@ -88,13 +104,16 @@ namespace Nbic.References.EFCore.Migrations.SqliteMigrations
             modelBuilder.Entity("Nbic.References.Public.Models.ReferenceUsage", b =>
                 {
                     b.Property<Guid>("ReferenceId")
-                        .HasColumnName("ReferenceId");
+                        .HasColumnName("ReferenceId")
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("ApplicationId")
-                        .HasColumnName("ApplicationId");
+                        .HasColumnName("ApplicationId")
+                        .HasColumnType("INTEGER");
 
-                    b.Property<int>("UserId")
-                        .HasColumnName("UserId");
+                    b.Property<Guid>("UserId")
+                        .HasColumnName("UserId")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("ReferenceId", "ApplicationId", "UserId");
 
@@ -106,7 +125,8 @@ namespace Nbic.References.EFCore.Migrations.SqliteMigrations
                     b.HasOne("Nbic.References.Public.Models.Reference", "Reference")
                         .WithMany("ReferenceUsage")
                         .HasForeignKey("ReferenceId")
-                        .HasConstraintName("FK_ReferenceUsage_Reference");
+                        .HasConstraintName("FK_ReferenceUsage_Reference")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }
