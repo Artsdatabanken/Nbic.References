@@ -30,7 +30,7 @@ namespace Nbic.References.Tests
                 using (var context = new ReferencesDbContext(options))
                 {
                     var service = new ReferencesController(context, index);
-                    await service.Post(new Reference() {Id = id, ReferenceUsage = new List<ReferenceUsage>() { new ReferenceUsage() { ApplicationId = 1, UserId = 1 } } }).ConfigureAwait(false);
+                    await service.Post(new Reference() {Id = id, ReferenceUsage = new List<ReferenceUsage>() { new ReferenceUsage() { ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") } } }).ConfigureAwait(false);
                 }
 
                 // Use a separate instance of the context to verify correct data was saved to database
@@ -64,7 +64,7 @@ namespace Nbic.References.Tests
                 using (var context = new ReferencesDbContext(options))
                 {
                     var service = new ReferencesController(context, index);
-                    await service.Post(new Reference() { Id = id, ReferenceUsage = new List<ReferenceUsage>() { new ReferenceUsage() { ApplicationId = 1, UserId = 1 } } }).ConfigureAwait(false);
+                    await service.Post(new Reference() { Id = id, ReferenceUsage = new List<ReferenceUsage>() { new ReferenceUsage() { ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") } } }).ConfigureAwait(false);
                 }
 
                 // Use a separate instance of the context to verify correct data was saved to database
@@ -103,7 +103,7 @@ namespace Nbic.References.Tests
                 using (var context = new ReferencesDbContext(options))
                 {
                     var service = new ReferencesController(context, index);
-                    await service.Post(new Reference() { Id = id, ReferenceUsage = new List<ReferenceUsage>() { new ReferenceUsage() { ApplicationId = 1, UserId = 1 }, new ReferenceUsage() { ApplicationId = 2, UserId = 1 } } }).ConfigureAwait(false);
+                    await service.Post(new Reference() { Id = id, ReferenceUsage = new List<ReferenceUsage>() { new ReferenceUsage() { ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") }, new ReferenceUsage() { ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") } } }).ConfigureAwait(false);
                 }
 
                 // Use a separate instance of the context to verify correct data was saved to database
@@ -111,7 +111,7 @@ namespace Nbic.References.Tests
                 {
                     var service = new ReferencesController(context, index);
                     var usageService = new ReferenceUsageController(context);
-                    usageService.DeleteUsage(id, 1,1);
+                    usageService.DeleteUsage(id, 1, new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3"));
                     var all = await usageService.GetAll(0, 10).ConfigureAwait(false);
                     Assert.Single(all);
                     var result = await service.Get(id).ConfigureAwait(false);
@@ -140,7 +140,7 @@ namespace Nbic.References.Tests
                 using (var context = new ReferencesDbContext(options))
                 {
                     var service = new ReferencesController(context, index);
-                    await service.Post(new Reference() { Id = id, ReferenceUsage = new List<ReferenceUsage>() { new ReferenceUsage() { ApplicationId = 1, UserId = 1 }, new ReferenceUsage() { ApplicationId = 2, UserId = 1 } } }).ConfigureAwait(false);
+                    await service.Post(new Reference() { Id = id, ReferenceUsage = new List<ReferenceUsage>() { new ReferenceUsage() { ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") }, new ReferenceUsage() { ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") } } }).ConfigureAwait(false);
                 }
 
                 // Use a separate instance of the context to verify correct data was saved to database
@@ -148,7 +148,7 @@ namespace Nbic.References.Tests
                 {
                     var service = new ReferencesController(context, index);
                     var usageService = new ReferenceUsageController(context);
-                    await usageService.Post(new ReferenceUsage() { ApplicationId = 3, ReferenceId = id, UserId = 1 }).ConfigureAwait(false);
+                    await usageService.Post(new ReferenceUsage() { ApplicationId = 3, ReferenceId = id, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") }).ConfigureAwait(false);
                     var all = await usageService.GetAll(0, 10).ConfigureAwait(false);
                     Assert.Equal(3, all.Count);
                     var result = await service.Get(id).ConfigureAwait(false);
@@ -173,7 +173,7 @@ namespace Nbic.References.Tests
                 using (var context = new ReferencesDbContext(options))
                 {
                     var service = new ReferencesController(context, index);
-                    await service.Post(new Reference() { Id = id, ReferenceUsage = new List<ReferenceUsage>() { new ReferenceUsage() { ApplicationId = 1, UserId = 1 }, new ReferenceUsage() { ApplicationId = 2, UserId = 1 } } }).ConfigureAwait(false);
+                    await service.Post(new Reference() { Id = id, ReferenceUsage = new List<ReferenceUsage>() { new ReferenceUsage() { ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") }, new ReferenceUsage() { ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") } } }).ConfigureAwait(false);
                 }
 
                 // Use a separate instance of the context to verify correct data was saved to database
@@ -181,7 +181,7 @@ namespace Nbic.References.Tests
                 {
                     var service = new ReferencesController(context, index);
                     var usageService = new ReferenceUsageController(context);
-                    await usageService.Post(new ReferenceUsage() { ApplicationId = 1, ReferenceId = id, UserId = 1 }).ConfigureAwait(false);
+                    await usageService.Post(new ReferenceUsage() { ApplicationId = 1, ReferenceId = id, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") }).ConfigureAwait(false);
                     var all = await usageService.GetAll(0, 10).ConfigureAwait(false);
                     Assert.Equal(2, all.Count);
                     var result = await service.Get(id).ConfigureAwait(false);

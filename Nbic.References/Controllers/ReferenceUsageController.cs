@@ -60,7 +60,7 @@ namespace Nbic.References.Controllers
         }
         [Authorize("WriteAccess")]
         [HttpDelete("{id},{applicationId},{userId}")]
-        public ActionResult DeleteUsage(Guid id, int applicationId, int userId)
+        public ActionResult DeleteUsage(Guid id, int applicationId, Guid userId)
         {
             var entities = this._referencesDbContext.ReferenceUsage.Where(x => x.ReferenceId == id && x.ApplicationId == applicationId && x.UserId == userId).ToArray();
             if (entities.Length == 0) return NotFound();

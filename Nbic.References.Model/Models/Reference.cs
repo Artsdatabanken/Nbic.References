@@ -13,7 +13,7 @@ namespace Nbic.References.Public.Models
 
         public Guid Id { get; set; }
         public int? ApplicationId { get; set; }
-        public int? UserId { get; set; }
+        public Guid UserId { get; set; }
         public string Author { get; set; }
         public string Year { get; set; }
         public string Title { get; set; }
@@ -27,7 +27,8 @@ namespace Nbic.References.Public.Models
         public string Firstname { get; set; }
         public string Url { get; set; }
         public string Keywords { get; set; }
-        public string ImportXml { get; set; }
+        //public string ImportXml { get; set; }
+        public string ReferenceString { get; set; }
         public DateTime EditDate { get; set; }
         public string ReferencePresentation
         {
@@ -51,6 +52,11 @@ namespace Nbic.References.Public.Models
             if (reference == null)
             {
                 throw new ArgumentNullException("reference");
+            }
+
+            if (!string.IsNullOrWhiteSpace(reference.ReferenceString))
+            {
+                return reference.ReferenceString.Trim();
             }
 
             string formatedString;
@@ -113,7 +119,7 @@ namespace Nbic.References.Public.Models
         {
             string type;
 
-            if (!String.IsNullOrEmpty(reference.Author) || !String.IsNullOrEmpty(reference.Year) ||
+            if (!String.IsNullOrEmpty(reference.ReferenceString) || !String.IsNullOrEmpty(reference.Author) || !String.IsNullOrEmpty(reference.Year) ||
                 !String.IsNullOrEmpty(reference.Volume) || !String.IsNullOrEmpty(reference.Pages))
             {
                 type = "Publication";

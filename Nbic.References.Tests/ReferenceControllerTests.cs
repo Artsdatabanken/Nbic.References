@@ -92,7 +92,7 @@ namespace Nbic.References.Tests
                 using (var context = new ReferencesDbContext(options))
                 {
                     var service = new ReferencesController(context, index);
-                    var result = await service.Post(new Reference() { Id = id, ReferenceUsage = new List<ReferenceUsage>(){new ReferenceUsage(){ApplicationId = 1, UserId = 1}}}).ConfigureAwait(false);
+                    var result = await service.Post(new Reference() { Id = id, ReferenceUsage = new List<ReferenceUsage>(){new ReferenceUsage(){ApplicationId = 1, UserId = new Guid()}}}).ConfigureAwait(false);
                 }
 
                 // Use a separate instance of the context to verify correct data was saved to database
@@ -125,7 +125,7 @@ namespace Nbic.References.Tests
                 using (var context = new ReferencesDbContext(options))
                 {
                     var service = new ReferencesController(context, index);
-                    var result = await service.Post(new Reference() { Id = id, ReferenceUsage = new List<ReferenceUsage>() { new ReferenceUsage() { ApplicationId = 1, UserId = 1 } } }).ConfigureAwait(false);
+                    var result = await service.Post(new Reference() { Id = id, ReferenceUsage = new List<ReferenceUsage>() { new ReferenceUsage() { ApplicationId = 1, UserId = new Guid() } } }).ConfigureAwait(false);
                 }
 
                 // Use a separate instance of the context to verify correct data was saved to database
@@ -164,17 +164,17 @@ namespace Nbic.References.Tests
                     Bibliography = "tri",
                     EditDate = DateTime.Now,
                     Firstname = "stein",
-                    ImportXml = "no",
+                    //ImportXml = "no",
                     Journal = "the",
                     Keywords = "natur,nett",
                     Lastname = "hoem",
                     Middlename = "Ari",
                     Pages = "1-3",
-                    ReferenceUsage = new[] { new ReferenceUsage() { UserId = 1, ApplicationId = 1 } },
+                    ReferenceUsage = new[] { new ReferenceUsage() { UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3"), ApplicationId = 1 } },
                     Summary = "Sum",
                     Title = "Tiii",
                     Url = "http://vg.no",
-                    UserId = 1,
+                    UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3"),
                     Volume = "1",
                     Year = "1901"
                 };
@@ -199,7 +199,7 @@ namespace Nbic.References.Tests
                     Assert.Equal(it.EditDate, reference.EditDate);
                     Assert.Equal(it.Firstname, reference.Firstname);
                     Assert.Equal(it.Id, reference.Id);
-                    Assert.Equal(it.ImportXml, reference.ImportXml);
+                    //Assert.Equal(it.ImportXml, reference.ImportXml);
                     Assert.Equal(it.Journal, reference.Journal);
                     Assert.Equal(it.Lastname, reference.Lastname);
                     Assert.Equal(it.Middlename, reference.Middlename);
@@ -236,17 +236,17 @@ namespace Nbic.References.Tests
                     Bibliography = "tri",
                     EditDate = DateTime.Now,
                     Firstname = "stein",
-                    ImportXml = "no",
+                    //ImportXml = "no",
                     Journal = "the",
                     Keywords = "natur,nett",
                     Lastname = "hoem",
                     Middlename = "Ari",
                     Pages = "1-3",
-                    ReferenceUsage = new[] { new ReferenceUsage() { UserId = 1, ApplicationId = 1 } },
+                    ReferenceUsage = new[] { new ReferenceUsage() { UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3"), ApplicationId = 1 } },
                     Summary = "Sum",
                     Title = "Tiii",
                     Url = "http://vg.no",
-                    UserId = 1,
+                    UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3"),
                     Volume = "1",
                     Year = "1901"
                 };
@@ -264,17 +264,17 @@ namespace Nbic.References.Tests
                                               Bibliography = "tri2",
                                               EditDate = DateTime.Now,
                                               Firstname = "stein2",
-                                              ImportXml = "no2",
+                                              //ImportXml = "no2",
                                               Journal = "the2",
                                               Keywords = "natur,nett2",
                                               Lastname = "hoem2",
                                               Middlename = "Ari2",
                                               Pages = "1-32",
-                                              ReferenceUsage = new[] { new ReferenceUsage() { UserId = 2, ApplicationId = 2 } },
+                                              ReferenceUsage = new[] { new ReferenceUsage() { UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a2"), ApplicationId = 2 } },
                                               Summary = "Sum2",
                                               Title = "Tiii2",
                                               Url = "http://vg.no2",
-                                              UserId = 2,
+                                              UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a2"),
                                               Volume = "2",
                                               Year = "1902"
                                           };
@@ -300,7 +300,7 @@ namespace Nbic.References.Tests
                     //Assert.Equal(it.EditDate, replacementReference.EditDate);
                     Assert.Equal(it.Firstname, replacementReference.Firstname);
                     //Assert.Equal(it.Id, replacementReference.Id);
-                    Assert.Equal(it.ImportXml, replacementReference.ImportXml);
+                    //Assert.Equal(it.ImportXml, replacementReference.ImportXml);
                     Assert.Equal(it.Journal, replacementReference.Journal);
                     Assert.Equal(it.Lastname, replacementReference.Lastname);
                     Assert.Equal(it.Middlename, replacementReference.Middlename);

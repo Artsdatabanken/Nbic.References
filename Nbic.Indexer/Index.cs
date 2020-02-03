@@ -79,7 +79,7 @@ namespace Nbic.Indexer
         private static string GetIndexString(Reference reference)
         {
             return string.Join(' ',
-                new List<string>() {reference.Firstname, reference.Middlename, reference.Lastname, reference.Summary, reference.Author, reference.Bibliography, reference.Journal, reference.Keywords, reference.Pages, reference.Title, reference.Url, reference.Volume, reference.Year}
+                new List<string>() {reference.Firstname, reference.Middlename, reference.Lastname, reference.Summary, reference.Author, reference.Bibliography, reference.Journal, reference.Keywords, reference.Pages, reference.Title, reference.Url, reference.Volume, reference.Year, reference.ReferenceString}
                     .Where(x => !string.IsNullOrWhiteSpace(x)).ToArray());
         }
 

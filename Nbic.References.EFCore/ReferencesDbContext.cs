@@ -64,9 +64,7 @@ namespace Nbic.References.EFCore
 
                 entity.Property(e => e.UserId).HasColumnName("UserId");
 
-                entity.Property(e => e.ImportXml)
-                    .HasColumnName("ImportXML")
-                    .HasColumnType("xml");
+                entity.Property(e => e.ReferenceString).HasColumnName("ReferenceString");
 
                 entity.Property(e => e.Journal).IsUnicode(false);
 
