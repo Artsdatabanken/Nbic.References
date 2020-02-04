@@ -264,7 +264,7 @@ namespace Nbic.References.Tests
                                               Bibliography = "tri2",
                                               EditDate = DateTime.Now,
                                               Firstname = "stein2",
-                                              //ImportXml = "no2",
+                                              ReferenceString = "no2",
                                               Journal = "the2",
                                               Keywords = "natur,nett2",
                                               Lastname = "hoem2",
@@ -300,7 +300,7 @@ namespace Nbic.References.Tests
                     //Assert.Equal(it.EditDate, replacementReference.EditDate);
                     Assert.Equal(it.Firstname, replacementReference.Firstname);
                     //Assert.Equal(it.Id, replacementReference.Id);
-                    //Assert.Equal(it.ImportXml, replacementReference.ImportXml);
+                    Assert.Equal(it.ReferenceString, replacementReference.ReferenceString);
                     Assert.Equal(it.Journal, replacementReference.Journal);
                     Assert.Equal(it.Lastname, replacementReference.Lastname);
                     Assert.Equal(it.Middlename, replacementReference.Middlename);

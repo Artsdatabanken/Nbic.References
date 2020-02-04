@@ -184,7 +184,7 @@ namespace Nbic.References.Controllers
             if (r.Author != value.Author) r.Author = value.Author;
             if (r.Bibliography != value.Bibliography) r.Bibliography = value.Bibliography;
             if (r.Firstname != value.Firstname) r.Firstname = value.Firstname;
-            //if (r.ImportXml != value.ImportXml) r.ImportXml = value.ImportXml;
+            if (r.ReferenceString != value.ReferenceString) r.ReferenceString = value.ReferenceString;
             if (r.Journal != value.Journal) r.Journal = value.Journal;
             if (r.Keywords != value.Keywords) r.Keywords = value.Keywords;
             if (r.Lastname != value.Lastname) r.Lastname = value.Lastname;

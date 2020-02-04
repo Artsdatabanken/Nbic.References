@@ -119,7 +119,11 @@ namespace Nbic.References.Public.Models
         {
             string type;
 
-            if (!String.IsNullOrEmpty(reference.ReferenceString) || !String.IsNullOrEmpty(reference.Author) || !String.IsNullOrEmpty(reference.Year) ||
+            if (!String.IsNullOrEmpty(reference.ReferenceString))
+            {
+                type = "Reference";
+            }
+            else if (!String.IsNullOrEmpty(reference.Author) || !String.IsNullOrEmpty(reference.Year) ||
                 !String.IsNullOrEmpty(reference.Volume) || !String.IsNullOrEmpty(reference.Pages))
             {
                 type = "Publication";
