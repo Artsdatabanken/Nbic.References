@@ -47,7 +47,42 @@ namespace Nbic.References.Tests
                 connection.Close();
             }
         }
+        [Fact]
+        public async Task CanPostReindexAndGetReference()
+        {
+            GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
+            using var index = new Index();
+            try
+            {
+                var id = Guid.NewGuid();
+                using (var context = new ReferencesDbContext(options))
+                {
+                    var service = new ReferencesController(context, index);
+                    var result = await service.Post(new Reference() { Id = id }).ConfigureAwait(false);
+                }
+                using (var context = new ReferencesDbContext(options))
+                {
+                    var service = new ReferencesController(context, index);
+                    var result = await service.DoReindex().ConfigureAwait(false);
+                }
 
+                // Use a separate instance of the context to verify correct data was saved to database
+                using (var context = new ReferencesDbContext(options))
+                {
+                    var service = new ReferencesController(context, index);
+                    var result = await service.Get(id).ConfigureAwait(false);
+                    Assert.Equal(id, result.Value.Id);
+                    var count = (await service.GetCount().ConfigureAwait(false)).Value;
+                    Assert.Equal(1, count);
+                    var all = await service.GetAll(0, 10).ConfigureAwait(false);
+                    Assert.Single(all);
+                }
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
         [Fact]
         public async Task CanDeleteReference()
         {

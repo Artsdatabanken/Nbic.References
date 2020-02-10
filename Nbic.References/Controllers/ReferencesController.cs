@@ -26,7 +26,7 @@ namespace Nbic.References.Controllers
         {
             _referencesDbContext = referencesDbContext;
             _index = index;
-            IndexSanityCheck();
+            //IndexSanityCheck();
             
         }
 
@@ -36,6 +36,7 @@ namespace Nbic.References.Controllers
             {
                 if (_index.IndexCount() != _referencesDbContext.Reference.Count())
                 {
+                    _index.FirstUse = false;
                     _index.ClearIndex();
                     var batch = new List<Reference>();
                     foreach (var reference in _referencesDbContext.Reference)
@@ -80,6 +81,15 @@ namespace Nbic.References.Controllers
         public async Task<ActionResult<int>> GetCount()
         {
             return await this._referencesDbContext.Reference.CountAsync().ConfigureAwait(false);
+        }
+
+        [HttpGet]
+        [Authorize("WriteAccess")]
+        [Route("Reindex")]
+        public async Task<ActionResult<bool>> DoReindex()
+        {
+            IndexSanityCheck();
+            return true;
         }
 
         [HttpGet("{id}")]
