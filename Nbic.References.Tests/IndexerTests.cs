@@ -17,15 +17,15 @@ namespace Nbic.References.Tests
                 var newGuid = Guid.Parse("b1df2d4b-e06a-421d-865b-03f3dfdf6913");
                 index.AddOrUpdate(new Reference() { Id = newGuid, Title = "Creepy" });
                 var result = index.SearchReference("Creepy", 0, 10);
-                Assert.Equal(result.Count(), 1);
+                Assert.Single(result);
                 index.AddOrUpdate(new Reference() { Id = newGuid, Title = "Snoopy Dog" });
                 result = index.SearchReference("Creepy", 0, 10);
-                Assert.Equal(result.Count(), 0);
+                Assert.Empty(result);
                 result = index.SearchReference("Snoopy Dog", 0, 10);
-                Assert.Equal(result.Count(), 1);
+                Assert.Single(result);
                 index.Delete(newGuid);
                 result = index.SearchReference("Snoopy Dog", 0, 10);
-                Assert.Equal(result.Count(), 0);
+                Assert.Empty(result);
             }
         }
         [Fact]
@@ -58,11 +58,11 @@ namespace Nbic.References.Tests
 
                 index.AddOrUpdate(referanse);
                 var result = index.SearchReference("elven", 0, 10);
-                Assert.Equal(result.Count(), 1);
+                Assert.Single(result);
                 result = index.SearchReference("elven Association", 0, 10);
-                Assert.Equal(result.Count(), 1);
+                Assert.Single(result);
                 result = index.SearchReference("elven. R.", 0, 10);
-                Assert.Equal(result.Count(), 1);
+                Assert.Single(result);
 
             }
         }
@@ -96,11 +96,11 @@ namespace Nbic.References.Tests
 
                 index.AddOrUpdate(referanse);
                 var result = index.SearchReference("hoem", 0, 10);
-                Assert.Equal(result.Count(), 1);
+                Assert.Single(result);
                 result = index.SearchReference("hoem Association", 0, 10);
-                Assert.Equal(result.Count(), 1);
+                Assert.Single(result);
                 result = index.SearchReference("hoem. R.", 0, 10);
-                Assert.Equal(result.Count(), 1);
+                Assert.Single(result);
 
             }
         }
@@ -159,11 +159,11 @@ namespace Nbic.References.Tests
                 index.AddOrUpdate(referans2);
 
                 var result = index.SearchReference("elven", 0, 10);
-                Assert.Equal(result.Count(), 2);
+                Assert.Equal(2,result.Count());
                 result = index.SearchReference("elven Association", 0, 10);
-                Assert.Equal(result.Count(), 2);
+                Assert.Equal(2,result.Count());
                 result = index.SearchReference("elven 1981", 0, 10);
-                Assert.Equal(result.Count(), 1);
+                Assert.Single(result);
 
             }
         }

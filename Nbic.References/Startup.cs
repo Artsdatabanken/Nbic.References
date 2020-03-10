@@ -58,7 +58,9 @@ namespace Nbic.References
 
         public IConfiguration Configuration { get; }
 
+
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
         {
             this.logger = logger;
@@ -232,6 +234,7 @@ namespace Nbic.References
         }
 
         [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>")]
+        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
         private void AddSqlServerContext(IServiceCollection services)
         {
             Console.WriteLine("Adding SqlServerContext");

@@ -86,7 +86,7 @@ namespace Nbic.References.Controllers
         [HttpGet]
         [Authorize("WriteAccess")]
         [Route("Reindex")]
-        public async Task<ActionResult<bool>> DoReindex()
+        public ActionResult<bool> DoReindex()
         {
             IndexSanityCheck();
             return true;
@@ -227,6 +227,7 @@ namespace Nbic.References.Controllers
 
         [Authorize("WriteAccess")]
         [HttpDelete("{id}")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
         public ActionResult Delete(Guid id)
         {
             var item = this._referencesDbContext.Reference.Include(x => x.ReferenceUsage).FirstOrDefault(x => x.Id == id);

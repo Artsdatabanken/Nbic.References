@@ -63,7 +63,7 @@ namespace Nbic.References.Tests
                 using (var context = new ReferencesDbContext(options))
                 {
                     var service = new ReferencesController(context, index);
-                    var result = await service.DoReindex().ConfigureAwait(false);
+                    var result = service.DoReindex();
                 }
 
                 // Use a separate instance of the context to verify correct data was saved to database
