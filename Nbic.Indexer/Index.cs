@@ -24,6 +24,7 @@ namespace Nbic.Indexer
 
         private bool firstUse = true;
         private CharArraySet _stopwords = StandardAnalyzer.STOP_WORDS_SET;
+        private FSDirectory _dir;
 
         public Index()
         {
@@ -38,7 +39,7 @@ namespace Nbic.Indexer
             var indexLocation = applicationRoot.Contains('\\') ? applicationRoot + @"\Data\index" : applicationRoot + @"/Data/index";
             
             //var otherdir = AppDomain.CurrentDomain.BaseDirectory;
-            var dir = FSDirectory.Open(indexLocation);
+            _dir = FSDirectory.Open(indexLocation);
 
             //create an analyzer to process the text
             var analyzer = new StandardAnalyzer(AppLuceneVersion);
@@ -46,7 +47,7 @@ namespace Nbic.Indexer
 
             //create an index writer
             var indexConfig = new IndexWriterConfig(AppLuceneVersion, analyzer);
-            _writer = new IndexWriter(dir, indexConfig);
+            _writer = new IndexWriter(_dir, indexConfig);
 
         }
 
@@ -113,7 +114,15 @@ namespace Nbic.Indexer
 
         public void Dispose()
         {
+            if (_writer != null)
+            {
             _writer.Dispose();
+            }
+
+            if (_dir != null)
+            {
+                _dir.Dispose();
+            }
         }
 
         public IEnumerable<Guid> SearchReference(string terms, int offset, int limit)

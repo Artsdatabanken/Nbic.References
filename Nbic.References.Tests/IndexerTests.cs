@@ -72,6 +72,7 @@ namespace Nbic.References.Tests
         {
             using (var index = new Nbic.Indexer.Index())
             {
+                index.ClearIndex();
                 var referanse = new Reference()
                 {
                     Id = Guid.Parse("208daeb0-a917-45cd-9b0f-fa21f4300d01"),
