@@ -6,6 +6,7 @@ using System.Net.Mime;
 using System.Text.RegularExpressions;
 using Lucene.Net.Analysis.Core;
 using Lucene.Net.Analysis.Standard;
+using Lucene.Net.Analysis.Util;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
 using Lucene.Net.Search;
@@ -22,6 +23,7 @@ namespace Nbic.Indexer
         private IndexWriter _writer;
 
         private bool firstUse = true;
+        private CharArraySet _stopwords = StandardAnalyzer.STOP_WORDS_SET;
 
         public Index()
         {
@@ -121,6 +123,7 @@ namespace Nbic.Indexer
             lower = Regex.Replace(lower, @"(\s{2,})", "");
             var items = lower.Split(' ', StringSplitOptions.RemoveEmptyEntries);
             Query query;
+            
             if (items.Length == 1)
             {
                 query = new TermQuery(new Term(Field_String, items[0]));
@@ -130,7 +133,11 @@ namespace Nbic.Indexer
                 query = new BooleanQuery();
                 foreach (var item in items)
                 {
-                    ((BooleanQuery)query).Add(new BooleanClause(new TermQuery(new Term(Field_String, item)), Occur.MUST));
+                    if (!_stopwords.Contains(item))
+                    {
+                         ((BooleanQuery)query).Add(new BooleanClause(new TermQuery(new Term(Field_String, item)), Occur.MUST));
+                    }
+                   
                 }
             }
 
@@ -144,6 +151,19 @@ namespace Nbic.Indexer
                 if (count <= startAt) continue;
                 var foundDoc = searcher.Doc(hit.Doc);
                 yield return Guid.Parse(foundDoc.Get(Field_Id));
+            }
+
+            if (count == 0 && items.Length == 1 && items[0].Length > 3)
+            {
+                query = new WildcardQuery(new Term(Field_String, items[0] + "*"));
+                hits = searcher.Search(query, startAt + limit /* top 20 */).ScoreDocs;
+                foreach (var hit in hits)
+                {
+                    count++;
+                    if (count <= startAt) continue;
+                    var foundDoc = searcher.Doc(hit.Doc);
+                    yield return Guid.Parse(foundDoc.Get(Field_Id));
+                }
             }
         }
 

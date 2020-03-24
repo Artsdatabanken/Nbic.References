@@ -104,7 +104,81 @@ namespace Nbic.References.Tests
 
             }
         }
+        [Fact]
+        public void CanFindAwholelotofthingsDocument()
+        {
+            using (var index = new Nbic.Indexer.Index())
+            {
+                var referanse = new Reference()
+                {
+                    Id = Guid.Parse("208daeb0-a917-45cd-9b0f-fa21f4300d01"),
+                    ApplicationId = 8,
+                    UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3"),
+                    Author = "Horem, R.",
+                    Year = "1982",
+                    Title = "A whole lot of things",
+                    Summary = null,
+                    Journal = null,
+                    Volume = null,
+                    Pages = null,
+                    Bibliography = null,
+                    Lastname = null,
+                    Middlename = null,
+                    Firstname = null,
+                    Url = null,
+                    Keywords = "Fje Veg Ass Dyn NNNd#2",
+                    ReferenceString = "Hojem, R. 1980. Association analysis of moraine vegetation at the glacier Hardangerjökulen, Finse, South Norway. - Norw. J. Bot. 25: 171-191.",
+                    EditDate = DateTime.Parse("2010-04-26T08:09:18.613")
+                };
 
+                index.AddOrUpdate(referanse);
+                var result = index.SearchReference("A whole lot of things", 0, 10);
+                Assert.Equal(result.Count(), 1);
+                result = index.SearchReference("A whole lot", 0, 10);
+                Assert.Equal(result.Count(), 1);
+                result = index.SearchReference("of things", 0, 10);
+                Assert.Equal(result.Count(), 1);
+
+            }
+        }
+
+        [Fact]
+        public void CanFindSubstringsDocument()
+        {
+            using (var index = new Nbic.Indexer.Index())
+            {
+                var referanse = new Reference()
+                {
+                    Id = Guid.Parse("208daeb0-a917-45cd-9b0f-fa21f4300d07"),
+                    ApplicationId = 8,
+                    UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3"),
+                    Author = "Hormem, R.",
+                    Year = "1982",
+                    Title = "Tullball & balltull 2021",
+                    Summary = null,
+                    Journal = null,
+                    Volume = null,
+                    Pages = null,
+                    Bibliography = null,
+                    Lastname = null,
+                    Middlename = null,
+                    Firstname = null,
+                    Url = null,
+                    Keywords = "Fje Veg Ass Dyn NNNd#2",
+                    ReferenceString = "Hojtem, R. 1980. Association analysis of moraine vegetation at the glacier Hardangerjökulen, Finse, South Norway. - Norw. J. Bot. 25: 171-191.",
+                    EditDate = DateTime.Parse("2010-04-26T08:09:18.613")
+                };
+
+                index.AddOrUpdate(referanse);
+                var result = index.SearchReference("Tullb", 0, 10);
+                Assert.Equal(result.Count(), 1);
+                result = index.SearchReference("balltu", 0, 10);
+                Assert.Equal(result.Count(), 1);
+                result = index.SearchReference("Tullball", 0, 10);
+                Assert.Equal(result.Count(), 1);
+
+            }
+        }
         [Fact]
         public void CanFindTheRightReidarElvenReferanseDocument()
         {
