@@ -134,11 +134,11 @@ namespace Nbic.References.Tests
 
                 index.AddOrUpdate(referanse);
                 var result = index.SearchReference("A whole lot of things", 0, 10);
-                Assert.Equal(result.Count(), 1);
+                Assert.Single(result);
                 result = index.SearchReference("A whole lot", 0, 10);
-                Assert.Equal(result.Count(), 1);
+                Assert.Single(result);
                 result = index.SearchReference("of things", 0, 10);
-                Assert.Equal(result.Count(), 1);
+                Assert.Single(result);
 
             }
         }
@@ -172,11 +172,11 @@ namespace Nbic.References.Tests
 
                 index.AddOrUpdate(referanse);
                 var result = index.SearchReference("Tullb", 0, 10);
-                Assert.Equal(result.Count(), 1);
+                Assert.Single( result);
                 result = index.SearchReference("balltu", 0, 10);
-                Assert.Equal(result.Count(), 1);
+                Assert.Single(result);
                 result = index.SearchReference("Tullball", 0, 10);
-                Assert.Equal(result.Count(), 1);
+                Assert.Single(result);
 
             }
         }
