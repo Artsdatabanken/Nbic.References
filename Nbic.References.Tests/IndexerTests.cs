@@ -17,15 +17,15 @@ namespace Nbic.References.Tests
                 var newGuid = Guid.Parse("b1df2d4b-e06a-421d-865b-03f3dfdf6913");
                 index.AddOrUpdate(new Reference() { Id = newGuid, Title = "Creepy" });
                 var result = index.SearchReference("Creepy", 0, 10);
-                Assert.Single(result);
+                Assert.Single(result.ToArray());
                 index.AddOrUpdate(new Reference() { Id = newGuid, Title = "Snoopy Dog" });
                 result = index.SearchReference("Creepy", 0, 10);
-                Assert.Empty(result);
+                Assert.Empty(result.ToArray());
                 result = index.SearchReference("Snoopy Dog", 0, 10);
-                Assert.Single(result);
+                Assert.Single(result.ToArray());
                 index.Delete(newGuid);
                 result = index.SearchReference("Snoopy Dog", 0, 10);
-                Assert.Empty(result);
+                Assert.Empty(result.ToArray());
             }
         }
         [Fact]
@@ -38,7 +38,7 @@ namespace Nbic.References.Tests
                                         Id = Guid.Parse("208daeb0-a917-45cd-9b0f-fa21f4300d02"),
                                         ApplicationId = 8,
                                         UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3"),
-                                        Author = "Elven, R.",
+                                        Author = "Elvek, R.",
                                         Year = "1980",
                                         Title = null,
                                         Summary = null,
@@ -46,7 +46,7 @@ namespace Nbic.References.Tests
                                         Volume = null,
                                         Pages = null,
                                         Bibliography =
-                                            "Elven, R. 1980. Association analysis of moraine vegetation at the glacier Hardangerjökulen, Finse, South Norway. - Norw. J. Bot. 25: 171-191.",
+                                            "Elvek, R. 1980. Association analysis of moraine vegetation at the glacier Hardangerjökulen, Finse, South Norway. - Norw. J. Bot. 25: 171-191.",
                                         Lastname = null,
                                         Middlename = null,
                                         Firstname = null,
@@ -57,12 +57,12 @@ namespace Nbic.References.Tests
                                     };
 
                 index.AddOrUpdate(referanse);
-                var result = index.SearchReference("elven", 0, 10);
-                Assert.Single(result);
-                result = index.SearchReference("elven Association", 0, 10);
-                Assert.Single(result);
-                result = index.SearchReference("elven. R.", 0, 10);
-                Assert.Single(result);
+                var result = index.SearchReference("elvek", 0, 10);
+                Assert.Single(result.ToArray());
+                result = index.SearchReference("elvek Association", 0, 10);
+                Assert.Single(result.ToArray());
+                result = index.SearchReference("elvek. R.", 0, 10);
+                Assert.Single(result.ToArray());
 
             }
         }
@@ -97,11 +97,11 @@ namespace Nbic.References.Tests
 
                 index.AddOrUpdate(referanse);
                 var result = index.SearchReference("hoem", 0, 10);
-                Assert.Single(result);
+                Assert.Single(result.ToArray());
                 result = index.SearchReference("hoem Association", 0, 10);
-                Assert.Single(result);
+                Assert.Single(result.ToArray());
                 result = index.SearchReference("hoem. R.", 0, 10);
-                Assert.Single(result);
+                Assert.Single(result.ToArray());
 
             }
         }
@@ -134,11 +134,11 @@ namespace Nbic.References.Tests
 
                 index.AddOrUpdate(referanse);
                 var result = index.SearchReference("A whole lot of things", 0, 10);
-                Assert.Single(result);
+                Assert.Single(result.ToArray());
                 result = index.SearchReference("A whole lot", 0, 10);
-                Assert.Single(result);
+                Assert.Single(result.ToArray());
                 result = index.SearchReference("of things", 0, 10);
-                Assert.Single(result);
+                Assert.Single(result.ToArray());
 
             }
         }
@@ -172,11 +172,11 @@ namespace Nbic.References.Tests
 
                 index.AddOrUpdate(referanse);
                 var result = index.SearchReference("Tullb", 0, 10);
-                Assert.Single( result);
+                Assert.Single( result.ToArray());
                 result = index.SearchReference("balltu", 0, 10);
-                Assert.Single(result);
+                Assert.Single(result.ToArray());
                 result = index.SearchReference("Tullball", 0, 10);
-                Assert.Single(result);
+                Assert.Single(result.ToArray());
 
             }
         }
@@ -238,7 +238,7 @@ namespace Nbic.References.Tests
                 result = index.SearchReference("elven Association", 0, 10);
                 Assert.Equal(2,result.Count());
                 result = index.SearchReference("elven 1981", 0, 10);
-                Assert.Single(result);
+                Assert.Single(result.ToArray());
 
             }
         }

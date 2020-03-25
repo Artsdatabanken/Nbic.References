@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Mime;
 using System.Text.RegularExpressions;
+using System.Threading;
 using Lucene.Net.Analysis.Core;
 using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Analysis.Util;
@@ -37,18 +38,23 @@ namespace Nbic.Indexer
                 applicationRoot = AppDomain.CurrentDomain.BaseDirectory;
             }
             var indexLocation = applicationRoot.Contains('\\') ? applicationRoot + @"\Data\index" : applicationRoot + @"/Data/index";
-            
+            var lockfileindexLocation = applicationRoot.Contains('\\') ? applicationRoot + @"\Data\index\write.lock" : applicationRoot + @"/Data/index/write.lock";
             //var otherdir = AppDomain.CurrentDomain.BaseDirectory;
+            if (File.Exists(lockfileindexLocation))
+            {
+                Thread.Sleep(500);
+            }
             _dir = FSDirectory.Open(indexLocation);
-
+            
             //create an analyzer to process the text
             var analyzer = new StandardAnalyzer(AppLuceneVersion);
             //_idAnalyser = new SimpleAnalyzer(AppLuceneVersion);
-
+            
             //create an index writer
             var indexConfig = new IndexWriterConfig(AppLuceneVersion, analyzer);
+            
             _writer = new IndexWriter(_dir, indexConfig);
-
+            
         }
 
         public bool FirstUse
@@ -74,7 +80,7 @@ namespace Nbic.Indexer
                 //            _writer.DeleteDocuments(id);
                 _writer.UpdateDocument(new Term(Field_Id, reference.Id.ToString()), doc);
                 // _writer.AddDocument(doc);
-                //_writer.Flush(triggerMerge: false, applyAllDeletes: false);
+                //_writer.Flush(triggerMerge: true, applyAllDeletes: true);
                 _writer.Commit();
             }
         }
@@ -108,7 +114,7 @@ namespace Nbic.Indexer
                 
             }
             
-            //_writer.Flush(triggerMerge: false, applyAllDeletes: false);
+            //_writer.Flush(triggerMerge: true, applyAllDeletes: true);
             _writer.Commit();
         }
 
@@ -116,7 +122,11 @@ namespace Nbic.Indexer
         {
             if (_writer != null)
             {
-            _writer.Dispose();
+                _writer.Flush(true,true);
+                _writer.WaitForMerges();
+                _writer.Commit();
+                
+                _writer.Dispose();
             }
 
             if (_dir != null)
@@ -165,6 +175,7 @@ namespace Nbic.Indexer
             if (count == 0 && items.Length == 1 && items[0].Length > 3)
             {
                 query = new WildcardQuery(new Term(Field_String, items[0] + "*"));
+                searcher = new IndexSearcher(_writer.GetReader(applyAllDeletes: true));
                 hits = searcher.Search(query, startAt + limit /* top 20 */).ScoreDocs;
                 foreach (var hit in hits)
                 {
@@ -179,7 +190,7 @@ namespace Nbic.Indexer
         public void Delete(Guid newGuid)
         {
             _writer.DeleteDocuments(new Term(Field_Id, newGuid.ToString()));
-            //_writer.Flush(triggerMerge: false, applyAllDeletes: true);
+            //_writer.Flush(triggerMerge: true, applyAllDeletes: true);
             _writer.Commit();
         }
 
