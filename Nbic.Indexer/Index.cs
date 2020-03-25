@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Mime;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
 using Lucene.Net.Analysis.Core;
 using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Analysis.Util;
@@ -45,8 +46,9 @@ namespace Nbic.Indexer
                 var retry = 50;
                 while (retry > 0 && File.Exists(lockfileindexLocation))
                 {
-                     Thread.Sleep(100);
-                     retry--;
+                    Task.Delay(100).Wait();
+                    //Thread.Sleep(100);
+                    retry--;
                 }
             }
             _dir = FSDirectory.Open(indexLocation);
