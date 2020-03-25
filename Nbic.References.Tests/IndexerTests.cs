@@ -12,7 +12,7 @@ namespace Nbic.References.Tests
         [Fact]
         public void CanIndexAnDocument()
         {
-            using (var index = new Nbic.Indexer.Index())
+            using (var index = new Indexer.Index(true))
             {
                 var newGuid = Guid.Parse("b1df2d4b-e06a-421d-865b-03f3dfdf6913");
                 index.AddOrUpdate(new Reference() { Id = newGuid, Title = "Creepy" });
@@ -31,7 +31,7 @@ namespace Nbic.References.Tests
         [Fact]
         public void CanFindReidarElvenReferanseDocument()
         {
-            using (var index = new Nbic.Indexer.Index())
+            using (var index = new Indexer.Index(true))
             {
                 var referanse = new Reference()
                                     {
@@ -70,7 +70,7 @@ namespace Nbic.References.Tests
         [Fact]
         public void CanFindHoemDirectReferanseDocument()
         {
-            using (var index = new Nbic.Indexer.Index())
+            using (var index = new Indexer.Index(true))
             {
                 index.ClearIndex();
                 var referanse = new Reference()
@@ -108,7 +108,7 @@ namespace Nbic.References.Tests
         [Fact]
         public void CanFindAwholelotofthingsDocument()
         {
-            using (var index = new Nbic.Indexer.Index())
+            using (var index = new Indexer.Index(true))
             {
                 var referanse = new Reference()
                 {
@@ -146,7 +146,7 @@ namespace Nbic.References.Tests
         [Fact]
         public void CanFindSubstringsDocument()
         {
-            using (var index = new Nbic.Indexer.Index())
+            using (var index = new Indexer.Index(true))
             {
                 var referanse = new Reference()
                 {
@@ -183,7 +183,7 @@ namespace Nbic.References.Tests
         [Fact]
         public void CanFindTheRightReidarElvenReferanseDocument()
         {
-            using (var index = new Nbic.Indexer.Index())
+            using (var index = new Indexer.Index(true))
             {
                 var referanse = new Reference()
                 {

@@ -27,7 +27,7 @@ namespace Nbic.Indexer
         private CharArraySet _stopwords = StandardAnalyzer.STOP_WORDS_SET;
         private FSDirectory _dir;
 
-        public Index()
+        public Index(bool waitForLockFile = false)
         {
             // Ensures index backwards compatibility
             var AppLuceneVersion = LuceneVersion.LUCENE_48;
@@ -38,11 +38,16 @@ namespace Nbic.Indexer
                 applicationRoot = AppDomain.CurrentDomain.BaseDirectory;
             }
             var indexLocation = applicationRoot.Contains('\\') ? applicationRoot + @"\Data\index" : applicationRoot + @"/Data/index";
-            var lockfileindexLocation = applicationRoot.Contains('\\') ? applicationRoot + @"\Data\index\write.lock" : applicationRoot + @"/Data/index/write.lock";
-            //var otherdir = AppDomain.CurrentDomain.BaseDirectory;
-            if (File.Exists(lockfileindexLocation))
+            if (waitForLockFile)
             {
-                Thread.Sleep(500);
+                var lockfileindexLocation = applicationRoot.Contains('\\') ? applicationRoot + @"\Data\index\write.lock" : applicationRoot + @"/Data/index/write.lock";
+                //var otherdir = AppDomain.CurrentDomain.BaseDirectory;
+                var retry = 50;
+                while (retry > 0 && File.Exists(lockfileindexLocation))
+                {
+                     Thread.Sleep(100);
+                     retry--;
+                }
             }
             _dir = FSDirectory.Open(indexLocation);
             

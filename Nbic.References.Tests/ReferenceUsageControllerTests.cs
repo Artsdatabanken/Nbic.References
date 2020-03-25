@@ -22,7 +22,7 @@ namespace Nbic.References.Tests
         public async Task CanPostReferenceAndGetReferenceUsages()
         {
             GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
-            using (var index = new Index())
+            using (var index = new Index(true))
             {
                 try
                 {
@@ -65,7 +65,7 @@ namespace Nbic.References.Tests
         public async Task CanDeleteReferenceIfUsageReferencesIsDeletedFirst()
         {
             GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
-            using (var index = new Index())
+            using (var index = new Index(true))
             {
 
                 try
@@ -114,7 +114,7 @@ namespace Nbic.References.Tests
         public async Task CanDeleteSingleReferenceUsage()
         {
             GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
-            using (var index = new Index())
+            using (var index = new Index(true))
             {
 
                 try
@@ -164,7 +164,7 @@ namespace Nbic.References.Tests
         {
             GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
 
-            using var index = new Index();
+            using var index = new Index(true);
             try
             {
                 var id = Guid.NewGuid();
@@ -198,7 +198,7 @@ namespace Nbic.References.Tests
         {
             GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
 
-            using (var index = new Index())
+            using (var index = new Index(true))
             {
                 try
                 {
@@ -270,7 +270,7 @@ namespace Nbic.References.Tests
         public async Task CanAddSingleDuplicateReferenceUsage()
         {
             GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
-            using (var index = new Index())
+            using (var index = new Index(true))
             {
 
                 try
