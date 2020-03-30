@@ -64,15 +64,15 @@ namespace Nbic.References.Public.Models
             {
                 formatedString =
                     ((!string.IsNullOrEmpty(reference.Author) ? reference.Author.Trim() : string.Empty) +
-                     (!string.IsNullOrEmpty(reference.Year) ? (" " + reference.Year.Trim()) : string.Empty) +
+                     (!string.IsNullOrEmpty(reference.Year) ? (" " + AddParanteseIfMissing(reference.Year.Trim())) : string.Empty) +
                      ((!string.IsNullOrEmpty(reference.Author) || !string.IsNullOrEmpty(reference.Year))
                           ? ". "
                           : string.Empty) +
-                     (!string.IsNullOrEmpty(reference.Title) ? reference.Title.Trim() : string.Empty) +
+                     (!string.IsNullOrEmpty(reference.Title) ? AddPointIfMissing(reference.Title.Trim()) : string.Empty) +
                      (!string.IsNullOrEmpty(reference.Journal) ? (" " + reference.Journal.Trim()) : string.Empty) +
                      (!string.IsNullOrEmpty(reference.Volume) ? (" " + reference.Volume.Trim()) : string.Empty) +
                      ((!string.IsNullOrEmpty(reference.Volume) && !string.IsNullOrEmpty(reference.Pages)) ? ": " : " ") +
-                     (!string.IsNullOrEmpty(reference.Pages) ? reference.Pages.Trim() : string.Empty)).Trim();
+                     (!string.IsNullOrEmpty(reference.Pages) ? AddPointIfMissing(reference.Pages.Trim()) : string.Empty)).Trim();
                 if (!string.IsNullOrWhiteSpace(reference.Bibliography))
                 {
                     //maybe try remove stuff from this instead...
@@ -143,6 +143,25 @@ namespace Nbic.References.Public.Models
             }
 
             return type;
+        }
+
+        private static string AddParanteseIfMissing(string item)
+        {
+            if (!string.IsNullOrWhiteSpace(item) && !item.StartsWith("("))
+            {
+                return $"({item})";
+            }
+
+            return item;
+        }
+        private static string AddPointIfMissing(string item)
+        {
+            if (!string.IsNullOrWhiteSpace(item) && !item.EndsWith("."))
+            {
+                return $"{item}.";
+            }
+
+            return item;
         }
     }
 }
