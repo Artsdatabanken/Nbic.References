@@ -10,7 +10,7 @@ namespace Nbic.References.Tests
     public class ReferenceTests
     {
         [Fact]
-        public async Task FixParantesesAroundYearInReference()
+        public void FixParantesesAroundYearInReference()
         {
             var reference = new Reference
             {
@@ -25,7 +25,7 @@ namespace Nbic.References.Tests
         }
 
         [Fact]
-        public async Task NotFixParantesesIfOkInReference()
+        public void NotFixParantesesIfOkInReference()
         {
             var reference = new Reference
             {
