@@ -38,7 +38,7 @@ namespace Nbic.References.Tests
                                         Id = Guid.Parse("208daeb0-a917-45cd-9b0f-fa21f4300d02"),
                                         ApplicationId = 8,
                                         UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3"),
-                                        Author = "Elvek, R.",
+                                        Author = "Elven, R.",
                                         Year = "1980",
                                         Title = null,
                                         Summary = null,
@@ -46,7 +46,7 @@ namespace Nbic.References.Tests
                                         Volume = null,
                                         Pages = null,
                                         Bibliography =
-                                            "Elvek, R. 1980. Association analysis of moraine vegetation at the glacier Hardangerjökulen, Finse, South Norway. - Norw. J. Bot. 25: 171-191.",
+                                            "Elven, R. 1980. Association analysis of moraine vegetation at the glacier Hardangerjökulen, Finse, South Norway. - Norw. J. Bot. 25: 171-191.",
                                         Lastname = null,
                                         Middlename = null,
                                         Firstname = null,
@@ -57,11 +57,11 @@ namespace Nbic.References.Tests
                                     };
 
                 index.AddOrUpdate(referanse);
-                var result = index.SearchReference("elvek", 0, 10);
+                var result = index.SearchReference("elven", 0, 10);
                 Assert.Single(result.ToArray());
-                result = index.SearchReference("elvek Association", 0, 10);
+                result = index.SearchReference("elven Association", 0, 10);
                 Assert.Single(result.ToArray());
-                result = index.SearchReference("elvek. R.", 0, 10);
+                result = index.SearchReference("elven. R.", 0, 10);
                 Assert.Single(result.ToArray());
 
             }

@@ -20,7 +20,7 @@ namespace Nbic.References.Tests
         public async Task CanPostReference()
         {
             GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
-            using (var index = new Index(true))
+            using (var index = new Index(true, true))
             {
                 try
                 {
@@ -54,7 +54,7 @@ namespace Nbic.References.Tests
         public async Task CanPostReindexAndGetReference()
         {
             GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
-            using (var index = new Index(true))
+            using (var index = new Index(true, true))
             {
                 try
                 {
@@ -94,7 +94,7 @@ namespace Nbic.References.Tests
         public async Task CanDeleteReference()
         {
             GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
-            using (var index = new Index(true))
+            using (var index = new Index(true, true))
             {
                 try
                 {
@@ -129,7 +129,7 @@ namespace Nbic.References.Tests
         {
             GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
 
-            using (var index = new Index(true))
+            using (var index = new Index(true, true))
             {
                 try
                 {
@@ -170,7 +170,7 @@ namespace Nbic.References.Tests
         {
             GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
 
-            using (var index = new Index(true))
+            using (var index = new Index(true, true))
             {
                 try
                 {
@@ -211,7 +211,7 @@ namespace Nbic.References.Tests
         {
             GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
 
-            using (var index = new Index(true))
+            using (var index = new Index(true, true))
             {
                 try
                 {
@@ -290,7 +290,7 @@ namespace Nbic.References.Tests
         {
             GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
 
-            using (var index = new Index(true))
+            using (var index = new Index(true, true))
             {
                 try
                 {
@@ -403,7 +403,7 @@ namespace Nbic.References.Tests
         {
             GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
 
-            using (var index = new Index(true))
+            using (var index = new Index(true, true))
             {
                 try
                 {
@@ -435,7 +435,7 @@ namespace Nbic.References.Tests
         {
             GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
 
-            using (var index = new Index(true))
+            using (var index = new Index(true, true))
             {
                 try
                 {
@@ -461,7 +461,7 @@ namespace Nbic.References.Tests
         {
             GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
 
-            using (var index = new Index(true))
+            using (var index = new Index(true, true))
             {
                 try
                 {
