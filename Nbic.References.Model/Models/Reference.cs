@@ -56,6 +56,11 @@ namespace Nbic.References.Public.Models
 
             if (!string.IsNullOrWhiteSpace(reference.ReferenceString))
             {
+                if (!string.IsNullOrWhiteSpace(reference.Url))
+                {
+                    return (reference.ReferenceString.Trim() + " " + reference.Url).Trim();
+
+                }
                 return reference.ReferenceString.Trim();
             }
 
@@ -82,6 +87,12 @@ namespace Nbic.References.Public.Models
                     {
                         formatedString = start;
                     }
+                }
+
+                if (!string.IsNullOrWhiteSpace(reference.Url))
+                {
+                    formatedString = (formatedString + " " + reference.Url).Trim();
+
                 }
             }
             catch (Exception ex)
