@@ -185,7 +185,7 @@ namespace Nbic.Indexer
                 yield return guid;
             }
 
-            if (items.Length == 1 && items[0].Length > 3)
+            if (items.Length == 1 && items[0].Length > 2)
             {
                 query = new WildcardQuery(new Term(Field_String, items[0] + "*"));
                 searcher = new IndexSearcher(_writer.GetReader(applyAllDeletes: true));
