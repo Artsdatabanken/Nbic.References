@@ -174,15 +174,18 @@ namespace Nbic.Indexer
             var startAt = (offset * limit);
             var hits = searcher.Search(query, startAt + limit /* top 20 */).ScoreDocs;
             var count = 0;
+            var found = new HashSet<Guid>();
             foreach (var hit in hits)
             {
                 count++;
                 if (count <= startAt) continue;
                 var foundDoc = searcher.Doc(hit.Doc);
-                yield return Guid.Parse(foundDoc.Get(Field_Id));
+                var guid = Guid.Parse(foundDoc.Get(Field_Id));
+                found.Add(guid);
+                yield return guid;
             }
 
-            if (count == 0 && items.Length == 1 && items[0].Length > 3)
+            if (items.Length == 1 && items[0].Length > 3)
             {
                 query = new WildcardQuery(new Term(Field_String, items[0] + "*"));
                 searcher = new IndexSearcher(_writer.GetReader(applyAllDeletes: true));
@@ -192,7 +195,12 @@ namespace Nbic.Indexer
                     count++;
                     if (count <= startAt) continue;
                     var foundDoc = searcher.Doc(hit.Doc);
-                    yield return Guid.Parse(foundDoc.Get(Field_Id));
+                    var guid = Guid.Parse(foundDoc.Get(Field_Id));
+                    if (found.Contains(guid))
+                    {
+                        continue;
+                    }
+                    yield return guid;
                 }
             }
         }

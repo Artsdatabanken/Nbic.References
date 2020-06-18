@@ -169,10 +169,32 @@ namespace Nbic.References.Tests
                     ReferenceString = "Hojtem, R. 1980. Association analysis of moraine vegetation at the glacier Hardangerjökulen, Finse, South Norway. - Norw. J. Bot. 25: 171-191.",
                     EditDate = DateTime.Parse("2010-04-26T08:09:18.613")
                 };
+                var referanse2 = new Reference()
+                {
+                    Id = Guid.Parse("208daeb0-a917-45cd-9b0f-fa21f4300d08"),
+                    ApplicationId = 8,
+                    UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3"),
+                    Author = "Hormem, R.",
+                    Year = "1982",
+                    Title = "Tullb & frapp 2021",
+                    Summary = null,
+                    Journal = null,
+                    Volume = null,
+                    Pages = null,
+                    Bibliography = null,
+                    Lastname = null,
+                    Middlename = null,
+                    Firstname = null,
+                    Url = null,
+                    Keywords = "Fje Veg Ass Dyn NNNd#2",
+                    ReferenceString = "Hojtem, R. 1980. Association analysis of moraine vegetation at the glacier Hardangerjökulen, Finse, South Norway. - Norw. J. Bot. 25: 171-191.",
+                    EditDate = DateTime.Parse("2010-04-26T08:09:18.613")
+                };
 
                 index.AddOrUpdate(referanse);
+                index.AddOrUpdate(referanse2);
                 var result = index.SearchReference("Tullb", 0, 10);
-                Assert.Single( result.ToArray());
+                Assert.Equal(2, result.ToArray().Length);
                 result = index.SearchReference("balltu", 0, 10);
                 Assert.Single(result.ToArray());
                 result = index.SearchReference("Tullball", 0, 10);
