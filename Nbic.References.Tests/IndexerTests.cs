@@ -199,6 +199,10 @@ namespace Nbic.References.Tests
                 Assert.Single(result.ToArray());
                 result = index.SearchReference("Tullball", 0, 10);
                 Assert.Single(result.ToArray());
+                result = index.SearchReference("Tullb balltu", 0, 10);
+                Assert.Single(result.ToArray());
+                result = index.SearchReference("Tullball ball", 0, 10);
+                Assert.Single(result.ToArray());
 
             }
         }

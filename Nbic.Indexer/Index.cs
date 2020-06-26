@@ -185,9 +185,27 @@ namespace Nbic.Indexer
                 yield return guid;
             }
 
-            if (items.Length == 1 && items[0].Length > 2)
+            var longTerms = items.Where(x => x.Length > 2).ToArray();
+
+            if (longTerms.Length > 0)
             {
-                query = new WildcardQuery(new Term(Field_String, items[0] + "*"));
+                if (longTerms.Length == 1)
+                {
+                    query = new WildcardQuery(new Term(Field_String, longTerms[0] + "*"));
+                }
+                else
+                {
+                    query = new BooleanQuery();
+                    foreach (var item in longTerms)
+                    {
+                        if (!_stopwords.Contains(item))
+                        {
+                            ((BooleanQuery)query).Add(new WildcardQuery(new Term(Field_String, item + "*")), Occur.MUST);
+                        }
+
+                    }
+                }
+                //query = new WildcardQuery(new Term(Field_String, items[0] + "*"));
                 searcher = new IndexSearcher(_writer.GetReader(applyAllDeletes: true));
                 hits = searcher.Search(query, startAt + limit /* top 20 */).ScoreDocs;
                 foreach (var hit in hits)
