@@ -31,7 +31,7 @@ namespace Nbic.References.Tests
         [Fact]
         public void CanFindReidarElvenReferanseDocument()
         {
-            using (var index = new Indexer.Index(true))
+            using (var index = new Indexer.Index(true, true))
             {
                 var referanse = new Reference()
                                     {
