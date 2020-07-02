@@ -265,7 +265,84 @@ namespace Nbic.References.Tests
                 }
             }
         }
+        [Fact]
+        public async Task AddReferenceUsageToNotExistingReferenceShouldNotFail()
+        {
+            GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
 
+            using (var index = new Index(true, true))
+            {
+                try
+                {
+                    var id = Guid.NewGuid();
+                    var id2 = Guid.NewGuid();
+                    var id3 = Guid.NewGuid();
+                    using (var context = new ReferencesDbContext(options))
+                    {
+                        var service = new ReferencesController(context, index);
+                        await service.Post(new Reference()
+                        {
+                            Id = id,
+                            ReferenceUsage = new List<ReferenceUsage>()
+                            {
+                                new ReferenceUsage()
+                                    {ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")},
+                                new ReferenceUsage()
+                                    {ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")}
+                            }
+                        }).ConfigureAwait(false);
+                        await service.Post(new Reference()
+                        {
+                            Id = id2,
+                            ReferenceUsage = new List<ReferenceUsage>()
+                            {
+                                new ReferenceUsage()
+                                    {ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")},
+                                new ReferenceUsage()
+                                    {ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")}
+                            }
+                        }).ConfigureAwait(false);
+                    }
+
+                    // Use a separate instance of the context to verify correct data was saved to database
+                    using (var context = new ReferencesDbContext(options))
+                    {
+                        var service = new ReferencesController(context, index);
+                        var usageService = new ReferenceUsageController(context);
+                        await usageService.Post(new ReferenceUsage[]
+                        {
+                            new ReferenceUsage()
+                            {
+                                ApplicationId = 3, ReferenceId = id,
+                                UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")
+                            },
+                            new ReferenceUsage()
+                            {
+                                ApplicationId = 3, ReferenceId = id2,
+                                UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")
+                            },
+                            new ReferenceUsage()
+                            {
+                                ApplicationId = 3, ReferenceId = id3,
+                                UserId = new Guid("3ed89222-de9a-4df3-9e95-87f7fcac67a3")
+                            }
+                        }).ConfigureAwait(false);
+                        var all = await usageService.GetAll(0, 10).ConfigureAwait(false);
+                        Assert.Equal(6, all.Count);
+                        var result = await service.Get(id).ConfigureAwait(false);
+                        Assert.Equal(id, result.Value.Id);
+                        Assert.Equal(3, result.Value.ReferenceUsage.Count);
+                        var result2 = await service.Get(id2).ConfigureAwait(false);
+                        Assert.Equal(id2, result2.Value.Id);
+                        Assert.Equal(3, result2.Value.ReferenceUsage.Count);
+                    }
+                }
+                finally
+                {
+                    connection.Close();
+                }
+            }
+        }
         [Fact]
         public async Task CanAddSingleDuplicateReferenceUsage()
         {

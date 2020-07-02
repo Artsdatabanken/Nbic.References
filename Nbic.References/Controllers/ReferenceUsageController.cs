@@ -109,7 +109,10 @@ namespace Nbic.References.Controllers
                     x => x.ReferenceId == referenceUsage.ReferenceId && x.ApplicationId == referenceUsage.ApplicationId
                                                                      && x.UserId == referenceUsage.UserId))
                 {
-                    toSave.Add(referenceUsage);
+                    if (_referencesDbContext.Reference.Any(x => x.Id == referenceUsage.ReferenceId))
+                    {
+                        toSave.Add(referenceUsage);
+                    }
                 }
             }
 
