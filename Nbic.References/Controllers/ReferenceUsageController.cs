@@ -92,5 +92,39 @@ namespace Nbic.References.Controllers
 
             return value;
         }
+
+        [Authorize("WriteAccess")]
+        [HttpPost("bulk")]
+        public async Task<ActionResult<bool>> Post(ReferenceUsage[] value)
+        {
+            if (value == null)
+            {
+                return BadRequest("No data posted");
+            }
+
+            var toSave = new List<ReferenceUsage>();
+            foreach (var referenceUsage in value)
+            {
+                if (!_referencesDbContext.ReferenceUsage.Any(
+                    x => x.ReferenceId == referenceUsage.ReferenceId && x.ApplicationId == referenceUsage.ApplicationId
+                                                                     && x.UserId == referenceUsage.UserId))
+                {
+                    if (_referencesDbContext.Reference.Any(x => x.Id == referenceUsage.ReferenceId))
+                    {
+                        toSave.Add(referenceUsage);
+                    }
+                }
+            }
+
+            if (toSave.Any())
+            {
+                _referencesDbContext.ReferenceUsage.AddRange(toSave);
+
+                await this._referencesDbContext.SaveChangesAsync().ConfigureAwait(false);
+            }
+
+
+            return true;
+        }
     }
 }

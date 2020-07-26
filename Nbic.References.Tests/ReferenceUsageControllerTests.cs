@@ -22,33 +22,42 @@ namespace Nbic.References.Tests
         public async Task CanPostReferenceAndGetReferenceUsages()
         {
             GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
-            using var index = new Index();
-
-            try
+            using (var index = new Index(true, true))
             {
-                var id = Guid.NewGuid();
-                using (var context = new ReferencesDbContext(options))
+                try
                 {
-                    var service = new ReferencesController(context, index);
-                    await service.Post(new Reference() {Id = id, ReferenceUsage = new List<ReferenceUsage>() { new ReferenceUsage() { ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") } } }).ConfigureAwait(false);
-                }
+                    var id = Guid.NewGuid();
+                    using (var context = new ReferencesDbContext(options))
+                    {
+                        var service = new ReferencesController(context, index);
+                        await service.Post(new Reference()
+                        {
+                            Id = id,
+                            ReferenceUsage = new List<ReferenceUsage>()
+                            {
+                                new ReferenceUsage()
+                                    {ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")}
+                            }
+                        }).ConfigureAwait(false);
+                    }
 
-                // Use a separate instance of the context to verify correct data was saved to database
-                using (var context = new ReferencesDbContext(options))
-                {
-                    var usageService = new ReferenceUsageController(context);
-                    
-                    var count = (await usageService.GetCount().ConfigureAwait(false)).Value;
-                    Assert.Equal(1, count);
-                    var all = await usageService.GetAll(0, 10).ConfigureAwait(false);
-                    Assert.Single(all);
-                    var them = await usageService.Get(id).ConfigureAwait(false);
-                    Assert.Single(them);
+                    // Use a separate instance of the context to verify correct data was saved to database
+                    using (var context = new ReferencesDbContext(options))
+                    {
+                        var usageService = new ReferenceUsageController(context);
+
+                        var count = (await usageService.GetCount().ConfigureAwait(false)).Value;
+                        Assert.Equal(1, count);
+                        var all = await usageService.GetAll(0, 10).ConfigureAwait(false);
+                        Assert.Single(all);
+                        var them = await usageService.Get(id).ConfigureAwait(false);
+                        Assert.Single(them);
+                    }
                 }
-            }
-            finally
-            {
-                connection.Close();
+                finally
+                {
+                    connection.Close();
+                }
             }
         }
 
@@ -56,38 +65,48 @@ namespace Nbic.References.Tests
         public async Task CanDeleteReferenceIfUsageReferencesIsDeletedFirst()
         {
             GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
-            using var index = new Index();
-
-            try
+            using (var index = new Index(true, true))
             {
-                var id = Guid.NewGuid();
-                using (var context = new ReferencesDbContext(options))
-                {
-                    var service = new ReferencesController(context, index);
-                    await service.Post(new Reference() { Id = id, ReferenceUsage = new List<ReferenceUsage>() { new ReferenceUsage() { ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") } } }).ConfigureAwait(false);
-                }
 
-                // Use a separate instance of the context to verify correct data was saved to database
-                using (var context = new ReferencesDbContext(options))
+                try
                 {
-                    var service = new ReferencesController(context, index);
-                    var usageService = new ReferenceUsageController(context);
-                    usageService.DeleteAllUsages(id);
-                    var all = await usageService.GetAll(0, 10).ConfigureAwait(false);
-                    Assert.Empty(all);
-                    var result = await service.Get(id).ConfigureAwait(false);
-                    Assert.Equal(id, result.Value.Id);
+                    var id = Guid.NewGuid();
+                    using (var context = new ReferencesDbContext(options))
+                    {
+                        var service = new ReferencesController(context, index);
+                        await service.Post(new Reference()
+                        {
+                            Id = id,
+                            ReferenceUsage = new List<ReferenceUsage>()
+                            {
+                                new ReferenceUsage()
+                                    {ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")}
+                            }
+                        }).ConfigureAwait(false);
+                    }
 
-                    // now delete reference
-                    service.Delete(id);
-                    // and should not be found
-                    var result2 = await service.Get(id).ConfigureAwait(false);
-                    Assert.IsType<NotFoundResult>(result2.Result);
+                    // Use a separate instance of the context to verify correct data was saved to database
+                    using (var context = new ReferencesDbContext(options))
+                    {
+                        var service = new ReferencesController(context, index);
+                        var usageService = new ReferenceUsageController(context);
+                        usageService.DeleteAllUsages(id);
+                        var all = await usageService.GetAll(0, 10).ConfigureAwait(false);
+                        Assert.Empty(all);
+                        var result = await service.Get(id).ConfigureAwait(false);
+                        Assert.Equal(id, result.Value.Id);
+
+                        // now delete reference
+                        service.Delete(id);
+                        // and should not be found
+                        var result2 = await service.Get(id).ConfigureAwait(false);
+                        Assert.IsType<NotFoundResult>(result2.Result);
+                    }
                 }
-            }
-            finally
-            {
-                connection.Close();
+                finally
+                {
+                    connection.Close();
+                }
             }
         }
 
@@ -95,36 +114,48 @@ namespace Nbic.References.Tests
         public async Task CanDeleteSingleReferenceUsage()
         {
             GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
-            using var index = new Index();
-
-            try
+            using (var index = new Index(true, true))
             {
-                var id = Guid.NewGuid();
-                using (var context = new ReferencesDbContext(options))
-                {
-                    var service = new ReferencesController(context, index);
-                    await service.Post(new Reference() { Id = id, ReferenceUsage = new List<ReferenceUsage>() { new ReferenceUsage() { ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") }, new ReferenceUsage() { ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") } } }).ConfigureAwait(false);
-                }
 
-                // Use a separate instance of the context to verify correct data was saved to database
-                using (var context = new ReferencesDbContext(options))
+                try
                 {
-                    var service = new ReferencesController(context, index);
-                    var usageService = new ReferenceUsageController(context);
-                    usageService.DeleteUsage(id, 1, new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3"));
-                    var all = await usageService.GetAll(0, 10).ConfigureAwait(false);
-                    Assert.Single(all);
-                    var result = await service.Get(id).ConfigureAwait(false);
-                    Assert.Equal(id, result.Value.Id);
+                    var id = Guid.NewGuid();
+                    using (var context = new ReferencesDbContext(options))
+                    {
+                        var service = new ReferencesController(context, index);
+                        await service.Post(new Reference()
+                        {
+                            Id = id,
+                            ReferenceUsage = new List<ReferenceUsage>()
+                            {
+                                new ReferenceUsage()
+                                    {ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")},
+                                new ReferenceUsage()
+                                    {ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")}
+                            }
+                        }).ConfigureAwait(false);
+                    }
 
-                    // and should not be found
-                    var result2 = await service.Get(id).ConfigureAwait(false);
-                    Assert.Single(result2.Value.ReferenceUsage);
+                    // Use a separate instance of the context to verify correct data was saved to database
+                    using (var context = new ReferencesDbContext(options))
+                    {
+                        var service = new ReferencesController(context, index);
+                        var usageService = new ReferenceUsageController(context);
+                        usageService.DeleteUsage(id, 1, new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3"));
+                        var all = await usageService.GetAll(0, 10).ConfigureAwait(false);
+                        Assert.Single(all);
+                        var result = await service.Get(id).ConfigureAwait(false);
+                        Assert.Equal(id, result.Value.Id);
+
+                        // and should not be found
+                        var result2 = await service.Get(id).ConfigureAwait(false);
+                        Assert.Single(result2.Value.ReferenceUsage);
+                    }
                 }
-            }
-            finally
-            {
-                connection.Close();
+                finally
+                {
+                    connection.Close();
+                }
             }
         }
 
@@ -133,7 +164,7 @@ namespace Nbic.References.Tests
         {
             GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
 
-            using var index = new Index();
+            using var index = new Index(true, true);
             try
             {
                 var id = Guid.NewGuid();
@@ -161,37 +192,204 @@ namespace Nbic.References.Tests
                 connection.Close();
             }
         }
+
+        [Fact]
+        public async Task CanAddDoubleReferenceUsage()
+        {
+            GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
+
+            using (var index = new Index(true, true))
+            {
+                try
+                {
+                    var id = Guid.NewGuid();
+                    var id2 = Guid.NewGuid();
+                    using (var context = new ReferencesDbContext(options))
+                    {
+                        var service = new ReferencesController(context, index);
+                        await service.Post(new Reference()
+                        {
+                            Id = id,
+                            ReferenceUsage = new List<ReferenceUsage>()
+                            {
+                                new ReferenceUsage()
+                                    {ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")},
+                                new ReferenceUsage()
+                                    {ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")}
+                            }
+                        }).ConfigureAwait(false);
+                        await service.Post(new Reference()
+                        {
+                            Id = id2,
+                            ReferenceUsage = new List<ReferenceUsage>()
+                            {
+                                new ReferenceUsage()
+                                    {ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")},
+                                new ReferenceUsage()
+                                    {ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")}
+                            }
+                        }).ConfigureAwait(false);
+                    }
+
+                    // Use a separate instance of the context to verify correct data was saved to database
+                    using (var context = new ReferencesDbContext(options))
+                    {
+                        var service = new ReferencesController(context, index);
+                        var usageService = new ReferenceUsageController(context);
+                        await usageService.Post(new ReferenceUsage[]
+                        {
+                            new ReferenceUsage()
+                            {
+                                ApplicationId = 3, ReferenceId = id,
+                                UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")
+                            },
+                            new ReferenceUsage()
+                            {
+                                ApplicationId = 3, ReferenceId = id2,
+                                UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")
+                            }
+                        }).ConfigureAwait(false);
+                        var all = await usageService.GetAll(0, 10).ConfigureAwait(false);
+                        Assert.Equal(6, all.Count);
+                        var result = await service.Get(id).ConfigureAwait(false);
+                        Assert.Equal(id, result.Value.Id);
+                        Assert.Equal(3, result.Value.ReferenceUsage.Count);
+                        var result2 = await service.Get(id2).ConfigureAwait(false);
+                        Assert.Equal(id2, result2.Value.Id);
+                        Assert.Equal(3, result2.Value.ReferenceUsage.Count);
+                    }
+                }
+                finally
+                {
+                    connection.Close();
+                }
+            }
+        }
+        [Fact]
+        public async Task AddReferenceUsageToNotExistingReferenceShouldNotFail()
+        {
+            GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
+
+            using (var index = new Index(true, true))
+            {
+                try
+                {
+                    var id = Guid.NewGuid();
+                    var id2 = Guid.NewGuid();
+                    var id3 = Guid.NewGuid();
+                    using (var context = new ReferencesDbContext(options))
+                    {
+                        var service = new ReferencesController(context, index);
+                        await service.Post(new Reference()
+                        {
+                            Id = id,
+                            ReferenceUsage = new List<ReferenceUsage>()
+                            {
+                                new ReferenceUsage()
+                                    {ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")},
+                                new ReferenceUsage()
+                                    {ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")}
+                            }
+                        }).ConfigureAwait(false);
+                        await service.Post(new Reference()
+                        {
+                            Id = id2,
+                            ReferenceUsage = new List<ReferenceUsage>()
+                            {
+                                new ReferenceUsage()
+                                    {ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")},
+                                new ReferenceUsage()
+                                    {ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")}
+                            }
+                        }).ConfigureAwait(false);
+                    }
+
+                    // Use a separate instance of the context to verify correct data was saved to database
+                    using (var context = new ReferencesDbContext(options))
+                    {
+                        var service = new ReferencesController(context, index);
+                        var usageService = new ReferenceUsageController(context);
+                        await usageService.Post(new ReferenceUsage[]
+                        {
+                            new ReferenceUsage()
+                            {
+                                ApplicationId = 3, ReferenceId = id,
+                                UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")
+                            },
+                            new ReferenceUsage()
+                            {
+                                ApplicationId = 3, ReferenceId = id2,
+                                UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")
+                            },
+                            new ReferenceUsage()
+                            {
+                                ApplicationId = 3, ReferenceId = id3,
+                                UserId = new Guid("3ed89222-de9a-4df3-9e95-87f7fcac67a3")
+                            }
+                        }).ConfigureAwait(false);
+                        var all = await usageService.GetAll(0, 10).ConfigureAwait(false);
+                        Assert.Equal(6, all.Count);
+                        var result = await service.Get(id).ConfigureAwait(false);
+                        Assert.Equal(id, result.Value.Id);
+                        Assert.Equal(3, result.Value.ReferenceUsage.Count);
+                        var result2 = await service.Get(id2).ConfigureAwait(false);
+                        Assert.Equal(id2, result2.Value.Id);
+                        Assert.Equal(3, result2.Value.ReferenceUsage.Count);
+                    }
+                }
+                finally
+                {
+                    connection.Close();
+                }
+            }
+        }
         [Fact]
         public async Task CanAddSingleDuplicateReferenceUsage()
         {
             GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
-            using var index = new Index();
-
-            try
+            using (var index = new Index(true, true))
             {
-                var id = Guid.NewGuid();
-                using (var context = new ReferencesDbContext(options))
-                {
-                    var service = new ReferencesController(context, index);
-                    await service.Post(new Reference() { Id = id, ReferenceUsage = new List<ReferenceUsage>() { new ReferenceUsage() { ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") }, new ReferenceUsage() { ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") } } }).ConfigureAwait(false);
-                }
 
-                // Use a separate instance of the context to verify correct data was saved to database
-                using (var context = new ReferencesDbContext(options))
+                try
                 {
-                    var service = new ReferencesController(context, index);
-                    var usageService = new ReferenceUsageController(context);
-                    await usageService.Post(new ReferenceUsage() { ApplicationId = 1, ReferenceId = id, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") }).ConfigureAwait(false);
-                    var all = await usageService.GetAll(0, 10).ConfigureAwait(false);
-                    Assert.Equal(2, all.Count);
-                    var result = await service.Get(id).ConfigureAwait(false);
-                    Assert.Equal(id, result.Value.Id);
-                    Assert.Equal(2, result.Value.ReferenceUsage.Count);
+                    var id = Guid.NewGuid();
+                    using (var context = new ReferencesDbContext(options))
+                    {
+                        var service = new ReferencesController(context, index);
+                        await service.Post(new Reference()
+                        {
+                            Id = id,
+                            ReferenceUsage = new List<ReferenceUsage>()
+                            {
+                                new ReferenceUsage()
+                                    {ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")},
+                                new ReferenceUsage()
+                                    {ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")}
+                            }
+                        }).ConfigureAwait(false);
+                    }
+
+                    // Use a separate instance of the context to verify correct data was saved to database
+                    using (var context = new ReferencesDbContext(options))
+                    {
+                        var service = new ReferencesController(context, index);
+                        var usageService = new ReferenceUsageController(context);
+                        await usageService.Post(new ReferenceUsage()
+                        {
+                            ApplicationId = 1, ReferenceId = id,
+                            UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")
+                        }).ConfigureAwait(false);
+                        var all = await usageService.GetAll(0, 10).ConfigureAwait(false);
+                        Assert.Equal(2, all.Count);
+                        var result = await service.Get(id).ConfigureAwait(false);
+                        Assert.Equal(id, result.Value.Id);
+                        Assert.Equal(2, result.Value.ReferenceUsage.Count);
+                    }
                 }
-            }
-            finally
-            {
-                connection.Close();
+                finally
+                {
+                    connection.Close();
+                }
             }
         }
 

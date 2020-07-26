@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Nbic.References
 {
-    public class Program
+    public static class Program
     {
         public static void Main(string[] args)
         {

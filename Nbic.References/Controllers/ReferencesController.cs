@@ -26,7 +26,7 @@ namespace Nbic.References.Controllers
         {
             _referencesDbContext = referencesDbContext;
             _index = index;
-            IndexSanityCheck();
+            //IndexSanityCheck();
             
         }
 
@@ -36,6 +36,7 @@ namespace Nbic.References.Controllers
             {
                 if (_index.IndexCount() != _referencesDbContext.Reference.Count())
                 {
+                    _index.FirstUse = false;
                     _index.ClearIndex();
                     var batch = new List<Reference>();
                     foreach (var reference in _referencesDbContext.Reference)
@@ -80,6 +81,15 @@ namespace Nbic.References.Controllers
         public async Task<ActionResult<int>> GetCount()
         {
             return await this._referencesDbContext.Reference.CountAsync().ConfigureAwait(false);
+        }
+
+        [HttpGet]
+        [Authorize("WriteAccess")]
+        [Route("Reindex")]
+        public ActionResult<bool> DoReindex()
+        {
+            IndexSanityCheck();
+            return true;
         }
 
         [HttpGet("{id}")]
@@ -184,7 +194,7 @@ namespace Nbic.References.Controllers
             if (r.Author != value.Author) r.Author = value.Author;
             if (r.Bibliography != value.Bibliography) r.Bibliography = value.Bibliography;
             if (r.Firstname != value.Firstname) r.Firstname = value.Firstname;
-            //if (r.ImportXml != value.ImportXml) r.ImportXml = value.ImportXml;
+            if (r.ReferenceString != value.ReferenceString) r.ReferenceString = value.ReferenceString;
             if (r.Journal != value.Journal) r.Journal = value.Journal;
             if (r.Keywords != value.Keywords) r.Keywords = value.Keywords;
             if (r.Lastname != value.Lastname) r.Lastname = value.Lastname;
@@ -217,6 +227,7 @@ namespace Nbic.References.Controllers
 
         [Authorize("WriteAccess")]
         [HttpDelete("{id}")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
         public ActionResult Delete(Guid id)
         {
             var item = this._referencesDbContext.Reference.Include(x => x.ReferenceUsage).FirstOrDefault(x => x.Id == id);

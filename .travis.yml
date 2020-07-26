@@ -6,7 +6,7 @@ install:
  - dotnet restore
 script:
  - dotnet build
- - dotnet test Nbic.References.Tests/Nbic.References.Tests.csproj
+ - dotnet test Nbic.References.Tests/Nbic.References.Tests.csproj -- MaxCpuCount=1
  - docker build --tag artsdatabanken/nbicreferences -f "Nbic.References/Dockerfile" . 
 deploy:
   skip_cleanup: true
