@@ -64,6 +64,7 @@ namespace Nbic.References
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
         {
             this.logger = logger;
+            app.UseResponseCompression();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -90,6 +91,7 @@ namespace Nbic.References
         [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddResponseCompression();
             services.AddControllers();
 
             // services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
