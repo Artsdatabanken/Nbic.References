@@ -6,7 +6,7 @@ using System.Net.Mime;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Lucene.Net.Analysis.Core;
+using Lucene.Net.Analysis;
 using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Analysis.Util;
 using Lucene.Net.Documents;
@@ -25,9 +25,12 @@ namespace Nbic.Indexer
         private IndexWriter _writer;
 
         private bool firstUse = true;
-        private CharArraySet _stopwords = StandardAnalyzer.STOP_WORDS_SET;
+        private HashSet<string> _stopwords = new HashSet<string>(){"a", "an", "and", "are", "as", "at", "be", "but", "by", "for", "if", "in", "into", "is", "it", "no", "not", "of", "on", "or", "such", "that", "the", "their", "then", "there", "these", "they", "this", "to", "was", "will", "with"}; // StopAnalyzer.ENGLISH_STOP_WORDS_SET.ToArray().ToHashSet();
         private FSDirectory _dir;
 
+        private static object _theLock = new object();
+        private bool _lockWasTaken = false;
+        
         public Index(bool waitForLockFile = false, bool deleteAndCreateIndex = false)
         {
             // Ensures index backwards compatibility
@@ -50,7 +53,13 @@ namespace Nbic.Indexer
                     //Thread.Sleep(100);
                     retry--;
                 }
+                
+                System.Threading.Monitor.Enter(_theLock);
+                _lockWasTaken = true;
             }
+
+            
+            
             _dir = FSDirectory.Open(indexLocation);
             
             //create an analyzer to process the text
@@ -142,6 +151,11 @@ namespace Nbic.Indexer
             if (_dir != null)
             {
                 _dir.Dispose();
+            }
+
+            if (_lockWasTaken)
+            {
+                System.Threading.Monitor.Exit(_theLock);
             }
         }
 
