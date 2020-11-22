@@ -36,7 +36,7 @@ namespace Nbic.References.EFCore
                 entity.ToTable("Reference");
 
                 entity.HasIndex(e => new { e.UserId, e.ApplicationId })
-                    .HasName("IX_UserId_ApplicationId");
+                    .HasDatabaseName("IX_UserId_ApplicationId");
 
                 entity.Property(e => e.Id)
                     .HasColumnName("Id")

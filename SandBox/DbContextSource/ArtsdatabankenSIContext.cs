@@ -43,7 +43,7 @@ namespace SandBox.DbContextSource
                 entity.ToTable("RF_Reference");
 
                 entity.HasIndex(e => new { e.FkUserId, e.ApplicationId })
-                    .HasName("NonClusteredIndex-20190323-220323");
+                    .HasDatabaseName("NonClusteredIndex-20190323-220323");
 
                 entity.Property(e => e.PkReferenceId)
                     .HasColumnName("PK_ReferenceID")

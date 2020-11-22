@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.0-buster-slim AS base
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-buster-slim AS base
 WORKDIR /app
 RUN sed -i 's/DEFAULT@SECLEVEL=2/DEFAULT@SECLEVEL=1/g' /etc/ssl/openssl.cnf
 RUN sed -i 's/DEFAULT@SECLEVEL=2/DEFAULT@SECLEVEL=1/g' /usr/lib/ssl/openssl.cnf
@@ -12,7 +12,7 @@ ENV DbProvider=Sqlite
 ENV DbConnectionString="Data Source=references.db"
 ENV ASPNETCORE_URLS="http://+:8000"
 
-FROM mcr.microsoft.com/dotnet/core/sdk:3.0-buster AS build
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
 COPY ["Nbic.References/Nbic.References.csproj", "Nbic.References/"]
 COPY ["Nbic.References.Model/Nbic.References.Public.csproj", "Nbic.References.Model/"]
