@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -11,8 +10,8 @@ namespace Nbic.References.Controllers
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.EntityFrameworkCore;
 
-    using Nbic.References.EFCore;
-    using Nbic.References.Public.Models;
+    using EFCore;
+    using Public.Models;
 
     [Route("api/[controller]")]
     [ApiController]
@@ -29,32 +28,32 @@ namespace Nbic.References.Controllers
         [HttpGet]
         public async Task<List<ReferenceUsage>> GetAll(int offset = 0, int limit = 10)
         {
-            return await this._referencesDbContext.ReferenceUsage.OrderBy(x => x.ReferenceId)
+            return await _referencesDbContext.ReferenceUsage.OrderBy(x => x.ReferenceId)
                        .Skip(offset).Take(limit).ToListAsync().ConfigureAwait(false);
         }
         [HttpGet]
         [Route("Reference/{id}")]
         public async Task<List<ReferenceUsage>> Get(Guid id)
         {
-            return await this._referencesDbContext.ReferenceUsage.Where(x=>x.ReferenceId == id).ToListAsync().ConfigureAwait(false);
+            return await _referencesDbContext.ReferenceUsage.Where(x=>x.ReferenceId == id).ToListAsync().ConfigureAwait(false);
         }
 
         [HttpGet]
         [Route("Count")]
         public async Task<ActionResult<int>> GetCount()
         {
-            return await this._referencesDbContext.ReferenceUsage.CountAsync().ConfigureAwait(false);
+            return await _referencesDbContext.ReferenceUsage.CountAsync().ConfigureAwait(false);
         }
 
         [Authorize("WriteAccess")]
         [HttpDelete("{id}")]
         public ActionResult DeleteAllUsages(Guid id)
         {
-            var entities = this._referencesDbContext.ReferenceUsage.Where(x => x.ReferenceId == id).ToArray();
+            var entities = _referencesDbContext.ReferenceUsage.Where(x => x.ReferenceId == id).ToArray();
             if (entities.Length == 0) return NotFound();
             
             _referencesDbContext.ReferenceUsage.RemoveRange(entities);
-            this._referencesDbContext.SaveChanges();
+            _referencesDbContext.SaveChanges();
             return Ok();
 
         }
@@ -62,11 +61,11 @@ namespace Nbic.References.Controllers
         [HttpDelete("{id},{applicationId},{userId}")]
         public ActionResult DeleteUsage(Guid id, int applicationId, Guid userId)
         {
-            var entities = this._referencesDbContext.ReferenceUsage.Where(x => x.ReferenceId == id && x.ApplicationId == applicationId && x.UserId == userId).ToArray();
+            var entities = _referencesDbContext.ReferenceUsage.Where(x => x.ReferenceId == id && x.ApplicationId == applicationId && x.UserId == userId).ToArray();
             if (entities.Length == 0) return NotFound();
 
             _referencesDbContext.ReferenceUsage.RemoveRange(entities);
-            this._referencesDbContext.SaveChanges();
+            _referencesDbContext.SaveChanges();
             return Ok();
 
         }
@@ -80,15 +79,13 @@ namespace Nbic.References.Controllers
                 return BadRequest("No data posted");
             }
 
-            if (!_referencesDbContext.ReferenceUsage.Any(
-                    x => x.ReferenceId == value.ReferenceId && x.ApplicationId == value.ApplicationId
-                                                            && x.UserId == value.UserId))
-            {
-                _referencesDbContext.ReferenceUsage.Add(value);
+            if (_referencesDbContext.ReferenceUsage.Any(
+                x => x.ReferenceId == value.ReferenceId && x.ApplicationId == value.ApplicationId
+                                                        && x.UserId == value.UserId)) return value;
+            
+            _referencesDbContext.ReferenceUsage.Add(value);
 
-                await this._referencesDbContext.SaveChangesAsync().ConfigureAwait(false);
-            }
-
+            await _referencesDbContext.SaveChangesAsync().ConfigureAwait(false);
 
             return value;
         }
@@ -105,23 +102,22 @@ namespace Nbic.References.Controllers
             var toSave = new List<ReferenceUsage>();
             foreach (var referenceUsage in value)
             {
-                if (!_referencesDbContext.ReferenceUsage.Any(
+                if (_referencesDbContext.ReferenceUsage.Any(
                     x => x.ReferenceId == referenceUsage.ReferenceId && x.ApplicationId == referenceUsage.ApplicationId
-                                                                     && x.UserId == referenceUsage.UserId))
+                                                                     && x.UserId == referenceUsage.UserId)) continue;
+
+                if (_referencesDbContext.Reference.Any(x => x.Id == referenceUsage.ReferenceId))
                 {
-                    if (_referencesDbContext.Reference.Any(x => x.Id == referenceUsage.ReferenceId))
-                    {
-                        toSave.Add(referenceUsage);
-                    }
+                    toSave.Add(referenceUsage);
                 }
+
             }
 
-            if (toSave.Any())
-            {
-                _referencesDbContext.ReferenceUsage.AddRange(toSave);
+            if (!toSave.Any()) return true;
+            
+            _referencesDbContext.ReferenceUsage.AddRange(toSave);
 
-                await this._referencesDbContext.SaveChangesAsync().ConfigureAwait(false);
-            }
+            await _referencesDbContext.SaveChangesAsync().ConfigureAwait(false);
 
 
             return true;

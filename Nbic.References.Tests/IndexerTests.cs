@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Nbic.References.Public.Models;
 using Xunit;
 
@@ -15,10 +13,10 @@ namespace Nbic.References.Tests
             using (var index = new Indexer.Index(true))
             {
                 var newGuid = Guid.Parse("b1df2d4b-e06a-421d-865b-03f3dfdf6913");
-                index.AddOrUpdate(new Reference() { Id = newGuid, Title = "Creepy" });
+                index.AddOrUpdate(new Reference { Id = newGuid, Title = "Creepy" });
                 var result = index.SearchReference("Creepy", 0, 10);
                 Assert.Single(result.ToArray());
-                index.AddOrUpdate(new Reference() { Id = newGuid, Title = "Snoopy Dog" });
+                index.AddOrUpdate(new Reference { Id = newGuid, Title = "Snoopy Dog" });
                 result = index.SearchReference("Creepy", 0, 10);
                 Assert.Empty(result.ToArray());
                 result = index.SearchReference("Snoopy Dog", 0, 10);
@@ -33,8 +31,8 @@ namespace Nbic.References.Tests
         {
             using (var index = new Indexer.Index(true, true))
             {
-                var referanse = new Reference()
-                                    {
+                var referanse = new Reference
+                {
                                         Id = Guid.Parse("208daeb0-a917-45cd-9b0f-fa21f4300d02"),
                                         ApplicationId = 8,
                                         UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3"),
@@ -73,7 +71,7 @@ namespace Nbic.References.Tests
             using (var index = new Indexer.Index(true))
             {
                 index.ClearIndex();
-                var referanse = new Reference()
+                var referanse = new Reference
                 {
                     Id = Guid.Parse("208daeb0-a917-45cd-9b0f-fa21f4300d01"),
                     ApplicationId = 8,
@@ -110,7 +108,7 @@ namespace Nbic.References.Tests
         {
             using (var index = new Indexer.Index(true))
             {
-                var referanse = new Reference()
+                var referanse = new Reference
                 {
                     Id = Guid.Parse("208daeb0-a917-45cd-9b0f-fa21f4300d01"),
                     ApplicationId = 8,
@@ -148,7 +146,7 @@ namespace Nbic.References.Tests
         {
             using (var index = new Indexer.Index(true))
             {
-                var referanse = new Reference()
+                var referanse = new Reference
                 {
                     Id = Guid.Parse("208daeb0-a917-45cd-9b0f-fa21f4300d07"),
                     ApplicationId = 8,
@@ -169,7 +167,7 @@ namespace Nbic.References.Tests
                     ReferenceString = "Hojtem, R. 1980. Association analysis of moraine vegetation at the glacier Hardangerjökulen, Finse, South Norway. - Norw. J. Bot. 25: 171-191.",
                     EditDate = DateTime.Parse("2010-04-26T08:09:18.613")
                 };
-                var referanse2 = new Reference()
+                var referanse2 = new Reference
                 {
                     Id = Guid.Parse("208daeb0-a917-45cd-9b0f-fa21f4300d08"),
                     ApplicationId = 8,
@@ -211,7 +209,7 @@ namespace Nbic.References.Tests
         {
             using (var index = new Indexer.Index(true))
             {
-                var referanse = new Reference()
+                var referanse = new Reference
                 {
                     Id = Guid.Parse("208daeb0-a917-45cd-9b0f-fa21f4300d01"),
                     ApplicationId = 8,
@@ -233,7 +231,7 @@ namespace Nbic.References.Tests
                     //ImportXml = null,
                     EditDate = DateTime.Parse("2010-04-26T08:09:18.613")
                 };
-                var referans2 = new Reference()
+                var referans2 = new Reference
                 {
                     Id = Guid.Parse("208daeb0-a917-45cd-9b0f-fa21f4300d02"),
                     ApplicationId = 8,

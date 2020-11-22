@@ -21,10 +21,10 @@ namespace Nbic.References
     using Microsoft.OpenApi.Models;
     using Microsoft.IdentityModel.Logging;
 
-    using Nbic.References.EFCore;
-    using Nbic.References.Swagger;
+    using EFCore;
+    using Swagger;
 
-    using Index = Nbic.Indexer.Index;
+    using Index = Indexer.Index;
 
     public class Startup
     {
@@ -61,14 +61,14 @@ namespace Nbic.References
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> log)
         {
-            this.logger = logger;
+            logger = log;
             app.UseResponseCompression();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                logger.LogInformation("In Development environment");
+                log.LogInformation("In Development environment");
                 
                 IdentityModelEventSource.ShowPII = true;
             }
@@ -190,7 +190,7 @@ namespace Nbic.References
             Console.WriteLine("Adding SqliteContext");
             if (connectionString == "DataSource=:memory:")
             {
-                Console.WriteLine("SqliteContext - ConnectionString:" + connectionString);
+                Console.WriteLine($"SqliteContext - ConnectionString:{connectionString}");
                 var context = new SqliteReferencesDbContext(connectionString);
                 context.Database.OpenConnection();
                 context.Database.Migrate();
@@ -207,7 +207,7 @@ namespace Nbic.References
                                                  "Data Source=",
                                                  "Data Source=./Data/",
                                                  StringComparison.InvariantCulture);
-                Console.WriteLine("SqliteContext - ConnectionString:" + dbConnectionString);
+                Console.WriteLine($"SqliteContext - ConnectionString:{dbConnectionString}");
                 using (var context = new SqliteReferencesDbContext(dbConnectionString))
                 {
                     try
@@ -219,7 +219,7 @@ namespace Nbic.References
                         if (ex.Message.Contains("SQLite Error 1: 'no such table", StringComparison.CurrentCulture))
                         {
                             context.Database.Migrate();
-                            Console.WriteLine("Empty Schema - initial create - after exception " + ex.Message);
+                            Console.WriteLine($"Empty Schema - initial create - after exception {ex.Message}");
                         }
                         else
                         {
@@ -248,7 +248,7 @@ namespace Nbic.References
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Empty Schema - initial create - after error " + ex.Message);
+                    Console.WriteLine($"Empty Schema - initial create - after error {ex.Message}");
                     context.Database.Migrate();
                 }
             }

@@ -2,13 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Mime;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Lucene.Net.Analysis;
 using Lucene.Net.Analysis.Standard;
-using Lucene.Net.Analysis.Util;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
 using Lucene.Net.Search;
@@ -25,7 +22,7 @@ namespace Nbic.Indexer
         private IndexWriter _writer;
 
         private bool firstUse = true;
-        private HashSet<string> _stopwords = new HashSet<string>(){"a", "an", "and", "are", "as", "at", "be", "but", "by", "for", "if", "in", "into", "is", "it", "no", "not", "of", "on", "or", "such", "that", "the", "their", "then", "there", "these", "they", "this", "to", "was", "will", "with"}; // StopAnalyzer.ENGLISH_STOP_WORDS_SET.ToArray().ToHashSet();
+        private HashSet<string> _stopwords = new HashSet<string> {"a", "an", "and", "are", "as", "at", "be", "but", "by", "for", "if", "in", "into", "is", "it", "no", "not", "of", "on", "or", "such", "that", "the", "their", "then", "there", "these", "they", "this", "to", "was", "will", "with"}; // StopAnalyzer.ENGLISH_STOP_WORDS_SET.ToArray().ToHashSet();
         private FSDirectory _dir;
 
         private static object _theLock = new object();
@@ -36,7 +33,7 @@ namespace Nbic.Indexer
             // Ensures index backwards compatibility
             var AppLuceneVersion = LuceneVersion.LUCENE_48;
 
-            var applicationRoot = this.GetApplicationRoot();
+            var applicationRoot = GetApplicationRoot();
             if (string.IsNullOrWhiteSpace(applicationRoot))
             {
                 applicationRoot = AppDomain.CurrentDomain.BaseDirectory;
@@ -44,7 +41,8 @@ namespace Nbic.Indexer
             var indexLocation = applicationRoot.Contains('\\') ? $@"{applicationRoot}\Data\index" : $@"{applicationRoot}/Data/index";
             if (waitForLockFile)
             {
-                var lockfileindexLocation = applicationRoot.Contains('\\') ? applicationRoot + @"\Data\index\write.lock" : applicationRoot + @"/Data/index/write.lock";
+                var lockfileindexLocation = applicationRoot.Contains('\\') ? $@"{applicationRoot}\Data\index\write.lock"
+                    : $@"{applicationRoot}/Data/index/write.lock";
                 //var otherdir = AppDomain.CurrentDomain.BaseDirectory;
                 var retry = 50;
                 while (retry > 0 && File.Exists(lockfileindexLocation))
@@ -54,7 +52,7 @@ namespace Nbic.Indexer
                     retry--;
                 }
                 
-                System.Threading.Monitor.Enter(_theLock);
+                Monitor.Enter(_theLock);
                 _lockWasTaken = true;
             }
 
@@ -86,28 +84,27 @@ namespace Nbic.Indexer
         {
             var indexString = GetIndexString(reference);
 
-            if (indexString.Length > 0)
+            if (indexString.Length <= 0) return;
+            
+            Document doc = new Document
             {
-                Document doc = new Document
-                {
-                    new StringField(Field_Id, reference.Id.ToString(), Field.Store.YES),
-                    // StringField indexes but doesn't tokenize
-                    new TextField(Field_String, indexString, Field.Store.YES),
-                    //new TextField("favoritePhrase", source.FavoritePhrase, Field.Store.YES)
-                };
-                //            var id = new Term("Id", reference.Id.ToString());
-                //            _writer.DeleteDocuments(id);
-                _writer.UpdateDocument(new Term(Field_Id, reference.Id.ToString()), doc);
-                // _writer.AddDocument(doc);
-                //_writer.Flush(triggerMerge: true, applyAllDeletes: true);
-                _writer.Commit();
-            }
+                new StringField(Field_Id, reference.Id.ToString(), Field.Store.YES),
+                // StringField indexes but doesn't tokenize
+                new TextField(Field_String, indexString, Field.Store.YES)
+                //new TextField("favoritePhrase", source.FavoritePhrase, Field.Store.YES)
+            };
+            //            var id = new Term("Id", reference.Id.ToString());
+            //            _writer.DeleteDocuments(id);
+            _writer.UpdateDocument(new Term(Field_Id, reference.Id.ToString()), doc);
+            // _writer.AddDocument(doc);
+            //_writer.Flush(triggerMerge: true, applyAllDeletes: true);
+            _writer.Commit();
         }
 
         private static string GetIndexString(Reference reference)
         {
             return string.Join(' ',
-                new List<string>() {reference.Firstname, reference.Middlename, reference.Lastname, reference.Summary, reference.Author, reference.Bibliography, reference.Journal, reference.Keywords, reference.Pages, reference.Title, reference.Url, reference.Volume, reference.Year, reference.ReferenceString}
+                new List<string> {reference.Firstname, reference.Middlename, reference.Lastname, reference.Summary, reference.Author, reference.Bibliography, reference.Journal, reference.Keywords, reference.Pages, reference.Title, reference.Url, reference.Volume, reference.Year, reference.ReferenceString}
                     .Where(x => !string.IsNullOrWhiteSpace(x)).ToArray());
         }
 
@@ -122,7 +119,7 @@ namespace Nbic.Indexer
                                    {
                                        new StringField(Field_Id, reference.Id.ToString(), Field.Store.YES),
                                        // StringField indexes but doesn't tokenize
-                                       new TextField(Field_String, indexString, Field.Store.YES),
+                                       new TextField(Field_String, indexString, Field.Store.YES)
                                        //new TextField("favoritePhrase", source.FavoritePhrase, Field.Store.YES)
                                    };
                 //            var id = new Term("Id", reference.Id.ToString());
@@ -155,7 +152,7 @@ namespace Nbic.Indexer
 
             if (_lockWasTaken)
             {
-                System.Threading.Monitor.Exit(_theLock);
+                Monitor.Exit(_theLock);
             }
         }
 
@@ -201,39 +198,40 @@ namespace Nbic.Indexer
 
             var longTerms = items.Where(x => x.Length > 2).ToArray();
 
-            if (longTerms.Length > 0)
-            {
-                if (longTerms.Length == 1)
-                {
-                    query = new WildcardQuery(new Term(Field_String, longTerms[0] + "*"));
-                }
-                else
-                {
-                    query = new BooleanQuery();
-                    foreach (var item in longTerms)
-                    {
-                        if (!_stopwords.Contains(item))
-                        {
-                            ((BooleanQuery)query).Add(new WildcardQuery(new Term(Field_String, item + "*")), Occur.MUST);
-                        }
+            if (longTerms.Length <= 0) yield break;
 
-                    }
-                }
-                //query = new WildcardQuery(new Term(Field_String, items[0] + "*"));
-                searcher = new IndexSearcher(_writer.GetReader(applyAllDeletes: true));
-                hits = searcher.Search(query, startAt + limit /* top 20 */).ScoreDocs;
-                foreach (var hit in hits)
+            if (longTerms.Length == 1)
+            {
+                query = new WildcardQuery(new Term(Field_String, $"{longTerms[0]}*"));
+            }
+            else
+            {
+                query = new BooleanQuery();
+                foreach (var item in longTerms)
                 {
-                    count++;
-                    if (count <= startAt) continue;
-                    var foundDoc = searcher.Doc(hit.Doc);
-                    var guid = Guid.Parse(foundDoc.Get(Field_Id));
-                    if (found.Contains(guid))
+                    if (!_stopwords.Contains(item))
                     {
-                        continue;
+                        ((BooleanQuery) query).Add(new WildcardQuery(new Term(Field_String, $"{item}*")), Occur.MUST);
                     }
-                    yield return guid;
+
                 }
+            }
+
+            //query = new WildcardQuery(new Term(Field_String, items[0] + "*"));
+            searcher = new IndexSearcher(_writer.GetReader(applyAllDeletes: true));
+            hits = searcher.Search(query, startAt + limit /* top 20 */).ScoreDocs;
+            foreach (var hit in hits)
+            {
+                count++;
+                if (count <= startAt) continue;
+                var foundDoc = searcher.Doc(hit.Doc);
+                var guid = Guid.Parse(foundDoc.Get(Field_Id));
+                if (found.Contains(guid))
+                {
+                    continue;
+                }
+
+                yield return guid;
             }
         }
 

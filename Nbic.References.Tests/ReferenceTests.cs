@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.OpenApi.Models;
 using Nbic.References.Public.Models;
 using Xunit;
 
@@ -43,7 +39,7 @@ namespace Nbic.References.Tests
         [Fact]
         public void UrlShouldBeIncludedInReference()
         {
-            var reference = new Reference()
+            var reference = new Reference
             {
                 ApplicationId = 25,
                 Id = new Guid("b0b008c0-a6df-4b9a-a7a4-7360976b659c"),

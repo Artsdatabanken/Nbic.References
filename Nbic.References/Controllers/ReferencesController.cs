@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,7 +19,7 @@ namespace Nbic.References.Controllers
     public class ReferencesController : ControllerBase
     {
         private readonly ReferencesDbContext _referencesDbContext;
-        private readonly Indexer.Index _index;
+        private readonly Index _index;
 
         public ReferencesController(ReferencesDbContext referencesDbContext, Index index)//, Index index)
         {
@@ -32,55 +31,54 @@ namespace Nbic.References.Controllers
 
         private void IndexSanityCheck()
         {
-            if (_index.FirstUse)
+            if (!_index.FirstUse) return;
+            
+            if (_index.IndexCount() != _referencesDbContext.Reference.Count())
             {
-                if (_index.IndexCount() != _referencesDbContext.Reference.Count())
-                {
-                    _index.FirstUse = false;
-                    _index.ClearIndex();
-                    var batch = new List<Reference>();
-                    foreach (var reference in _referencesDbContext.Reference)
-                    {
-                        batch.Add(reference);
-                        if (batch.Count <= 20) continue;
-
-                        _index.AddOrUpdate(batch);
-                        batch = new List<Reference>();
-                    }
-                    if (batch.Count > 0)
-                    {
-                        _index.AddOrUpdate(batch);
-                    }
-                }
-
                 _index.FirstUse = false;
+                _index.ClearIndex();
+                var batch = new List<Reference>();
+                foreach (var reference in _referencesDbContext.Reference)
+                {
+                    batch.Add(reference);
+                    if (batch.Count <= 20) continue;
+
+                    _index.AddOrUpdate(batch);
+                    batch = new List<Reference>();
+                }
+                if (batch.Count > 0)
+                {
+                    _index.AddOrUpdate(batch);
+                }
             }
+
+            _index.FirstUse = false;
         }
 
         [HttpGet]
         public async Task<List<Reference>> GetAll(int offset = 0, int limit = 10, string search = null)
         {
-            if (!string.IsNullOrWhiteSpace(search))
+            if (string.IsNullOrWhiteSpace(search))
+                return await _referencesDbContext.Reference.Include(x => x.ReferenceUsage).OrderBy(x => x.Id)
+                    .Skip(offset).Take(limit).ToListAsync().ConfigureAwait(false);
+
+            var searchresults = _index.SearchReference(search, offset, limit);
+            var guids = searchresults as Guid[] ?? searchresults.ToArray();
+            if (!guids.Any())
             {
-                var searchresults = _index.SearchReference(search, offset, limit);
-                var guids = searchresults as Guid[] ?? searchresults.ToArray();
-                if (!guids.Any())
-                {
-                    return new List<Reference>();
-                }
-                return await this._referencesDbContext.Reference.Include(x => x.ReferenceUsage).Where(x=>guids.Contains(x.Id))
-                    .OrderBy(x => x.Id).
-                    Take(limit).ToListAsync().ConfigureAwait(false);
+                return new List<Reference>();
             }
-            return await this._referencesDbContext.Reference.Include(x => x.ReferenceUsage).OrderBy(x => x.Id)
-                       .Skip(offset).Take(limit).ToListAsync().ConfigureAwait(false);
+
+            return await _referencesDbContext.Reference.Include(x => x.ReferenceUsage).Where(x => guids.Contains(x.Id))
+                .OrderBy(x => x.Id).Take(limit).ToListAsync().ConfigureAwait(false);
+
         }
 
         [HttpGet]
         [Route("Count")]
         public async Task<ActionResult<int>> GetCount()
         {
-            return await this._referencesDbContext.Reference.CountAsync().ConfigureAwait(false);
+            return await _referencesDbContext.Reference.CountAsync().ConfigureAwait(false);
         }
 
         [HttpGet]
@@ -123,7 +121,7 @@ namespace Nbic.References.Controllers
             try
             {
                 _referencesDbContext.Reference.Add(value);
-                await this._referencesDbContext.SaveChangesAsync().ConfigureAwait(false);
+                await _referencesDbContext.SaveChangesAsync().ConfigureAwait(false);
                 _index.AddOrUpdate(value);
             }
             catch (SqlException e)
@@ -181,7 +179,7 @@ namespace Nbic.References.Controllers
                 return BadRequest("No reference to put");
             }
 
-            var r = await this._referencesDbContext.Reference.Include(x => x.ReferenceUsage).FirstOrDefaultAsync(x => x.Id == id).ConfigureAwait(false);
+            var r = await _referencesDbContext.Reference.Include(x => x.ReferenceUsage).FirstOrDefaultAsync(x => x.Id == id).ConfigureAwait(false);
             if (r == null)
             {
                 return NotFound();
@@ -220,7 +218,7 @@ namespace Nbic.References.Controllers
             
             // todo usages
 
-            await this._referencesDbContext.SaveChangesAsync().ConfigureAwait(false);
+            await _referencesDbContext.SaveChangesAsync().ConfigureAwait(false);
             _index.AddOrUpdate(r);
             return Ok();
         }
@@ -230,14 +228,14 @@ namespace Nbic.References.Controllers
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
         public ActionResult Delete(Guid id)
         {
-            var item = this._referencesDbContext.Reference.Include(x => x.ReferenceUsage).FirstOrDefault(x => x.Id == id);
+            var item = _referencesDbContext.Reference.Include(x => x.ReferenceUsage).FirstOrDefault(x => x.Id == id);
             if (item == null) return NotFound();
             if (item.ReferenceUsage.Any())
             {
                 throw  new InvalidOperationException("Can not delete reference with referenceusages. Remove them first.");
             }
             _referencesDbContext.Reference.Remove(item);
-            this._referencesDbContext.SaveChanges();
+            _referencesDbContext.SaveChanges();
             _index.Delete(item.Id);
             return Ok();
 

@@ -1,12 +1,10 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Nbic.References.Controllers;
 using Nbic.References.EFCore;
 using Nbic.References.Public.Models;
-using Nbic.Indexer;
 using Xunit;
 
 namespace Nbic.References.Tests
@@ -30,13 +28,12 @@ namespace Nbic.References.Tests
                     using (var context = new ReferencesDbContext(options))
                     {
                         var service = new ReferencesController(context, index);
-                        await service.Post(new Reference()
+                        await service.Post(new Reference
                         {
                             Id = id,
-                            ReferenceUsage = new List<ReferenceUsage>()
+                            ReferenceUsage = new List<ReferenceUsage>
                             {
-                                new ReferenceUsage()
-                                    {ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")}
+                                new ReferenceUsage {ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")}
                             }
                         }).ConfigureAwait(false);
                     }
@@ -74,13 +71,12 @@ namespace Nbic.References.Tests
                     using (var context = new ReferencesDbContext(options))
                     {
                         var service = new ReferencesController(context, index);
-                        await service.Post(new Reference()
+                        await service.Post(new Reference
                         {
                             Id = id,
-                            ReferenceUsage = new List<ReferenceUsage>()
+                            ReferenceUsage = new List<ReferenceUsage>
                             {
-                                new ReferenceUsage()
-                                    {ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")}
+                                new ReferenceUsage {ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")}
                             }
                         }).ConfigureAwait(false);
                     }
@@ -123,15 +119,13 @@ namespace Nbic.References.Tests
                     using (var context = new ReferencesDbContext(options))
                     {
                         var service = new ReferencesController(context, index);
-                        await service.Post(new Reference()
+                        await service.Post(new Reference
                         {
                             Id = id,
-                            ReferenceUsage = new List<ReferenceUsage>()
+                            ReferenceUsage = new List<ReferenceUsage>
                             {
-                                new ReferenceUsage()
-                                    {ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")},
-                                new ReferenceUsage()
-                                    {ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")}
+                                new ReferenceUsage {ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")},
+                                new ReferenceUsage {ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")}
                             }
                         }).ConfigureAwait(false);
                     }
@@ -171,7 +165,7 @@ namespace Nbic.References.Tests
                 using (var context = new ReferencesDbContext(options))
                 {
                     var service = new ReferencesController(context, index);
-                    await service.Post(new Reference() { Id = id, ReferenceUsage = new List<ReferenceUsage>() { new ReferenceUsage() { ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") }, new ReferenceUsage() { ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") } } }).ConfigureAwait(false);
+                    await service.Post(new Reference { Id = id, ReferenceUsage = new List<ReferenceUsage> { new ReferenceUsage { ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") }, new ReferenceUsage { ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") } } }).ConfigureAwait(false);
                 }
 
                 // Use a separate instance of the context to verify correct data was saved to database
@@ -179,7 +173,7 @@ namespace Nbic.References.Tests
                 {
                     var service = new ReferencesController(context, index);
                     var usageService = new ReferenceUsageController(context);
-                    await usageService.Post(new ReferenceUsage() { ApplicationId = 3, ReferenceId = id, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") }).ConfigureAwait(false);
+                    await usageService.Post(new ReferenceUsage { ApplicationId = 3, ReferenceId = id, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") }).ConfigureAwait(false);
                     var all = await usageService.GetAll(0, 10).ConfigureAwait(false);
                     Assert.Equal(3, all.Count);
                     var result = await service.Get(id).ConfigureAwait(false);
@@ -207,26 +201,22 @@ namespace Nbic.References.Tests
                     using (var context = new ReferencesDbContext(options))
                     {
                         var service = new ReferencesController(context, index);
-                        await service.Post(new Reference()
+                        await service.Post(new Reference
                         {
                             Id = id,
-                            ReferenceUsage = new List<ReferenceUsage>()
+                            ReferenceUsage = new List<ReferenceUsage>
                             {
-                                new ReferenceUsage()
-                                    {ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")},
-                                new ReferenceUsage()
-                                    {ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")}
+                                new ReferenceUsage {ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")},
+                                new ReferenceUsage {ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")}
                             }
                         }).ConfigureAwait(false);
-                        await service.Post(new Reference()
+                        await service.Post(new Reference
                         {
                             Id = id2,
-                            ReferenceUsage = new List<ReferenceUsage>()
+                            ReferenceUsage = new List<ReferenceUsage>
                             {
-                                new ReferenceUsage()
-                                    {ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")},
-                                new ReferenceUsage()
-                                    {ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")}
+                                new ReferenceUsage {ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")},
+                                new ReferenceUsage {ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")}
                             }
                         }).ConfigureAwait(false);
                     }
@@ -238,12 +228,12 @@ namespace Nbic.References.Tests
                         var usageService = new ReferenceUsageController(context);
                         await usageService.Post(new ReferenceUsage[]
                         {
-                            new ReferenceUsage()
+                            new ReferenceUsage
                             {
                                 ApplicationId = 3, ReferenceId = id,
                                 UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")
                             },
-                            new ReferenceUsage()
+                            new ReferenceUsage
                             {
                                 ApplicationId = 3, ReferenceId = id2,
                                 UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")
@@ -280,26 +270,22 @@ namespace Nbic.References.Tests
                     using (var context = new ReferencesDbContext(options))
                     {
                         var service = new ReferencesController(context, index);
-                        await service.Post(new Reference()
+                        await service.Post(new Reference
                         {
                             Id = id,
-                            ReferenceUsage = new List<ReferenceUsage>()
+                            ReferenceUsage = new List<ReferenceUsage>
                             {
-                                new ReferenceUsage()
-                                    {ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")},
-                                new ReferenceUsage()
-                                    {ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")}
+                                new ReferenceUsage {ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")},
+                                new ReferenceUsage {ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")}
                             }
                         }).ConfigureAwait(false);
-                        await service.Post(new Reference()
+                        await service.Post(new Reference
                         {
                             Id = id2,
-                            ReferenceUsage = new List<ReferenceUsage>()
+                            ReferenceUsage = new List<ReferenceUsage>
                             {
-                                new ReferenceUsage()
-                                    {ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")},
-                                new ReferenceUsage()
-                                    {ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")}
+                                new ReferenceUsage {ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")},
+                                new ReferenceUsage {ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")}
                             }
                         }).ConfigureAwait(false);
                     }
@@ -311,17 +297,17 @@ namespace Nbic.References.Tests
                         var usageService = new ReferenceUsageController(context);
                         await usageService.Post(new ReferenceUsage[]
                         {
-                            new ReferenceUsage()
+                            new ReferenceUsage
                             {
                                 ApplicationId = 3, ReferenceId = id,
                                 UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")
                             },
-                            new ReferenceUsage()
+                            new ReferenceUsage
                             {
                                 ApplicationId = 3, ReferenceId = id2,
                                 UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")
                             },
-                            new ReferenceUsage()
+                            new ReferenceUsage
                             {
                                 ApplicationId = 3, ReferenceId = id3,
                                 UserId = new Guid("3ed89222-de9a-4df3-9e95-87f7fcac67a3")
@@ -356,15 +342,13 @@ namespace Nbic.References.Tests
                     using (var context = new ReferencesDbContext(options))
                     {
                         var service = new ReferencesController(context, index);
-                        await service.Post(new Reference()
+                        await service.Post(new Reference
                         {
                             Id = id,
-                            ReferenceUsage = new List<ReferenceUsage>()
+                            ReferenceUsage = new List<ReferenceUsage>
                             {
-                                new ReferenceUsage()
-                                    {ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")},
-                                new ReferenceUsage()
-                                    {ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")}
+                                new ReferenceUsage {ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")},
+                                new ReferenceUsage {ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")}
                             }
                         }).ConfigureAwait(false);
                     }
@@ -374,7 +358,7 @@ namespace Nbic.References.Tests
                     {
                         var service = new ReferencesController(context, index);
                         var usageService = new ReferenceUsageController(context);
-                        await usageService.Post(new ReferenceUsage()
+                        await usageService.Post(new ReferenceUsage
                         {
                             ApplicationId = 1, ReferenceId = id,
                             UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")

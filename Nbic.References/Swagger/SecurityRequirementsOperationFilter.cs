@@ -21,24 +21,23 @@ namespace Nbic.References.Swagger
                 .Select(attr => attr.Policy)
                 .Distinct().ToList();
 
-            if (requiredScopes.Any())
+            if (!requiredScopes.Any()) return;
+            
+            operation.Responses.Add("401", new OpenApiResponse { Description = "Unauthorized" });
+            operation.Responses.Add("403", new OpenApiResponse { Description = "Forbidden" });
+
+            var oAuthScheme = new OpenApiSecurityScheme
             {
-                operation.Responses.Add("401", new OpenApiResponse { Description = "Unauthorized" });
-                operation.Responses.Add("403", new OpenApiResponse { Description = "Forbidden" });
+                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "oauth2" }
+            };
 
-                var oAuthScheme = new OpenApiSecurityScheme
+            operation.Security = new List<OpenApiSecurityRequirement>
+            {
+                new OpenApiSecurityRequirement
                 {
-                    Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "oauth2" }
-                };
-
-                operation.Security = new List<OpenApiSecurityRequirement>
-                {
-                    new OpenApiSecurityRequirement
-                    {
-                        [ oAuthScheme ] = requiredScopes
-                    }
-                };
-            }
+                    [ oAuthScheme ] = requiredScopes
+                }
+            };
         }
     }
 }
