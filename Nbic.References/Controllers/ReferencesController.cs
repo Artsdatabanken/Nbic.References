@@ -203,7 +203,7 @@ namespace Nbic.References.Controllers
             if (r.Title != value.Title) r.Title = value.Title;
             if (r.Volume != value.Volume) r.Volume = value.Volume;
             if (r.Year != value.Year) r.Year = value.Year;
-            if (value.ReferenceUsage.Any())
+            if (value.ReferenceUsage != null && value.ReferenceUsage.Any())
             {
                 r.ReferenceUsage.Clear();
                 foreach (var item in value.ReferenceUsage)
