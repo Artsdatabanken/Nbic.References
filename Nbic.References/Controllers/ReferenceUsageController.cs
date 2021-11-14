@@ -47,7 +47,7 @@ namespace Nbic.References.Controllers
 
         [Authorize("WriteAccess")]
         [HttpDelete("{id}")]
-        public ActionResult DeleteAllUsages(Guid id)
+        public Microsoft.AspNetCore.Mvc.ActionResult DeleteAllUsages(Guid id)
         {
             var entities = _referencesDbContext.ReferenceUsage.Where(x => x.ReferenceId == id).ToArray();
             if (entities.Length == 0) return NotFound();
@@ -59,7 +59,7 @@ namespace Nbic.References.Controllers
         }
         [Authorize("WriteAccess")]
         [HttpDelete("{id},{applicationId},{userId}")]
-        public ActionResult DeleteUsage(Guid id, int applicationId, Guid userId)
+        public Microsoft.AspNetCore.Mvc.ActionResult DeleteUsage(Guid id, int applicationId, Guid userId)
         {
             var entities = _referencesDbContext.ReferenceUsage.Where(x => x.ReferenceId == id && x.ApplicationId == applicationId && x.UserId == userId).ToArray();
             if (entities.Length == 0) return NotFound();

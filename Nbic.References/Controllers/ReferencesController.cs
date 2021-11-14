@@ -137,7 +137,7 @@ namespace Nbic.References.Controllers
         [Authorize("WriteAccess")]
         [HttpPost]
         [Route("Bulk")]
-        public ActionResult PostMany([FromBody] Reference[] values)
+        public Microsoft.AspNetCore.Mvc.ActionResult PostMany([FromBody] Reference[] values)
         {
             if (values == null || values.Length == 0)
             {
@@ -172,7 +172,7 @@ namespace Nbic.References.Controllers
 
         [Authorize("WriteAccess")]
         [HttpPut("{id}")]
-        public async Task<ActionResult> Put(Guid id, [FromBody] Reference value)
+        public async Task<Microsoft.AspNetCore.Mvc.ActionResult> Put(Guid id, [FromBody] Reference value)
         {
             if (value == null)
             {
@@ -226,7 +226,7 @@ namespace Nbic.References.Controllers
         [Authorize("WriteAccess")]
         [HttpDelete("{id}")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
-        public ActionResult Delete(Guid id)
+        public Microsoft.AspNetCore.Mvc.ActionResult Delete(Guid id)
         {
             var item = _referencesDbContext.Reference.Include(x => x.ReferenceUsage).FirstOrDefault(x => x.Id == id);
             if (item == null) return NotFound();

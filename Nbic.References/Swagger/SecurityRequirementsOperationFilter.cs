@@ -17,7 +17,7 @@ namespace Nbic.References.Swagger
             // Policy names map to scopes
             var requiredScopes = context.MethodInfo
                 .GetCustomAttributes(true)
-                .OfType<AuthorizeAttribute>()
+                .OfType<Microsoft.AspNetCore.Authorization.AuthorizeAttribute>()
                 .Select(attr => attr.Policy)
                 .Distinct().ToList();
 
