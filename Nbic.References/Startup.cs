@@ -22,6 +22,9 @@ namespace Nbic.References
     using Microsoft.IdentityModel.Logging;
 
     using EFCore;
+
+    using RobotsTxt;
+
     using Swagger;
 
     using Index = Indexer.Index;
@@ -74,7 +77,8 @@ namespace Nbic.References
             }
 
             app.UseHttpsRedirection();
-
+            app.UseStaticFiles();
+            app.UseRobotsTxt();
             app.UseRouting();
 
             AddSwaggerMiddleware(app);
@@ -119,6 +123,8 @@ namespace Nbic.References
                                         .WithExposedHeaders("WWW-Authenticate");
                                 });
                     });
+            
+            services.AddStaticRobotsTxt(builder => builder.DenyAll());
         }
 
         private void AddIdentityServerAuthentication(IServiceCollection services)

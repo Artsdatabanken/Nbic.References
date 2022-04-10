@@ -8,7 +8,7 @@ API documented with Swagger at root URL
 
 ## Test with docker
 ```<language>
-docker run -d -p 8080:80 -p 8082:443 --name nbicreferences -v /app/Data steinho/nbicreferences
+docker run -d -p 8080:80 -p 8082:443 --name nbicreferences -v /app/Data artsdatabanken/nbicreferences
 ```
 
 Default configuration:
@@ -30,4 +30,9 @@ Schema will be created on first run.
 If using SQLite - map volume /app/Data/ for persistence and backup 
 
 Feel free to fork!
+
+Landingpages for api (Swagger):
+
+- https://referenceapi.artsdatabanken.no/ (production)
+- https://referenceapi.test.artsdatabanken.no/ (test/staging)
 
