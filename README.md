@@ -13,8 +13,8 @@ docker run -d -p 8080:80 -p 8082:443 --name nbicreferences -v /app/Data steinho/
 
 Default configuration:
 ```<language>
-ENV AuthAuthority=https://demo.identityserver.io
-ENV AuthAuthorityEndPoint=https://demo.identityserver.io/connect/authorize
+ENV AuthAuthority=https://demo.identityserver.com
+ENV AuthAuthorityEndPoint=https://demo.identityserver.com/connect/authorize
 ENV ApiName=api
 ENV WriteAccessRole="my_write_access_role"
 ENV SwaggerClientId="implicit"

@@ -43,10 +43,10 @@ namespace Nbic.References
             Configuration = configuration;
 
             // configuration
-            authAuthority = Configuration.GetValue("AuthAuthority", "https://demo.identityserver.io");
+            authAuthority = Configuration.GetValue("AuthAuthority", "https://demo.identityserver.com");
             authAuthorityEndPoint = Configuration.GetValue(
                 "AuthAuthorityEndPoint",
-                "https://demo.identityserver.io/connect/authorize");
+                "https://demo.identityserver.com/connect/authorize");
             apiName = Configuration.GetValue("ApiName", "api");
 
             provider = Configuration.GetValue("DbProvider", "Sqlite");
@@ -126,12 +126,12 @@ namespace Nbic.References
             var roleClaim = "role";
             var roleClaimValue = writeAccessRole;
 
-            // Users defined at https://demo.identityserver.io has no roles.
+            // Users defined at https://demo.identityserver.com has no roles.
             // Using the Issuer-claim (iss) as a substitute to allow authorization with Swagger when testing
-            if (authAuthority == "https://demo.identityserver.io")
+            if (authAuthority == "https://demo.identityserver.com")
             {
                 roleClaim = "iss";
-                roleClaimValue = "https://demo.identityserver.io";
+                roleClaimValue = "https://demo.identityserver.com";
             }
 
             services.AddAuthorization(options =>
