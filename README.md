@@ -8,7 +8,7 @@ API documented with Swagger at root URL
 
 ## Test with docker
 ```<language>
-docker run -d -p 8080:80 -p 8082:443 --name nbicreferences -v /app/Data artsdatabanken/nbicreferences
+docker run -d -p 8080:8000 --name nbicreferences artsdatabanken/nbicreferences
 ```
 
 Default configuration:
