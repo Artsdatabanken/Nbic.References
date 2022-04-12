@@ -1,6 +1,6 @@
 # Nbic.References
 
-![Nbic.References CI](https://github.com/Artsdatabanken/Nbic.References/actions/workflows/dotnetcore/badge.svg)
+![Nbic.References CI](https://github.com/Artsdatabanken/Nbic.References/actions/workflows/dotnetcore.yml/badge.svg)
 
 Reference database that handles literature references, person and url references. Also tracks usage by userid and applicationid if needed.
 
