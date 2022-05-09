@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Text.RegularExpressions;
 using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
 using Lucene.Net.Search;
 using Lucene.Net.Store;
 using Lucene.Net.Util;
-using Nbic.References.Public.Models;
+using Nbic.References.Core.Models;
 
-namespace Nbic.Indexer;
+namespace Nbic.References.Infrastructure.Services.Indexing;
 
 public class Index : IDisposable
 {

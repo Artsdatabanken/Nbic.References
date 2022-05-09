@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
-using Nbic.References.EFCore;
-using Nbic.References.Public.Models;
+using Nbic.References.Core.Exceptions;
+using Nbic.References.Core.Interfaces.Repositories;
+using Nbic.References.Core.Models;
 using Swashbuckle.AspNetCore.Annotations;
-using Index = Nbic.Indexer.Index;
 
 namespace Nbic.References.Controllers
 {
@@ -18,67 +15,24 @@ namespace Nbic.References.Controllers
     [SwaggerTag("Create, read, update and delete References")]
     public class ReferencesController : ControllerBase
     {
-        private readonly ReferencesDbContext _referencesDbContext;
-        private readonly Index _index;
+        private readonly IReferencesRepository _referencesRepository;
 
-        public ReferencesController(ReferencesDbContext referencesDbContext, Index index)//, Index index)
+        public ReferencesController(IReferencesRepository referencesRepository)
         {
-            _referencesDbContext = referencesDbContext;
-            _index = index;
-            //IndexSanityCheck();
-            
-        }
-
-        private void IndexSanityCheck()
-        {
-            if (!_index.FirstUse) return;
-            
-            if (_index.IndexCount() != _referencesDbContext.Reference.Count())
-            {
-                _index.FirstUse = false;
-                _index.ClearIndex();
-                var batch = new List<Reference>();
-                foreach (var reference in _referencesDbContext.Reference)
-                {
-                    batch.Add(reference);
-                    if (batch.Count <= 20) continue;
-
-                    _index.AddOrUpdate(batch);
-                    batch = new List<Reference>();
-                }
-                if (batch.Count > 0)
-                {
-                    _index.AddOrUpdate(batch);
-                }
-            }
-
-            _index.FirstUse = false;
+            _referencesRepository = referencesRepository;
         }
 
         [HttpGet]
         public async Task<List<Reference>> GetAll(int offset = 0, int limit = 10, string search = null)
         {
-            if (string.IsNullOrWhiteSpace(search))
-                return await _referencesDbContext.Reference.Include(x => x.ReferenceUsage).OrderBy(x => x.Id)
-                    .Skip(offset).Take(limit).ToListAsync().ConfigureAwait(false);
-
-            var searchresults = _index.SearchReference(search, offset, limit);
-            var guids = searchresults as Guid[] ?? searchresults.ToArray();
-            if (!guids.Any())
-            {
-                return new List<Reference>();
-            }
-
-            return await _referencesDbContext.Reference.Include(x => x.ReferenceUsage).Where(x => guids.Contains(x.Id))
-                .OrderBy(x => x.Id).Take(limit).ToListAsync().ConfigureAwait(false);
-
+            return await _referencesRepository.Search(search, offset, limit);
         }
 
         [HttpGet]
         [Route("Count")]
         public async Task<ActionResult<int>> GetCount()
         {
-            return await _referencesDbContext.Reference.CountAsync().ConfigureAwait(false);
+            return await _referencesRepository.GetReferencesCountAsync(); // _referencesDbContext.Reference.CountAsync().ConfigureAwait(false);
         }
 
         [HttpGet]
@@ -86,20 +40,16 @@ namespace Nbic.References.Controllers
         [Route("Reindex")]
         public ActionResult<bool> DoReindex()
         {
-            IndexSanityCheck();
+            _referencesRepository.ReIndex();
             return true;
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Reference>> Get(Guid id)
         {
-            var reference = await _referencesDbContext.Reference.Include(x => x.ReferenceUsage)
-                                .FirstOrDefaultAsync(x => x.Id == id).ConfigureAwait(false);
-            if (reference == null)
-            {
-                return NotFound();
-            }
-
+            var reference = await _referencesRepository.Get(id);
+            if (reference == null) return NotFound();
+            
             return reference;
         }
 
@@ -112,131 +62,75 @@ namespace Nbic.References.Controllers
                 return BadRequest("No data posted");
             }
 
-            if (value.Id == Guid.Empty)
-            {
-                value.Id = Guid.NewGuid();
-            }
-
-            
+            Reference newReference;
             try
             {
-                _referencesDbContext.Reference.Add(value);
-                await _referencesDbContext.SaveChangesAsync().ConfigureAwait(false);
-                _index.AddOrUpdate(value);
+                newReference = await _referencesRepository.Add(value);
             }
-            catch (SqlException e)
+            catch (BadRequestException e)
             {
-                if (e.Message.Contains("Violation of PRIMARY KEY constraint", StringComparison.InvariantCulture))
-                {
-                    return BadRequest("Violation of PRIMARY KEY constraint. Key exists!");
-                }
+                return BadRequest(e);
             }
-        
-            return value;
+
+            return newReference;
         }
+        
         [Authorize("WriteAccess")]
         [HttpPost]
         [Route("Bulk")]
-        public Microsoft.AspNetCore.Mvc.ActionResult PostMany([FromBody] Reference[] values)
+        public async Task<ActionResult> PostMany([FromBody] Reference[] values)
         {
             if (values == null || values.Length == 0)
             {
                 return BadRequest("No data posted");
             }
-
-            foreach (var value in values)
-            {
-                if (value.Id == Guid.Empty)
-                {
-                    value.Id = Guid.NewGuid();
-                }
-            }
-
-
             try
             {
-                _referencesDbContext.Reference.AddRange(values);
-                _index.AddOrUpdate(values);
-                var recordsSaved = _referencesDbContext.SaveChanges();
+                await _referencesRepository.AddRange(values);
             }
-            catch (SqlException e)
+            catch (BadRequestException e)
             {
-                if (e.Message.Contains("Violation of PRIMARY KEY constraint", StringComparison.InvariantCulture))
-                {
-                    return BadRequest("Violation of PRIMARY KEY constraint. Key exists!");
-                }
+                return BadRequest(e);
             }
-
+            
             return Ok();
         }
 
         [Authorize("WriteAccess")]
         [HttpPut("{id}")]
-        public async Task<Microsoft.AspNetCore.Mvc.ActionResult> Put(Guid id, [FromBody] Reference value)
+        public async Task<ActionResult> Put(Guid id, [FromBody] Reference value)
         {
             if (value == null)
             {
                 return BadRequest("No reference to put");
             }
 
-            var r = await _referencesDbContext.Reference.Include(x => x.ReferenceUsage).FirstOrDefaultAsync(x => x.Id == id).ConfigureAwait(false);
-            if (r == null)
+            try
             {
-                return NotFound();
+                await _referencesRepository.Update(value);
             }
-            // transfer values
-            // these first three should never be changed
-            //if (r.PkReferenceId != value.PkReferenceId) r.PkReferenceId = value.PkReferenceId;
-            if (r.ApplicationId != value.ApplicationId) r.ApplicationId = value.ApplicationId;
-            if (r.UserId != value.UserId) r.UserId = value.UserId;
-            if (r.Author != value.Author) r.Author = value.Author;
-            if (r.Bibliography != value.Bibliography) r.Bibliography = value.Bibliography;
-            if (r.Firstname != value.Firstname) r.Firstname = value.Firstname;
-            if (r.ReferenceString != value.ReferenceString) r.ReferenceString = value.ReferenceString;
-            if (r.Journal != value.Journal) r.Journal = value.Journal;
-            if (r.Keywords != value.Keywords) r.Keywords = value.Keywords;
-            if (r.Lastname != value.Lastname) r.Lastname = value.Lastname;
-            if (r.Middlename != value.Middlename) r.Middlename = value.Middlename;
-            if (r.Pages != value.Pages) r.Pages = value.Pages;
-            if (r.Summary != value.Summary) r.Summary = value.Summary;
-            if (r.Url != value.Url) r.Url = value.Url;
-            if (r.Title != value.Title) r.Title = value.Title;
-            if (r.Volume != value.Volume) r.Volume = value.Volume;
-            if (r.Year != value.Year) r.Year = value.Year;
-            if (value.ReferenceUsage != null && value.ReferenceUsage.Any())
+            catch (NotFoundException e)
             {
-                r.ReferenceUsage.Clear();
-                foreach (var item in value.ReferenceUsage)
-                {
-                    item.Reference = r;
-                    item.ReferenceId = r.Id;
-                    r.ReferenceUsage.Add(item);
-                }
+                return NotFound(e);
             }
-
-            r.EditDate = DateTime.Now;
-            
-            // todo usages
-
-            await _referencesDbContext.SaveChangesAsync().ConfigureAwait(false);
-            _index.AddOrUpdate(r);
+           
             return Ok();
         }
 
         [Authorize("WriteAccess")]
         [HttpDelete("{id}")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
-        public Microsoft.AspNetCore.Mvc.ActionResult Delete(Guid id)
+        public ActionResult Delete(Guid id)
         {
-            var item = _referencesDbContext.Reference.Include(x => x.ReferenceUsage).FirstOrDefault(x => x.Id == id);
-            if (item == null) return NotFound();
-            if (item.ReferenceUsage.Any())
+            try
             {
-                throw  new InvalidOperationException("Can not delete reference with referenceusages. Remove them first.");
+                _referencesRepository.Delete(id);
             }
-            _referencesDbContext.Reference.Remove(item);
-            _referencesDbContext.SaveChanges();
-            _index.Delete(item.Id);
+            catch (NotFoundException e)
+            {
+                return NotFound(e);
+            }
+
             return Ok();
 
         }

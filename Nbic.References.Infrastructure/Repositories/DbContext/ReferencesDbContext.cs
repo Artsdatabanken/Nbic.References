@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Nbic.References.Public.Models;
+using Nbic.References.Core.Models;
 
 namespace Nbic.References.EFCore
 {

@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
-
-namespace Nbic.References.Public.Models;
+namespace Nbic.References.Core.Models;
 
 public partial class Reference
 {
