@@ -28,9 +28,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.7" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Nbic.Indexer\Nbic.Indexer.csproj" />
-    <ProjectReference Include="..\Nbic.References.EFCore\Nbic.References.EFCore.csproj" />
-    <ProjectReference Include="..\Nbic.References.Model\Nbic.References.Public.csproj" />
+    <ProjectReference Include="..\Nbic.References.Core\Nbic.References.Core.csproj" />
+    <ProjectReference Include="..\Nbic.References.Infrastructure\Nbic.References.Infrastructure.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Data\" />

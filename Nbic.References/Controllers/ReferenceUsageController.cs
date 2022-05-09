@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Nbic.References.Core.Models;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Nbic.References.Controllers
@@ -11,18 +12,17 @@ namespace Nbic.References.Controllers
     using Microsoft.EntityFrameworkCore;
 
     using EFCore;
-    using Public.Models;
 
     [Route("api/[controller]")]
     [ApiController]
     [SwaggerTag("Read, add or delete ReferencesUsages")]
     public class ReferenceUsageController : ControllerBase
     {
-        private readonly ReferencesDbContext _referencesDbContext;
+        //private readonly ReferencesDbContext _referencesDbContext;
 
         public ReferenceUsageController(ReferencesDbContext referencesDbContext)
         {
-            _referencesDbContext = referencesDbContext;
+        //    _referencesDbContext = referencesDbContext;
         }
 
         [HttpGet]
