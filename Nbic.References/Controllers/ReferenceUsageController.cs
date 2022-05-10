@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Nbic.References.Core.Models;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Nbic.References.Controllers
 {
     using Microsoft.AspNetCore.Authorization;
-    using Microsoft.EntityFrameworkCore;
 
     using EFCore;
 
@@ -18,37 +16,38 @@ namespace Nbic.References.Controllers
     [SwaggerTag("Read, add or delete ReferencesUsages")]
     public class ReferenceUsageController : ControllerBase
     {
-        //private readonly ReferencesDbContext _referencesDbContext;
+        private readonly IReferenceUsageRepository _referenceUsageRepository;
 
-        public ReferenceUsageController(ReferencesDbContext referencesDbContext)
+        public ReferenceUsageController(ReferencesDbContext referencesDbContext, IReferenceUsageRepository referenceUsageRepository)
         {
-        //    _referencesDbContext = referencesDbContext;
+            _referenceUsageRepository = referenceUsageRepository;
         }
 
         [HttpGet]
         public async Task<List<ReferenceUsage>> GetAll(int offset = 0, int limit = 10)
         {
-            return await _referencesDbContext.ReferenceUsage.OrderBy(x => x.ReferenceId)
-                       .Skip(offset).Take(limit).ToListAsync().ConfigureAwait(false);
+            return await _referenceUsageRepository.GetAll(offset, limit);
         }
         [HttpGet]
         [Route("Reference/{id}")]
         public async Task<List<ReferenceUsage>> Get(Guid id)
         {
-            return await _referencesDbContext.ReferenceUsage.Where(x=>x.ReferenceId == id).ToListAsync().ConfigureAwait(false);
+            return await _referenceUsageRepository.GetFromReferenceId(id);
         }
 
         [HttpGet]
         [Route("Count")]
         public async Task<ActionResult<int>> GetCount()
         {
-            return await _referencesDbContext.ReferenceUsage.CountAsync().ConfigureAwait(false);
+            return await _referenceUsageRepository.CountAsync();
         }
 
         [Authorize("WriteAccess")]
         [HttpDelete("{id}")]
+        [ProducesResponseType(404)]
         public Microsoft.AspNetCore.Mvc.ActionResult DeleteAllUsages(Guid id)
         {
+            
             var entities = _referencesDbContext.ReferenceUsage.Where(x => x.ReferenceId == id).ToArray();
             if (entities.Length == 0) return NotFound();
             
@@ -57,6 +56,7 @@ namespace Nbic.References.Controllers
             return Ok();
 
         }
+
         [Authorize("WriteAccess")]
         [HttpDelete("{id},{applicationId},{userId}")]
         public Microsoft.AspNetCore.Mvc.ActionResult DeleteUsage(Guid id, int applicationId, Guid userId)

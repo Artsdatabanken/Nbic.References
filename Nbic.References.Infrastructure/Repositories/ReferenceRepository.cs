@@ -7,39 +7,37 @@ using Index = Nbic.References.Infrastructure.Services.Indexing.Index;
 
 namespace Nbic.References.Infrastructure.Repositories;
 
-public class ReferenceRepository : IReferencesRepository
+public class ReferenceRepository : Repository<Reference>, IReferencesRepository
 {
-    private readonly ReferencesDbContext dbContext;
     private readonly Index _index;
 
-    public ReferenceRepository(ReferencesDbContext dbContext, Index index)
+    public ReferenceRepository(ReferencesDbContext dbContext, Index index) : base(dbContext)
     {
-        this.dbContext = dbContext;
         _index = index;
     }
 
-    public Task<int> GetReferencesCountAsync()
-    {
-        return dbContext.Reference.CountAsync();
-    }
+    //public Task<int> CountAsync()
+    //{
+    //    return dbContext.Reference.CountAsync();
+    //}
 
     public Task<Reference?> Get(Guid id)
     {
-        return dbContext.Reference.Include(x => x.ReferenceUsage)
+        return _dbContext.Reference.Include(x => x.ReferenceUsage)
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 
     public void Delete(Guid id)
     {
-        var item = dbContext.Reference.Include(x => x.ReferenceUsage).FirstOrDefault(x => x.Id == id);
+        var item = _dbContext.Reference.Include(x => x.ReferenceUsage).FirstOrDefault(x => x.Id == id);
         if (item == null) throw new NotFoundException("Reference", id);
         if (item.ReferenceUsage.Any())
         {
             throw new InvalidOperationException("Can not delete reference with referenceusages. Remove them first.");
         }
 
-        dbContext.Reference.Remove(item);
-        dbContext.SaveChanges();
+        _dbContext.Reference.Remove(item);
+        _dbContext.SaveChanges();
         _index.Delete(item.Id);
     }
 
@@ -49,8 +47,8 @@ public class ReferenceRepository : IReferencesRepository
 
         try
         {
-            dbContext.Reference.Add(reference);
-            await dbContext.SaveChangesAsync();
+            _dbContext.Reference.Add(reference);
+            await _dbContext.SaveChangesAsync();
             _index.AddOrUpdate(reference);
         }
         catch (DbUpdateException e)
@@ -78,8 +76,8 @@ public class ReferenceRepository : IReferencesRepository
 
         try
         {
-            await dbContext.Reference.AddRangeAsync(references);
-            await dbContext.SaveChangesAsync();
+            await _dbContext.Reference.AddRangeAsync(references);
+            await _dbContext.SaveChangesAsync();
             _index.AddOrUpdate(references);
         }
         catch (DbUpdateException e)
@@ -96,7 +94,7 @@ public class ReferenceRepository : IReferencesRepository
 
     public async Task Update(Reference reference)
     {
-         var r = await dbContext.Reference.Include(x => x.ReferenceUsage).FirstOrDefaultAsync(x => x.Id == reference.Id);
+         var r = await _dbContext.Reference.Include(x => x.ReferenceUsage).FirstOrDefaultAsync(x => x.Id == reference.Id);
             if (r == null)
             {
                 throw new NotFoundException("Reference", reference.Id);
@@ -135,14 +133,14 @@ public class ReferenceRepository : IReferencesRepository
             r.EditDate = DateTime.Now;
             
             // todo usages
-            await dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync();
             _index.AddOrUpdate(r);
     }
 
     public async Task<List<Reference>> Search(string search, int offset, int limit)
     {
         if (string.IsNullOrWhiteSpace(search))
-            return await dbContext.Reference.Include(x => x.ReferenceUsage).OrderBy(x => x.Id)
+            return await _dbContext.Reference.Include(x => x.ReferenceUsage).OrderBy(x => x.Id)
                 .Skip(offset).Take(limit).ToListAsync();
 
         var searchresults = _index.SearchReference(search, offset, limit);
@@ -152,7 +150,7 @@ public class ReferenceRepository : IReferencesRepository
             return new List<Reference>();
         }
 
-        return await dbContext.Reference.Include(x => x.ReferenceUsage).Where(x => guids.Contains(x.Id))
+        return await _dbContext.Reference.Include(x => x.ReferenceUsage).Where(x => guids.Contains(x.Id))
             .OrderBy(x => x.Id).Take(limit).ToListAsync();
     }
 
@@ -161,12 +159,12 @@ public class ReferenceRepository : IReferencesRepository
 
         if (!_index.FirstUse) return;
 
-        if (_index.IndexCount() != dbContext.Reference.Count())
+        if (_index.IndexCount() != _dbContext.Reference.Count())
         {
             _index.FirstUse = false;
             _index.ClearIndex();
             var batch = new List<Reference>();
-            foreach (var reference in dbContext.Reference)
+            foreach (var reference in _dbContext.Reference)
             {
                 batch.Add(reference);
                 if (batch.Count <= 20) continue;

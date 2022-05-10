@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Nbic.References.Core.Exceptions;
-using Nbic.References.Core.Interfaces.Repositories;
-using Nbic.References.Core.Models;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Nbic.References.Controllers
@@ -32,7 +29,7 @@ namespace Nbic.References.Controllers
         [Route("Count")]
         public async Task<ActionResult<int>> GetCount()
         {
-            return await _referencesRepository.GetReferencesCountAsync(); // _referencesDbContext.Reference.CountAsync().ConfigureAwait(false);
+            return await _referencesRepository.CountAsync(); // _referencesDbContext.Reference.CountAsync().ConfigureAwait(false);
         }
 
         [HttpGet]

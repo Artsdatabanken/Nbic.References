@@ -2,9 +2,8 @@
 
 namespace Nbic.References.Core.Interfaces.Repositories;
 
-public interface IReferencesRepository
+public interface IReferencesRepository : IRepository<Reference>
 {
-    Task<int> GetReferencesCountAsync();
     Task<Reference?> Get(Guid id);
     void Delete(Guid id);
     Task<Reference> Add(Reference reference);
