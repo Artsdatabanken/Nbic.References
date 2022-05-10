@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Nbic.References.Core.Models;
+using Index = Nbic.References.Infrastructure.Services.Indexing.Index;
 
 namespace Nbic.References.EFCore
 {
