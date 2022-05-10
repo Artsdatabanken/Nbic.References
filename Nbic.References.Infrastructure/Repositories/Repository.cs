@@ -21,11 +21,6 @@ namespace Nbic.References.Infrastructure.Repositories
             _dbSet = _dbContext.Set<T>();
         }
 
-        public void Add(T entity)
-        {
-            _dbSet.Add(entity);
-        }
-
         public int Count()
         {
             return _dbSet.Count();
@@ -34,36 +29,6 @@ namespace Nbic.References.Infrastructure.Repositories
         public Task<int> CountAsync()
         {
             return _dbSet.CountAsync();
-        }
-
-        public void Delete(object id)
-        {
-            var entity = Get(id);
-            if (entity != null)
-            {
-                if (_dbContext.Entry(entity).State == EntityState.Detached)
-                {
-                    _dbSet.Attach(entity);
-                }
-                _dbSet.Remove(entity);
-            }
-        }
-
-        public T Get(object id)
-        {
-            var x = _dbSet.Find(id);
-            return x;
-        }
-
-        public IEnumerable<T> GetAll()
-        {
-            return _dbSet.AsEnumerable();
-        }
-
-        public void Update(T entity)
-        {
-            _dbSet.Attach(entity);
-            _dbContext.Entry(entity).State = EntityState.Modified;
         }
     }
 }
