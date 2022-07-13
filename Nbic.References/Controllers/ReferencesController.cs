@@ -102,6 +102,16 @@ namespace Nbic.References.Controllers
                 return BadRequest("No reference to put");
             }
 
+            if (value.Id == Guid.Empty)
+            {
+                value.Id = id;
+            }
+            
+            if (value.Id != id)
+            {
+                return BadRequest("Id on reference set and different...");
+            }
+            
             try
             {
                 await _referencesRepository.Update(value);

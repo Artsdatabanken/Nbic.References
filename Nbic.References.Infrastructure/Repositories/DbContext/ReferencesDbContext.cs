@@ -15,8 +15,8 @@ namespace Nbic.References.EFCore
         {
         }
 
-        public virtual DbSet<Reference> Reference { get; set; }
-        public virtual DbSet<ReferenceUsage> ReferenceUsage { get; set; }
+        public virtual DbSet<Reference> Reference { get; set; } = null!;
+        public virtual DbSet<ReferenceUsage> ReferenceUsage { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

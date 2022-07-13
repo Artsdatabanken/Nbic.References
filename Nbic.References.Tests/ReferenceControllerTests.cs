@@ -296,9 +296,7 @@ namespace Nbic.References.Tests
             {
                 try
                 {
-
-
-                    Reference reference = new Reference
+                    var reference = new Reference
                     {
                         Id = Guid.NewGuid(),
                         ApplicationId = 1,

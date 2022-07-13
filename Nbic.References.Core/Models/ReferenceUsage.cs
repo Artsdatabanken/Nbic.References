@@ -10,5 +10,5 @@ public class ReferenceUsage
 
 
     [JsonIgnore]
-    public virtual Reference Reference { get; set; }
+    public virtual Reference Reference { get; set; } = null!;
 }

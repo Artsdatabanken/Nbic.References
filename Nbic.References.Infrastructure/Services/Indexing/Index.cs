@@ -98,7 +98,7 @@ public class Index : IDisposable
     private static string GetIndexString(Reference reference)
     {
         return string.Join(' ',
-            new List<string> { reference.Firstname, reference.Middlename, reference.Lastname, reference.Summary, reference.Author, reference.Bibliography, reference.Journal, reference.Keywords, reference.Pages, reference.Title, reference.Url, reference.Volume, reference.Year, reference.ReferenceString }
+            new List<string?> { reference.Firstname, reference.Middlename, reference.Lastname, reference.Summary, reference.Author, reference.Bibliography, reference.Journal, reference.Keywords, reference.Pages, reference.Title, reference.Url, reference.Volume, reference.Year, reference.ReferenceString }
                 .Where(x => !string.IsNullOrWhiteSpace(x)).ToArray());
     }
 
@@ -250,9 +250,13 @@ public class Index : IDisposable
     {
         var exePath = Path.GetDirectoryName(System.Reflection
             .Assembly.GetExecutingAssembly().Location);
-        Regex appPathMatcher = new Regex(@"(?<!fil)[A-Za-z]:\\+[\S\s]*?(?=\\+bin)");
+        var appPathMatcher = new Regex(@"(?<!fil)[A-Za-z]:\\+[\S\s]*?(?=\\+bin)");
+        
+        if (exePath == null) return string.Empty;
+        
         var appRoot = appPathMatcher.Match(exePath).Value;
         return appRoot;
+        
     }
 
 }
