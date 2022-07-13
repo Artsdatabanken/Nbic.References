@@ -39,6 +39,6 @@ ENV ASPNETCORE_URLS="http://+:8000"
 RUN groupadd -r --gid 1007 dockerrunner && useradd -r -g dockerrunner dockerrunner
 WORKDIR /app
 COPY --from=publish /app/publish .
-run mkdir -m 777 /app/Data
+RUN mkdir -m 777 /app/Data
 USER dockerrunner
 ENTRYPOINT ["dotnet", "Nbic.References.dll"]

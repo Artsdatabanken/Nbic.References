@@ -1,6 +1,7 @@
 ﻿// ReSharper disable once StyleCop.SA1634
 // ReSharper disable StyleCop.SA1600
 
+using Nbic.References.Infrastructure.Repositories;
 using Nbic.References.Infrastructure.Services.Indexing;
 
 namespace Nbic.References
@@ -115,6 +116,9 @@ namespace Nbic.References
             }
 
             services.AddSingleton(new Index());
+            services.AddScoped<IReferencesRepository, ReferenceRepository>();
+            services.AddScoped<IReferenceUsageRepository, ReferenceUsageRepository>();
+
             services.AddCors(
                 options =>
                     {
