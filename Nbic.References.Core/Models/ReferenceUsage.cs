@@ -1,7 +1,6 @@
-using System;
 using System.Text.Json.Serialization;
 
-namespace Nbic.References.Public.Models;
+namespace Nbic.References.Core.Models;
 
 public class ReferenceUsage
 {
@@ -11,5 +10,5 @@ public class ReferenceUsage
 
 
     [JsonIgnore]
-    public virtual Reference Reference { get; set; }
+    public virtual Reference Reference { get; set; } = null!;
 }

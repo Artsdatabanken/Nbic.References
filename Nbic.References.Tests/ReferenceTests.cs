@@ -1,5 +1,5 @@
 ﻿using System;
-using Nbic.References.Public.Models;
+using Nbic.References.Core.Models;
 using Xunit;
 
 namespace Nbic.References.Tests;

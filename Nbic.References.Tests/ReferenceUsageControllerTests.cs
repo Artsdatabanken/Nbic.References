@@ -3,19 +3,30 @@ using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Nbic.References.Controllers;
+using Nbic.References.Core.Models;
 using Nbic.References.EFCore;
-using Nbic.References.Public.Models;
+using Nbic.References.Infrastructure.Repositories;
 using Xunit;
+using Index = Nbic.References.Infrastructure.Services.Indexing.Index;
 
 namespace Nbic.References.Tests;
 
 using System.Collections.Generic;
 
 using Microsoft.AspNetCore.Mvc;
-using Index = Indexer.Index;
+using Index = Index;
 
 public class ReferenceUsageControllerTests
 {
+    private static ReferencesController GetReferencesController(ReferencesDbContext context, Index index)
+    {
+        return new ReferencesController(new ReferenceRepository(context, index));
+    }
+    private static ReferenceUsageController GetReferencesUsageController(ReferencesDbContext context)
+    {
+        return new ReferenceUsageController(new ReferenceUsageRepository(context));
+    }
+    
     [Fact]
     public async Task CanPostReferenceAndGetReferenceUsages()
     {
@@ -27,7 +38,7 @@ public class ReferenceUsageControllerTests
                 var id = Guid.NewGuid();
                 using (var context = new ReferencesDbContext(options))
                 {
-                    var service = new ReferencesController(context, index);
+                    var service = GetReferencesController(context, index);
                     await service.Post(new Reference
                     {
                         Id = id,
@@ -41,7 +52,7 @@ public class ReferenceUsageControllerTests
                 // Use a separate instance of the context to verify correct data was saved to database
                 using (var context = new ReferencesDbContext(options))
                 {
-                    var usageService = new ReferenceUsageController(context);
+                    var usageService = GetReferencesUsageController(context);
 
                     var count = (await usageService.GetCount().ConfigureAwait(false)).Value;
                     Assert.Equal(1, count);
@@ -70,7 +81,7 @@ public class ReferenceUsageControllerTests
                 var id = Guid.NewGuid();
                 using (var context = new ReferencesDbContext(options))
                 {
-                    var service = new ReferencesController(context, index);
+                    var service = GetReferencesController(context, index);
                     await service.Post(new Reference
                     {
                         Id = id,
@@ -84,8 +95,8 @@ public class ReferenceUsageControllerTests
                 // Use a separate instance of the context to verify correct data was saved to database
                 using (var context = new ReferencesDbContext(options))
                 {
-                    var service = new ReferencesController(context, index);
-                    var usageService = new ReferenceUsageController(context);
+                    var service = GetReferencesController(context, index);
+                    var usageService = GetReferencesUsageController(context);
                     usageService.DeleteAllUsages(id);
                     var all = await usageService.GetAll(0, 10).ConfigureAwait(false);
                     Assert.Empty(all);
@@ -118,7 +129,7 @@ public class ReferenceUsageControllerTests
                 var id = Guid.NewGuid();
                 using (var context = new ReferencesDbContext(options))
                 {
-                    var service = new ReferencesController(context, index);
+                    var service = GetReferencesController(context, index);
                     await service.Post(new Reference
                     {
                         Id = id,
@@ -133,8 +144,8 @@ public class ReferenceUsageControllerTests
                 // Use a separate instance of the context to verify correct data was saved to database
                 using (var context = new ReferencesDbContext(options))
                 {
-                    var service = new ReferencesController(context, index);
-                    var usageService = new ReferenceUsageController(context);
+                    var service = GetReferencesController(context, index);
+                    var usageService = GetReferencesUsageController(context);
                     usageService.DeleteUsage(id, 1, new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3"));
                     var all = await usageService.GetAll(0, 10).ConfigureAwait(false);
                     Assert.Single(all);
@@ -164,15 +175,15 @@ public class ReferenceUsageControllerTests
             var id = Guid.NewGuid();
             using (var context = new ReferencesDbContext(options))
             {
-                var service = new ReferencesController(context, index);
+                var service = GetReferencesController(context, index);
                 await service.Post(new Reference { Id = id, ReferenceUsage = new List<ReferenceUsage> { new ReferenceUsage { ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") }, new ReferenceUsage { ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") } } }).ConfigureAwait(false);
             }
 
             // Use a separate instance of the context to verify correct data was saved to database
             using (var context = new ReferencesDbContext(options))
             {
-                var service = new ReferencesController(context, index);
-                var usageService = new ReferenceUsageController(context);
+                var service = GetReferencesController(context, index);
+                var usageService = GetReferencesUsageController(context);
                 await usageService.Post(new ReferenceUsage { ApplicationId = 3, ReferenceId = id, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") }).ConfigureAwait(false);
                 var all = await usageService.GetAll(0, 10).ConfigureAwait(false);
                 Assert.Equal(3, all.Count);
@@ -200,7 +211,7 @@ public class ReferenceUsageControllerTests
                 var id2 = Guid.NewGuid();
                 using (var context = new ReferencesDbContext(options))
                 {
-                    var service = new ReferencesController(context, index);
+                    var service = GetReferencesController(context, index);
                     await service.Post(new Reference
                     {
                         Id = id,
@@ -224,8 +235,8 @@ public class ReferenceUsageControllerTests
                 // Use a separate instance of the context to verify correct data was saved to database
                 using (var context = new ReferencesDbContext(options))
                 {
-                    var service = new ReferencesController(context, index);
-                    var usageService = new ReferenceUsageController(context);
+                    var service = GetReferencesController(context, index);
+                    var usageService = GetReferencesUsageController(context);
                     await usageService.Post(new ReferenceUsage[]
                     {
                             new ReferenceUsage
@@ -269,7 +280,7 @@ public class ReferenceUsageControllerTests
                 var id3 = Guid.NewGuid();
                 using (var context = new ReferencesDbContext(options))
                 {
-                    var service = new ReferencesController(context, index);
+                    var service = GetReferencesController(context, index);
                     await service.Post(new Reference
                     {
                         Id = id,
@@ -293,8 +304,8 @@ public class ReferenceUsageControllerTests
                 // Use a separate instance of the context to verify correct data was saved to database
                 using (var context = new ReferencesDbContext(options))
                 {
-                    var service = new ReferencesController(context, index);
-                    var usageService = new ReferenceUsageController(context);
+                    var service = GetReferencesController(context, index);
+                    var usageService = GetReferencesUsageController(context);
                     await usageService.Post(new ReferenceUsage[]
                     {
                             new ReferenceUsage
@@ -341,7 +352,7 @@ public class ReferenceUsageControllerTests
                 var id = Guid.NewGuid();
                 using (var context = new ReferencesDbContext(options))
                 {
-                    var service = new ReferencesController(context, index);
+                    var service = GetReferencesController(context, index);
                     await service.Post(new Reference
                     {
                         Id = id,
@@ -356,8 +367,8 @@ public class ReferenceUsageControllerTests
                 // Use a separate instance of the context to verify correct data was saved to database
                 using (var context = new ReferencesDbContext(options))
                 {
-                    var service = new ReferencesController(context, index);
-                    var usageService = new ReferenceUsageController(context);
+                    var service = GetReferencesController(context, index);
+                    var usageService = GetReferencesUsageController(context);
                     await usageService.Post(new ReferenceUsage
                     {
                         ApplicationId = 1,

@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Linq;
-using Nbic.References.Public.Models;
+using Nbic.References.Core.Models;
 using Xunit;
+using Index = Nbic.References.Infrastructure.Services.Indexing.Index;
 
 namespace Nbic.References.Tests;
 
@@ -10,7 +11,7 @@ public class IndexerTests
     [Fact]
     public void CanIndexAnDocument()
     {
-        using (var index = new Indexer.Index(true))
+        using (var index = new Index(true))
         {
             var newGuid = Guid.Parse("b1df2d4b-e06a-421d-865b-03f3dfdf6913");
             index.AddOrUpdate(new Reference { Id = newGuid, Title = "Creepy" });
@@ -29,7 +30,7 @@ public class IndexerTests
     [Fact]
     public void CanFindReidarElvenReferanseDocument()
     {
-        using (var index = new Indexer.Index(true, true))
+        using (var index = new Index(true, true))
         {
             var referanse = new Reference
             {
@@ -68,7 +69,7 @@ public class IndexerTests
     [Fact]
     public void CanFindHoemDirectReferanseDocument()
     {
-        using (var index = new Indexer.Index(true))
+        using (var index = new Index(true))
         {
             index.ClearIndex();
             var referanse = new Reference
@@ -106,7 +107,7 @@ public class IndexerTests
     [Fact]
     public void CanFindAwholelotofthingsDocument()
     {
-        using (var index = new Indexer.Index(true))
+        using (var index = new Index(true))
         {
             var referanse = new Reference
             {
@@ -144,7 +145,7 @@ public class IndexerTests
     [Fact]
     public void CanFindSubstringsDocument()
     {
-        using (var index = new Indexer.Index(true))
+        using (var index = new Index(true))
         {
             var referanse = new Reference
             {
@@ -207,7 +208,7 @@ public class IndexerTests
     [Fact]
     public void CanFindTheRightReidarElvenReferanseDocument()
     {
-        using (var index = new Indexer.Index(true))
+        using (var index = new Index(true))
         {
             var referanse = new Reference
             {

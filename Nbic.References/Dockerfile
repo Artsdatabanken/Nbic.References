@@ -20,16 +20,15 @@ ENV DbConnectionString="Data Source=references.db"
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 COPY ["Nbic.References/Nbic.References.csproj", "Nbic.References/"]
-COPY ["Nbic.References.Model/Nbic.References.Public.csproj", "Nbic.References.Model/"]
-COPY ["Nbic.Indexer/Nbic.Indexer.csproj", "Nbic.Indexer/"]
-COPY ["Nbic.References.EFCore/Nbic.References.EFCore.csproj", "Nbic.References.EFCore/"]
+COPY ["Nbic.References.Core/Nbic.References.Core.csproj", "Nbic.References.Core/"]
+COPY ["Nbic.References.Infrastructure/Nbic.References.Infrastructure.csproj", "Nbic.References.Infrastructure/"]
 RUN dotnet restore "Nbic.References/Nbic.References.csproj"
 COPY . .
 WORKDIR "/src/Nbic.References"
 RUN dotnet build "Nbic.References.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "Nbic.References.csproj" -c Release -o /app/publish
+RUN dotnet publish "Nbic.References.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 # use port 8000 internally in final build
@@ -39,6 +38,6 @@ ENV ASPNETCORE_URLS="http://+:8000"
 RUN groupadd -r --gid 1007 dockerrunner && useradd -r -g dockerrunner dockerrunner
 WORKDIR /app
 COPY --from=publish /app/publish .
-run mkdir -m 777 /app/Data
+RUN mkdir -m 777 /app/Data
 USER dockerrunner
 ENTRYPOINT ["dotnet", "Nbic.References.dll"]

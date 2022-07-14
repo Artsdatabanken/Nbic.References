@@ -1,5 +1,9 @@
 ﻿// ReSharper disable once StyleCop.SA1634
 // ReSharper disable StyleCop.SA1600
+
+using Nbic.References.Infrastructure.Repositories;
+using Nbic.References.Infrastructure.Services.Indexing;
+
 namespace Nbic.References
 {
     using System;
@@ -27,7 +31,7 @@ namespace Nbic.References
 
     using Swagger;
 
-    using Index = Indexer.Index;
+    using Index = Index;
 
     public class Startup
     {
@@ -112,6 +116,9 @@ namespace Nbic.References
             }
 
             services.AddSingleton(new Index());
+            services.AddScoped<IReferencesRepository, ReferenceRepository>();
+            services.AddScoped<IReferenceUsageRepository, ReferenceUsageRepository>();
+
             services.AddCors(
                 options =>
                     {
@@ -162,7 +169,7 @@ namespace Nbic.References
                         options.RequireHttpsMetadata = false;
                         
                         options.ApiName = apiName;
-
+                        options.RoleClaimType = roleClaim;
                         options.JwtBearerEvents = new JwtBearerEvents
                                                       {
                                                           OnMessageReceived = e =>
