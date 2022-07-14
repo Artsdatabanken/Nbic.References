@@ -169,7 +169,7 @@ namespace Nbic.References
                         options.RequireHttpsMetadata = false;
                         
                         options.ApiName = apiName;
-
+                        options.RoleClaimType = roleClaim;
                         options.JwtBearerEvents = new JwtBearerEvents
                                                       {
                                                           OnMessageReceived = e =>
