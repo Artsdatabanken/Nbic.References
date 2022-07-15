@@ -169,7 +169,6 @@ namespace Nbic.References
                         options.RequireHttpsMetadata = false;
                         
                         options.ApiName = apiName;
-                        options.RoleClaimType = roleClaim;
                         options.JwtBearerEvents = new JwtBearerEvents
                                                       {
                                                           OnMessageReceived = e =>
@@ -194,6 +193,8 @@ namespace Nbic.References
                                                               }
                         };
                     });
+
+            Microsoft.IdentityModel.Logging.IdentityModelEventSource.ShowPII = true;
         }
 
         [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
