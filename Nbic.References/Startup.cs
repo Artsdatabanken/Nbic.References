@@ -248,7 +248,7 @@ namespace Nbic.References
                     Console.WriteLine("Added FileDatabase");
                 }
 
-                services.AddDbContextPool<ReferencesDbContext>(options => options.UseSqlite(dbConnectionString));
+                services.AddDbContext<ReferencesDbContext>(options => options.UseSqlite(dbConnectionString));
                 Console.WriteLine("Added SqliteContext");
             }
         }
@@ -271,7 +271,7 @@ namespace Nbic.References
                 }
             }
 
-            services.AddDbContextPool<ReferencesDbContext>(options => options.UseSqlServer(connectionString));
+            services.AddDbContext<ReferencesDbContext>(options => options.UseSqlServer(connectionString));
             Console.WriteLine("Added SqlServerContext");
         }
 
