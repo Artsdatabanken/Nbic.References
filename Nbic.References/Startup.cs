@@ -54,7 +54,7 @@ namespace Nbic.References
             authAuthorityEndPoint = Configuration.GetValue(
                 "AuthAuthorityEndPoint",
                 "https://demo.identityserver.com/connect/authorize");
-            apiName = Configuration.GetValue("ApiName", "api1");
+            apiName = Configuration.GetValue("ApiName", "api");
 
             provider = Configuration.GetValue("DbProvider", "Sqlite");
             connectionString = Configuration.GetValue("DbConnectionString", "DataSource=:memory:");
@@ -92,7 +92,10 @@ namespace Nbic.References
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -100,7 +103,7 @@ namespace Nbic.References
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddResponseCompression();
-            services.AddControllers();
+            services.AddControllers(options => options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true);
 
             // services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             AddIdentityServerAuthentication(services);
