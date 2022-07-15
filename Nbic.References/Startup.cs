@@ -161,7 +161,7 @@ namespace Nbic.References
                         options.Authority = authAuthority;
                         options.RequireHttpsMetadata = false;
                         
-                        //options.Audience = apiName;
+                        options.Audience = apiName;
                         //options.TokenValidationParameters.ValidAudiences = options.TokenValidationParameters.ValidAudiences.Append("fab4api");
                     }
                     )
