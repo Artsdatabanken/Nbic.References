@@ -54,7 +54,7 @@ namespace Nbic.References
             authAuthorityEndPoint = Configuration.GetValue(
                 "AuthAuthorityEndPoint",
                 "https://demo.identityserver.com/connect/authorize");
-            apiName = Configuration.GetValue("ApiName", "api");
+            apiName = Configuration.GetValue("ApiName", "api1");
 
             provider = Configuration.GetValue("DbProvider", "Sqlite");
             connectionString = Configuration.GetValue("DbConnectionString", "DataSource=:memory:");
@@ -158,7 +158,8 @@ namespace Nbic.References
                         options.Authority = authAuthority;
                         options.RequireHttpsMetadata = false;
                         
-                        options.Audience = apiName;
+                        //options.Audience = apiName;
+                        //options.TokenValidationParameters.ValidAudiences = options.TokenValidationParameters.ValidAudiences.Append("fab4api");
                     }
                     )
                 .AddIdentityServerAuthentication(
@@ -167,7 +168,7 @@ namespace Nbic.References
                     {
                         options.Authority = authAuthority;
                         options.RequireHttpsMetadata = false;
-                        
+
                         options.ApiName = apiName;
                         options.JwtBearerEvents = new JwtBearerEvents
                                                       {
