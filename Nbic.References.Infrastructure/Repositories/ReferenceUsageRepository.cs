@@ -1,61 +1,61 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Nbic.References.Core.Exceptions;
 using Nbic.References.Core.Interfaces.Repositories;
 using Nbic.References.Core.Models;
-using Nbic.References.EFCore;
+using Nbic.References.Infrastructure.Repositories.DbContext;
 
 namespace Nbic.References.Infrastructure.Repositories
 {
     public class ReferenceUsageRepository : Repository<ReferenceUsage>, IReferenceUsageRepository
     {
+        private readonly DbSet<ReferenceUsage> _referenceUsages;
+        private readonly DbSet<Reference> _references;
+
         public ReferenceUsageRepository(ReferencesDbContext dbContext) : base(dbContext)
         {
+            _referenceUsages = _dbContext.Set<ReferenceUsage>();
+            _references = _dbContext.Set<Reference>();
         }
 
         public Task<List<ReferenceUsage>> GetAll(int offset, int limit)
         {
-            return _dbContext.ReferenceUsage.OrderBy(x => x.ReferenceId)
+            return _referenceUsages.OrderBy(x => x.ReferenceId)
                 .Skip(offset).Take(limit).ToListAsync();
         }
 
         public Task<List<ReferenceUsage>> GetFromReferenceId(Guid referenceId)
         {
-            return _dbContext.ReferenceUsage.Where(x => x.ReferenceId == referenceId).ToListAsync();
+            return _referenceUsages.Where(x => x.ReferenceId == referenceId).ToListAsync();
         }
 
         public void DeleteForReference(Guid id)
         {
-            var entity = _dbContext.Reference.SingleOrDefault(x=>x.Id == id);
+            var entity = _references.SingleOrDefault(x=>x.Id == id);
             if (entity == null) throw new NotFoundException("Reference", id);
-            var entities = _dbContext.ReferenceUsage.Where(x => x.ReferenceId == id).ToArray();
+            var entities = _referenceUsages.Where(x => x.ReferenceId == id).ToArray();
             if (entities.Length == 0) return;
 
-            _dbContext.ReferenceUsage.RemoveRange(entities);
+            _referenceUsages.RemoveRange(entities);
             _dbContext.SaveChanges();
         }
 
         public void DeleteUsage(Guid id, int applicationId, Guid userId)
         {
-            var entities = _dbContext.ReferenceUsage.Where(x => x.ReferenceId == id && x.ApplicationId == applicationId && x.UserId == userId).ToArray();
+            var entities = _referenceUsages.Where(x => x.ReferenceId == id && x.ApplicationId == applicationId && x.UserId == userId).ToArray();
             if (entities.Length == 0) throw new NotFoundException();
 
-            _dbContext.ReferenceUsage.RemoveRange(entities);
+            _referenceUsages.RemoveRange(entities);
             _dbContext.SaveChanges();
         }
 
         public async Task Add(ReferenceUsage referenceUsage)
         {
-            var any = _dbContext.ReferenceUsage.Any(
+            var any = _referenceUsages.Any(
                 x => x.ReferenceId == referenceUsage.ReferenceId && x.ApplicationId == referenceUsage.ApplicationId
                                                         && x.UserId == referenceUsage.UserId);
             if (any) return;
             
-            _dbContext.ReferenceUsage.Add(referenceUsage);
+            _referenceUsages.Add(referenceUsage);
 
             await _dbContext.SaveChangesAsync();
         }
@@ -65,11 +65,11 @@ namespace Nbic.References.Infrastructure.Repositories
             var toSave = new List<ReferenceUsage>();
             foreach (var referenceUsage in referenceUsages)
             {
-                if (_dbContext.ReferenceUsage.Any(
+                if (_referenceUsages.Any(
                         x => x.ReferenceId == referenceUsage.ReferenceId && x.ApplicationId == referenceUsage.ApplicationId
                                                                          && x.UserId == referenceUsage.UserId)) continue;
 
-                if (_dbContext.Reference.Any(x => x.Id == referenceUsage.ReferenceId))
+                if (_references.Any(x => x.Id == referenceUsage.ReferenceId))
                 {
                     toSave.Add(referenceUsage);
                 }
@@ -77,7 +77,7 @@ namespace Nbic.References.Infrastructure.Repositories
 
             if (!toSave.Any()) return true;
             
-            _dbContext.ReferenceUsage.AddRange(toSave);
+            _referenceUsages.AddRange(toSave);
 
             await _dbContext.SaveChangesAsync();
 

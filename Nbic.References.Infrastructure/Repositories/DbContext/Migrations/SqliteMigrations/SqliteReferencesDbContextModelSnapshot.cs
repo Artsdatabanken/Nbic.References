@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Nbic.References.EFCore;
+using Nbic.References.Infrastructure.Repositories.DbContext;
 
 namespace Nbic.References.EFCore.Migrations.SqliteMigrations
 {

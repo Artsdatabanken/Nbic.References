@@ -2,6 +2,7 @@
 // ReSharper disable StyleCop.SA1600
 
 using Nbic.References.Infrastructure.Repositories;
+using Nbic.References.Infrastructure.Repositories.DbContext;
 using Nbic.References.Infrastructure.Services.Indexing;
 
 namespace Nbic.References
@@ -230,7 +231,7 @@ namespace Nbic.References
                 {
                     try
                     {
-                        var any = context.Reference.Any();
+                        var any = context.Set<Reference>().Any();
                     }
                     catch (SqliteException ex)
                     {
@@ -262,7 +263,7 @@ namespace Nbic.References
             {
                 try
                 {
-                    var any = context.Reference.Any();
+                    var any = context.Set<Reference>().Any();
                 }
                 catch (Exception ex)
                 {

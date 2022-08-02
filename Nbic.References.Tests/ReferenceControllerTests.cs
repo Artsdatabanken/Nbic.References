@@ -7,6 +7,7 @@ using Nbic.References.Controllers;
 using Nbic.References.Core.Models;
 using Nbic.References.EFCore;
 using Nbic.References.Infrastructure.Repositories;
+using Nbic.References.Infrastructure.Repositories.DbContext;
 using Xunit;
 using Index = Nbic.References.Infrastructure.Services.Indexing.Index;
 
@@ -256,8 +257,8 @@ namespace Nbic.References.Tests
                     // Use a separate instance of the context to verify correct data was saved to database
                     using (var context = new ReferencesDbContext(options))
                     {
-                        Assert.Equal(1, context.Reference.Count());
-                        var it = context.Reference.Include(x => x.ReferenceUsage).First();
+                        Assert.Equal(1, context.Set<Reference>().Count());
+                        var it = context.Set<Reference>().Include(x => x.ReferenceUsage).First();
                         Assert.Equal(it.Year, reference.Year);
                         Assert.Equal(it.Volume, reference.Volume);
                         Assert.Equal(it.ApplicationId, reference.ApplicationId);
@@ -362,7 +363,7 @@ namespace Nbic.References.Tests
                     // Use a separate instance of the context to verify correct data was saved to database
                     using (var context = new ReferencesDbContext(options))
                     {
-                        Assert.Equal(1, context.Reference.Count());
+                        Assert.Equal(1, context.Set<Reference>().Count());
                         var service = GetReferencesController(context, index);
                         var getit = await service.Get(reference.Id).ConfigureAwait(false);
                         var it = getit.Value;
@@ -417,7 +418,7 @@ namespace Nbic.References.Tests
 
                     using (var context = new ReferencesDbContext(options))
                     {
-                        Assert.Equal(1, context.Reference.Count());
+                        Assert.Equal(1, context.Set<Reference>().Count());
                         var service = GetReferencesController(context, index);
                         var getit = await service.Get(reference.Id).ConfigureAwait(false);
                         var it = getit.Value;
@@ -472,8 +473,8 @@ namespace Nbic.References.Tests
                     // Use a separate instance of the context to verify correct data was saved to database
                     using (var context = new ReferencesDbContext(options))
                     {
-                        Assert.Equal(1, context.Reference.Where(x => x.Summary == "Ref1").Count());
-                        Assert.Equal(1, context.Reference.Where(x => x.Summary == "Ref2").Count());
+                        Assert.Equal(1, context.Set<Reference>().Where(x => x.Summary == "Ref1").Count());
+                        Assert.Equal(1, context.Set<Reference>().Where(x => x.Summary == "Ref2").Count());
                     }
                 }
                 finally

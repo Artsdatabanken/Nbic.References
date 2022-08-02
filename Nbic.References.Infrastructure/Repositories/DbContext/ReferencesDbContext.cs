@@ -1,10 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Nbic.References.Core.Models;
-using Index = Nbic.References.Infrastructure.Services.Indexing.Index;
 
-namespace Nbic.References.EFCore
+namespace Nbic.References.Infrastructure.Repositories.DbContext
 {
-    public partial class ReferencesDbContext : DbContext
+    public partial class ReferencesDbContext : Microsoft.EntityFrameworkCore.DbContext
     {
         public ReferencesDbContext()
         {
@@ -15,8 +14,8 @@ namespace Nbic.References.EFCore
         {
         }
 
-        public virtual DbSet<Reference> Reference { get; set; } = null!;
-        public virtual DbSet<ReferenceUsage> ReferenceUsage { get; set; } = null!;
+        //public virtual DbSet<Reference> Reference { get; set; } = null!;
+        //public virtual DbSet<ReferenceUsage> ReferenceUsage { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
