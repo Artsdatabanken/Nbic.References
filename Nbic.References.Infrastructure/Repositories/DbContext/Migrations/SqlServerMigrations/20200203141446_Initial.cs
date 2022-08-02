@@ -1,7 +1,6 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Nbic.References.EFCore.Migrations.SqlServerMigrations
+namespace Nbic.References.Infrastructure.Repositories.DbContext.Migrations.SqlServerMigrations
 {
     public partial class Initial : Migration
     {
