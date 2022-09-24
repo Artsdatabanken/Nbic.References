@@ -46,8 +46,9 @@ public class ReferenceTests
             ReferenceString =
                 "Roth S og Coulianos C-C (2014) A survey of aquatic and terrestrial Heteroptera in northern Europe with special regard to Finnmark, Norway (and adjacent regions). Norwegian Journal of Entomology 61 (1): 99–116.",
             Url = "http://www.entomologi.no/journals/nje/2014-1/pdf/nje-vol61-no1-roth.pdf"
-
         };
-        Assert.Equal("Roth S og Coulianos C-C (2014) A survey of aquatic and terrestrial Heteroptera in northern Europe with special regard to Finnmark, Norway (and adjacent regions). Norwegian Journal of Entomology 61 (1): 99–116. http://www.entomologi.no/journals/nje/2014-1/pdf/nje-vol61-no1-roth.pdf", reference.ReferencePresentation);
+        Assert.Equal(
+            "Roth S og Coulianos C-C (2014) A survey of aquatic and terrestrial Heteroptera in northern Europe with special regard to Finnmark, Norway (and adjacent regions). Norwegian Journal of Entomology 61 (1): 99–116. http://www.entomologi.no/journals/nje/2014-1/pdf/nje-vol61-no1-roth.pdf",
+            reference.ReferencePresentation);
     }
 }

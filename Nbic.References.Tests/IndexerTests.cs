@@ -27,6 +27,7 @@ public class IndexerTests
             Assert.Empty(result.ToArray());
         }
     }
+
     [Fact]
     public void CanFindReidarElvenReferanseDocument()
     {
@@ -45,7 +46,7 @@ public class IndexerTests
                 Volume = null,
                 Pages = null,
                 Bibliography =
-                                        "Elven, R. 1980. Association analysis of moraine vegetation at the glacier Hardangerjökulen, Finse, South Norway. - Norw. J. Bot. 25: 171-191.",
+                    "Elven, R. 1980. Association analysis of moraine vegetation at the glacier Hardangerjökulen, Finse, South Norway. - Norw. J. Bot. 25: 171-191.",
                 Lastname = null,
                 Middlename = null,
                 Firstname = null,
@@ -62,7 +63,6 @@ public class IndexerTests
             Assert.Single(result.ToArray());
             result = index.SearchReference("elven. R.", 0, 10);
             Assert.Single(result.ToArray());
-
         }
     }
 
@@ -90,7 +90,8 @@ public class IndexerTests
                 Firstname = null,
                 Url = null,
                 Keywords = "Fje Veg Ass Dyn NNNd#2",
-                ReferenceString = "Hoem, R. 1980. Association analysis of moraine vegetation at the glacier Hardangerjökulen, Finse, South Norway. - Norw. J. Bot. 25: 171-191.",
+                ReferenceString =
+                    "Hoem, R. 1980. Association analysis of moraine vegetation at the glacier Hardangerjökulen, Finse, South Norway. - Norw. J. Bot. 25: 171-191.",
                 EditDate = DateTime.Parse("2010-04-26T08:09:18.613")
             };
 
@@ -101,9 +102,9 @@ public class IndexerTests
             Assert.Single(result.ToArray());
             result = index.SearchReference("hoem. R.", 0, 10);
             Assert.Single(result.ToArray());
-
         }
     }
+
     [Fact]
     public void CanFindAwholelotofthingsDocument()
     {
@@ -127,7 +128,8 @@ public class IndexerTests
                 Firstname = null,
                 Url = null,
                 Keywords = "Fje Veg Ass Dyn NNNd#2",
-                ReferenceString = "Hojem, R. 1980. Association analysis of moraine vegetation at the glacier Hardangerjökulen, Finse, South Norway. - Norw. J. Bot. 25: 171-191.",
+                ReferenceString =
+                    "Hojem, R. 1980. Association analysis of moraine vegetation at the glacier Hardangerjökulen, Finse, South Norway. - Norw. J. Bot. 25: 171-191.",
                 EditDate = DateTime.Parse("2010-04-26T08:09:18.613")
             };
 
@@ -138,7 +140,6 @@ public class IndexerTests
             Assert.Single(result.ToArray());
             result = index.SearchReference("of things", 0, 10);
             Assert.Single(result.ToArray());
-
         }
     }
 
@@ -165,7 +166,8 @@ public class IndexerTests
                 Firstname = null,
                 Url = null,
                 Keywords = "Fje Veg Ass Dyn NNNd#2",
-                ReferenceString = "Hojtem, R. 1980. Association analysis of moraine vegetation at the glacier Hardangerjökulen, Finse, South Norway. - Norw. J. Bot. 25: 171-191.",
+                ReferenceString =
+                    "Hojtem, R. 1980. Association analysis of moraine vegetation at the glacier Hardangerjökulen, Finse, South Norway. - Norw. J. Bot. 25: 171-191.",
                 EditDate = DateTime.Parse("2010-04-26T08:09:18.613")
             };
             var referanse2 = new Reference
@@ -186,7 +188,8 @@ public class IndexerTests
                 Firstname = null,
                 Url = null,
                 Keywords = "Fje Veg Ass Dyn NNNd#2",
-                ReferenceString = "Hojtem, R. 1980. Association analysis of moraine vegetation at the glacier Hardangerjökulen, Finse, South Norway. - Norw. J. Bot. 25: 171-191.",
+                ReferenceString =
+                    "Hojtem, R. 1980. Association analysis of moraine vegetation at the glacier Hardangerjökulen, Finse, South Norway. - Norw. J. Bot. 25: 171-191.",
                 EditDate = DateTime.Parse("2010-04-26T08:09:18.613")
             };
 
@@ -202,9 +205,9 @@ public class IndexerTests
             Assert.Single(result.ToArray());
             result = index.SearchReference("Tullball ball", 0, 10);
             Assert.Single(result.ToArray());
-
         }
     }
+
     [Fact]
     public void CanFindTheRightReidarElvenReferanseDocument()
     {
@@ -223,7 +226,7 @@ public class IndexerTests
                 Volume = null,
                 Pages = null,
                 Bibliography =
-                                        "Elven, R. 1980. Association analysis of moraine vegetation at the glacier Hardangerjökulen, Finse, South Norway. - Norw. J. Bot. 25: 171-191.",
+                    "Elven, R. 1980. Association analysis of moraine vegetation at the glacier Hardangerjökulen, Finse, South Norway. - Norw. J. Bot. 25: 171-191.",
                 Lastname = null,
                 Middlename = null,
                 Firstname = null,
@@ -264,7 +267,6 @@ public class IndexerTests
             Assert.Equal(2, result.Count());
             result = index.SearchReference("elven 1981", 0, 10);
             Assert.Single(result.ToArray());
-
         }
     }
 }
