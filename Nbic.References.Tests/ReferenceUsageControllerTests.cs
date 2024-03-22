@@ -1,10 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Nbic.References.Controllers;
 using Nbic.References.Core.Models;
-using Nbic.References.EFCore;
 using Nbic.References.Infrastructure.Repositories;
 using Nbic.References.Infrastructure.Repositories.DbContext;
 using Xunit;
@@ -12,26 +13,22 @@ using Index = Nbic.References.Infrastructure.Services.Indexing.Index;
 
 namespace Nbic.References.Tests;
 
-using System.Collections.Generic;
-
-using Microsoft.AspNetCore.Mvc;
-using Index = Index;
-
 public class ReferenceUsageControllerTests
 {
     private static ReferencesController GetReferencesController(ReferencesDbContext context, Index index)
     {
         return new ReferencesController(new ReferenceRepository(context, index));
     }
+
     private static ReferenceUsageController GetReferencesUsageController(ReferencesDbContext context)
     {
         return new ReferenceUsageController(new ReferenceUsageRepository(context));
     }
-    
+
     [Fact]
     public async Task CanPostReferenceAndGetReferenceUsages()
     {
-        GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
+        GetInMemoryDb(out var connection, out var options);
         using (var index = new Index(true, true))
         {
             try
@@ -44,9 +41,9 @@ public class ReferenceUsageControllerTests
                     {
                         Id = id,
                         ReferenceUsage = new List<ReferenceUsage>
-                            {
-                                new ReferenceUsage {ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")}
-                            }
+                        {
+                            new() { ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") }
+                        }
                     }).ConfigureAwait(false);
                 }
 
@@ -57,7 +54,7 @@ public class ReferenceUsageControllerTests
 
                     var count = (await usageService.GetCount().ConfigureAwait(false)).Value;
                     Assert.Equal(1, count);
-                    var all = await usageService.GetAll(0, 10).ConfigureAwait(false);
+                    var all = await usageService.GetAll().ConfigureAwait(false);
                     Assert.Single(all);
                     var them = await usageService.Get(id).ConfigureAwait(false);
                     Assert.Single(them);
@@ -73,10 +70,9 @@ public class ReferenceUsageControllerTests
     [Fact]
     public async Task CanDeleteReferenceIfUsageReferencesIsDeletedFirst()
     {
-        GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
+        GetInMemoryDb(out var connection, out var options);
         using (var index = new Index(true, true))
         {
-
             try
             {
                 var id = Guid.NewGuid();
@@ -87,9 +83,9 @@ public class ReferenceUsageControllerTests
                     {
                         Id = id,
                         ReferenceUsage = new List<ReferenceUsage>
-                            {
-                                new ReferenceUsage {ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")}
-                            }
+                        {
+                            new() { ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") }
+                        }
                     }).ConfigureAwait(false);
                 }
 
@@ -99,7 +95,7 @@ public class ReferenceUsageControllerTests
                     var service = GetReferencesController(context, index);
                     var usageService = GetReferencesUsageController(context);
                     usageService.DeleteAllUsages(id);
-                    var all = await usageService.GetAll(0, 10).ConfigureAwait(false);
+                    var all = await usageService.GetAll().ConfigureAwait(false);
                     Assert.Empty(all);
                     var result = await service.Get(id).ConfigureAwait(false);
                     Assert.Equal(id, result.Value.Id);
@@ -121,10 +117,9 @@ public class ReferenceUsageControllerTests
     [Fact]
     public async Task CanDeleteSingleReferenceUsage()
     {
-        GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
+        GetInMemoryDb(out var connection, out var options);
         using (var index = new Index(true, true))
         {
-
             try
             {
                 var id = Guid.NewGuid();
@@ -135,10 +130,10 @@ public class ReferenceUsageControllerTests
                     {
                         Id = id,
                         ReferenceUsage = new List<ReferenceUsage>
-                            {
-                                new ReferenceUsage {ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")},
-                                new ReferenceUsage {ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")}
-                            }
+                        {
+                            new() { ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") },
+                            new() { ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") }
+                        }
                     }).ConfigureAwait(false);
                 }
 
@@ -148,7 +143,7 @@ public class ReferenceUsageControllerTests
                     var service = GetReferencesController(context, index);
                     var usageService = GetReferencesUsageController(context);
                     usageService.DeleteUsage(id, 1, new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3"));
-                    var all = await usageService.GetAll(0, 10).ConfigureAwait(false);
+                    var all = await usageService.GetAll().ConfigureAwait(false);
                     Assert.Single(all);
                     var result = await service.Get(id).ConfigureAwait(false);
                     Assert.Equal(id, result.Value.Id);
@@ -168,7 +163,7 @@ public class ReferenceUsageControllerTests
     [Fact]
     public async Task CanAddSingleReferenceUsage()
     {
-        GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
+        GetInMemoryDb(out var connection, out var options);
 
         using var index = new Index(true, true);
         try
@@ -177,7 +172,15 @@ public class ReferenceUsageControllerTests
             using (var context = new ReferencesDbContext(options))
             {
                 var service = GetReferencesController(context, index);
-                await service.Post(new Reference { Id = id, ReferenceUsage = new List<ReferenceUsage> { new ReferenceUsage { ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") }, new ReferenceUsage { ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") } } }).ConfigureAwait(false);
+                await service.Post(new Reference
+                {
+                    Id = id,
+                    ReferenceUsage = new List<ReferenceUsage>
+                    {
+                        new() { ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") },
+                        new() { ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") }
+                    }
+                }).ConfigureAwait(false);
             }
 
             // Use a separate instance of the context to verify correct data was saved to database
@@ -185,8 +188,12 @@ public class ReferenceUsageControllerTests
             {
                 var service = GetReferencesController(context, index);
                 var usageService = GetReferencesUsageController(context);
-                await usageService.Post(new ReferenceUsage { ApplicationId = 3, ReferenceId = id, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") }).ConfigureAwait(false);
-                var all = await usageService.GetAll(0, 10).ConfigureAwait(false);
+                await usageService.Post(new ReferenceUsage
+                    {
+                        ApplicationId = 3, ReferenceId = id, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")
+                    })
+                    .ConfigureAwait(false);
+                var all = await usageService.GetAll().ConfigureAwait(false);
                 Assert.Equal(3, all.Count);
                 var result = await service.Get(id).ConfigureAwait(false);
                 Assert.Equal(id, result.Value.Id);
@@ -202,7 +209,7 @@ public class ReferenceUsageControllerTests
     [Fact]
     public async Task CanAddDoubleReferenceUsage()
     {
-        GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
+        GetInMemoryDb(out var connection, out var options);
 
         using (var index = new Index(true, true))
         {
@@ -217,19 +224,19 @@ public class ReferenceUsageControllerTests
                     {
                         Id = id,
                         ReferenceUsage = new List<ReferenceUsage>
-                            {
-                                new ReferenceUsage {ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")},
-                                new ReferenceUsage {ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")}
-                            }
+                        {
+                            new() { ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") },
+                            new() { ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") }
+                        }
                     }).ConfigureAwait(false);
                     await service.Post(new Reference
                     {
                         Id = id2,
                         ReferenceUsage = new List<ReferenceUsage>
-                            {
-                                new ReferenceUsage {ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")},
-                                new ReferenceUsage {ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")}
-                            }
+                        {
+                            new() { ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") },
+                            new() { ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") }
+                        }
                     }).ConfigureAwait(false);
                 }
 
@@ -238,20 +245,20 @@ public class ReferenceUsageControllerTests
                 {
                     var service = GetReferencesController(context, index);
                     var usageService = GetReferencesUsageController(context);
-                    await usageService.Post(new ReferenceUsage[]
+                    await usageService.Post(new[]
                     {
-                            new ReferenceUsage
-                            {
-                                ApplicationId = 3, ReferenceId = id,
-                                UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")
-                            },
-                            new ReferenceUsage
-                            {
-                                ApplicationId = 3, ReferenceId = id2,
-                                UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")
-                            }
+                        new()
+                        {
+                            ApplicationId = 3, ReferenceId = id,
+                            UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")
+                        },
+                        new ReferenceUsage
+                        {
+                            ApplicationId = 3, ReferenceId = id2,
+                            UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")
+                        }
                     }).ConfigureAwait(false);
-                    var all = await usageService.GetAll(0, 10).ConfigureAwait(false);
+                    var all = await usageService.GetAll().ConfigureAwait(false);
                     Assert.Equal(6, all.Count);
                     var result = await service.Get(id).ConfigureAwait(false);
                     Assert.Equal(id, result.Value.Id);
@@ -267,10 +274,11 @@ public class ReferenceUsageControllerTests
             }
         }
     }
+
     [Fact]
     public async Task AddReferenceUsageToNotExistingReferenceShouldNotFail()
     {
-        GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
+        GetInMemoryDb(out var connection, out var options);
 
         using (var index = new Index(true, true))
         {
@@ -286,19 +294,19 @@ public class ReferenceUsageControllerTests
                     {
                         Id = id,
                         ReferenceUsage = new List<ReferenceUsage>
-                            {
-                                new ReferenceUsage {ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")},
-                                new ReferenceUsage {ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")}
-                            }
+                        {
+                            new() { ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") },
+                            new() { ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") }
+                        }
                     }).ConfigureAwait(false);
                     await service.Post(new Reference
                     {
                         Id = id2,
                         ReferenceUsage = new List<ReferenceUsage>
-                            {
-                                new ReferenceUsage {ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")},
-                                new ReferenceUsage {ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")}
-                            }
+                        {
+                            new() { ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") },
+                            new() { ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") }
+                        }
                     }).ConfigureAwait(false);
                 }
 
@@ -307,25 +315,25 @@ public class ReferenceUsageControllerTests
                 {
                     var service = GetReferencesController(context, index);
                     var usageService = GetReferencesUsageController(context);
-                    await usageService.Post(new ReferenceUsage[]
+                    await usageService.Post(new[]
                     {
-                            new ReferenceUsage
-                            {
-                                ApplicationId = 3, ReferenceId = id,
-                                UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")
-                            },
-                            new ReferenceUsage
-                            {
-                                ApplicationId = 3, ReferenceId = id2,
-                                UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")
-                            },
-                            new ReferenceUsage
-                            {
-                                ApplicationId = 3, ReferenceId = id3,
-                                UserId = new Guid("3ed89222-de9a-4df3-9e95-87f7fcac67a3")
-                            }
+                        new()
+                        {
+                            ApplicationId = 3, ReferenceId = id,
+                            UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")
+                        },
+                        new ReferenceUsage
+                        {
+                            ApplicationId = 3, ReferenceId = id2,
+                            UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")
+                        },
+                        new ReferenceUsage
+                        {
+                            ApplicationId = 3, ReferenceId = id3,
+                            UserId = new Guid("3ed89222-de9a-4df3-9e95-87f7fcac67a3")
+                        }
                     }).ConfigureAwait(false);
-                    var all = await usageService.GetAll(0, 10).ConfigureAwait(false);
+                    var all = await usageService.GetAll().ConfigureAwait(false);
                     Assert.Equal(6, all.Count);
                     var result = await service.Get(id).ConfigureAwait(false);
                     Assert.Equal(id, result.Value.Id);
@@ -341,13 +349,13 @@ public class ReferenceUsageControllerTests
             }
         }
     }
+
     [Fact]
     public async Task CanAddSingleDuplicateReferenceUsage()
     {
-        GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options);
+        GetInMemoryDb(out var connection, out var options);
         using (var index = new Index(true, true))
         {
-
             try
             {
                 var id = Guid.NewGuid();
@@ -358,10 +366,10 @@ public class ReferenceUsageControllerTests
                     {
                         Id = id,
                         ReferenceUsage = new List<ReferenceUsage>
-                            {
-                                new ReferenceUsage {ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")},
-                                new ReferenceUsage {ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")}
-                            }
+                        {
+                            new() { ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") },
+                            new() { ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") }
+                        }
                     }).ConfigureAwait(false);
                 }
 
@@ -376,7 +384,7 @@ public class ReferenceUsageControllerTests
                         ReferenceId = id,
                         UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")
                     }).ConfigureAwait(false);
-                    var all = await usageService.GetAll(0, 10).ConfigureAwait(false);
+                    var all = await usageService.GetAll().ConfigureAwait(false);
                     Assert.Equal(2, all.Count);
                     var result = await service.Get(id).ConfigureAwait(false);
                     Assert.Equal(id, result.Value.Id);
@@ -390,7 +398,8 @@ public class ReferenceUsageControllerTests
         }
     }
 
-    private static void GetInMemoryDb(out SqliteConnection connection, out DbContextOptions<ReferencesDbContext> options)
+    private static void GetInMemoryDb(out SqliteConnection connection,
+        out DbContextOptions<ReferencesDbContext> options)
     {
         // In-memory database only exists while the connection is open
         connection = new SqliteConnection("DataSource=:memory:");
