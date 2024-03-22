@@ -1,6 +1,7 @@
 ﻿// ReSharper disable once StyleCop.SA1634
 // ReSharper disable StyleCop.SA1600
 
+using EntityGraphQL.AspNet;
 using Nbic.References.Infrastructure.Repositories;
 using Nbic.References.Infrastructure.Repositories.DbContext;
 using Nbic.References.Infrastructure.Services.Indexing;
@@ -96,6 +97,7 @@ namespace Nbic.References
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapGraphQL<ReferencesDbContext>();
             });
         }
 
@@ -119,6 +121,7 @@ namespace Nbic.References
                     break;
             }
 
+            services.AddGraphQLSchema<ReferencesDbContext>();
             services.AddSingleton(new Index());
             services.AddScoped<IReferencesRepository, ReferenceRepository>();
             services.AddScoped<IReferenceUsageRepository, ReferenceUsageRepository>();

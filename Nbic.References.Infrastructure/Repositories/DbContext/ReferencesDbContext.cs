@@ -14,8 +14,9 @@ namespace Nbic.References.Infrastructure.Repositories.DbContext
         {
         }
 
-        //public virtual DbSet<Reference> Reference { get; set; } = null!;
-        //public virtual DbSet<ReferenceUsage> ReferenceUsage { get; set; } = null!;
+        // has to be defined for entityGraph - to discover
+        public virtual DbSet<Reference> Reference { get; set; } = null!;
+        public virtual DbSet<ReferenceUsage> ReferenceUsage { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

@@ -1,5 +1,8 @@
+using System.ComponentModel;
+
 namespace Nbic.References.Core.Models;
 
+[Description("DublinCore reference with some extra properties")]
 public partial class Reference
 {
     public Reference()
@@ -10,6 +13,7 @@ public partial class Reference
     public Guid Id { get; set; }
     public int? ApplicationId { get; set; }
     public Guid UserId { get; set; }
+    [Description("The Author connected with the reference")]
     public string? Author { get; set; }
     public string? Year { get; set; }
     public string? Title { get; set; }
