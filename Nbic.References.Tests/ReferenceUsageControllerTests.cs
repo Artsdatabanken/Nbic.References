@@ -45,7 +45,7 @@ public class ReferenceUsageControllerTests
                     {
                         new() {ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")}
                     }
-                }).ConfigureAwait(false);
+                });
             }
 
             // Use a separate instance of the context to verify correct data was saved to database
@@ -53,11 +53,11 @@ public class ReferenceUsageControllerTests
             {
                 var usageService = GetReferencesUsageController(context);
 
-                var count = (await usageService.GetCount().ConfigureAwait(false)).Value;
+                var count = (await usageService.GetCount()).Value;
                 Assert.Equal(1, count);
-                var all = await usageService.GetAll().ConfigureAwait(false);
+                var all = await usageService.GetAll();
                 Assert.Single(all);
-                var them = await usageService.Get(id).ConfigureAwait(false);
+                var them = await usageService.Get(id);
                 Assert.Single(them);
             }
         }
@@ -85,7 +85,7 @@ public class ReferenceUsageControllerTests
                     {
                         new() {ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")}
                     }
-                }).ConfigureAwait(false);
+                });
             }
 
             // Use a separate instance of the context to verify correct data was saved to database
@@ -94,15 +94,15 @@ public class ReferenceUsageControllerTests
                 var service = GetReferencesController(context, index);
                 var usageService = GetReferencesUsageController(context);
                 usageService.DeleteAllUsages(id);
-                var all = await usageService.GetAll().ConfigureAwait(false);
+                var all = await usageService.GetAll();
                 Assert.Empty(all);
-                var result = await service.Get(id).ConfigureAwait(false);
+                var result = await service.Get(id);
                 Assert.Equal(id, result.Value.Id);
 
                 // now delete reference
                 service.Delete(id);
                 // and should not be found
-                var result2 = await service.Get(id).ConfigureAwait(false);
+                var result2 = await service.Get(id);
                 Assert.IsType<NotFoundResult>(result2.Result);
             }
         }
@@ -131,7 +131,7 @@ public class ReferenceUsageControllerTests
                         new() {ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")},
                         new() {ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")}
                     }
-                }).ConfigureAwait(false);
+                });
             }
 
             // Use a separate instance of the context to verify correct data was saved to database
@@ -140,13 +140,13 @@ public class ReferenceUsageControllerTests
                 var service = GetReferencesController(context, index);
                 var usageService = GetReferencesUsageController(context);
                 usageService.DeleteUsage(id, 1, new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3"));
-                var all = await usageService.GetAll().ConfigureAwait(false);
+                var all = await usageService.GetAll();
                 Assert.Single(all);
-                var result = await service.Get(id).ConfigureAwait(false);
+                var result = await service.Get(id);
                 Assert.Equal(id, result.Value.Id);
 
                 // and should not be found
-                var result2 = await service.Get(id).ConfigureAwait(false);
+                var result2 = await service.Get(id);
                 Assert.Single(result2.Value.ReferenceUsage);
             }
         }
@@ -168,7 +168,7 @@ public class ReferenceUsageControllerTests
             await using (var context = new ReferencesDbContext(options))
             {
                 var service = GetReferencesController(context, index);
-                await service.Post(new Reference { Id = id, ReferenceUsage = new List<ReferenceUsage> { new() { ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") }, new() { ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") } } }).ConfigureAwait(false);
+                await service.Post(new Reference { Id = id, ReferenceUsage = new List<ReferenceUsage> { new() { ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") }, new() { ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") } } });
             }
 
             // Use a separate instance of the context to verify correct data was saved to database
@@ -176,10 +176,10 @@ public class ReferenceUsageControllerTests
             {
                 var service = GetReferencesController(context, index);
                 var usageService = GetReferencesUsageController(context);
-                await usageService.Post(new ReferenceUsage { ApplicationId = 3, ReferenceId = id, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") }).ConfigureAwait(false);
-                var all = await usageService.GetAll().ConfigureAwait(false);
+                await usageService.Post(new ReferenceUsage { ApplicationId = 3, ReferenceId = id, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") });
+                var all = await usageService.GetAll();
                 Assert.Equal(3, all.Count);
-                var result = await service.Get(id).ConfigureAwait(false);
+                var result = await service.Get(id);
                 Assert.Equal(id, result.Value.Id);
                 Assert.Equal(3, result.Value.ReferenceUsage.Count);
             }
@@ -211,7 +211,7 @@ public class ReferenceUsageControllerTests
                         new() {ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")},
                         new() {ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")}
                     }
-                }).ConfigureAwait(false);
+                });
                 await service.Post(new Reference
                 {
                     Id = id2,
@@ -220,7 +220,7 @@ public class ReferenceUsageControllerTests
                         new() {ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")},
                         new() {ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")}
                     }
-                }).ConfigureAwait(false);
+                });
             }
 
             // Use a separate instance of the context to verify correct data was saved to database
@@ -239,13 +239,13 @@ public class ReferenceUsageControllerTests
                         ApplicationId = 3, ReferenceId = id2,
                         UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")
                     }
-                ]).ConfigureAwait(false);
-                var all = await usageService.GetAll().ConfigureAwait(false);
+                ]);
+                var all = await usageService.GetAll();
                 Assert.Equal(6, all.Count);
-                var result = await service.Get(id).ConfigureAwait(false);
+                var result = await service.Get(id);
                 Assert.Equal(id, result.Value.Id);
                 Assert.Equal(3, result.Value.ReferenceUsage.Count);
-                var result2 = await service.Get(id2).ConfigureAwait(false);
+                var result2 = await service.Get(id2);
                 Assert.Equal(id2, result2.Value.Id);
                 Assert.Equal(3, result2.Value.ReferenceUsage.Count);
             }
@@ -277,7 +277,7 @@ public class ReferenceUsageControllerTests
                         new() {ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")},
                         new() {ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")}
                     }
-                }).ConfigureAwait(false);
+                });
                 await service.Post(new Reference
                 {
                     Id = id2,
@@ -286,7 +286,7 @@ public class ReferenceUsageControllerTests
                         new() {ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")},
                         new() {ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")}
                     }
-                }).ConfigureAwait(false);
+                });
             }
 
             // Use a separate instance of the context to verify correct data was saved to database
@@ -310,13 +310,13 @@ public class ReferenceUsageControllerTests
                         ApplicationId = 3, ReferenceId = id3,
                         UserId = new Guid("3ed89222-de9a-4df3-9e95-87f7fcac67a3")
                     }
-                ]).ConfigureAwait(false);
-                var all = await usageService.GetAll().ConfigureAwait(false);
+                ]);
+                var all = await usageService.GetAll();
                 Assert.Equal(6, all.Count);
-                var result = await service.Get(id).ConfigureAwait(false);
+                var result = await service.Get(id);
                 Assert.Equal(id, result.Value.Id);
                 Assert.Equal(3, result.Value.ReferenceUsage.Count);
-                var result2 = await service.Get(id2).ConfigureAwait(false);
+                var result2 = await service.Get(id2);
                 Assert.Equal(id2, result2.Value.Id);
                 Assert.Equal(3, result2.Value.ReferenceUsage.Count);
             }
@@ -345,7 +345,7 @@ public class ReferenceUsageControllerTests
                         new() {ApplicationId = 1, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")},
                         new() {ApplicationId = 2, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")}
                     }
-                }).ConfigureAwait(false);
+                });
             }
 
             // Use a separate instance of the context to verify correct data was saved to database
@@ -358,10 +358,10 @@ public class ReferenceUsageControllerTests
                     ApplicationId = 1,
                     ReferenceId = id,
                     UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")
-                }).ConfigureAwait(false);
+                });
                 var all = await usageService.GetAll();
                 Assert.Equal(2, all.Count);
-                var result = await service.Get(id).ConfigureAwait(false);
+                var result = await service.Get(id);
                 Assert.Equal(id, result.Value.Id);
                 Assert.Equal(2, result.Value.ReferenceUsage.Count);
             }
