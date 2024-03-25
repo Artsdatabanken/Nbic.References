@@ -359,7 +359,7 @@ public class ReferenceUsageControllerTests
                     ReferenceId = id,
                     UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")
                 }).ConfigureAwait(false);
-                var all = await usageService.GetAll().ConfigureAwait(false);
+                var all = await usageService.GetAll();
                 Assert.Equal(2, all.Count);
                 var result = await service.Get(id).ConfigureAwait(false);
                 Assert.Equal(id, result.Value.Id);

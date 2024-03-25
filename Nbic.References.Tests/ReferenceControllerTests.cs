@@ -27,18 +27,18 @@ namespace Nbic.References.Tests
                 await using (var context = new ReferencesDbContext(options))
                 {
                     var service = GetReferencesController(context, index);
-                    await service.Post(new Reference {Id = id}).ConfigureAwait(false);
+                    await service.Post(new Reference {Id = id});
                 }
 
                 // Use a separate instance of the context to verify correct data was saved to database
                 await using (var context = new ReferencesDbContext(options))
                 {
                     var service = GetReferencesController(context, index);
-                    var result = await service.Get(id).ConfigureAwait(false);
+                    var result = await service.Get(id);
                     Assert.Equal(id, result.Value.Id);
-                    var count = (await service.GetCount().ConfigureAwait(false)).Value;
+                    var count = (await service.GetCount()).Value;
                     Assert.Equal(1, count);
-                    var all = await service.GetAll().ConfigureAwait(false);
+                    var all = await service.GetAll();
                     Assert.Single(all.ToArray());
                 }
             }
@@ -64,7 +64,7 @@ namespace Nbic.References.Tests
                 await using (var context = new ReferencesDbContext(options))
                 {
                     var service = GetReferencesController(context, index);
-                    await service.Post(new Reference {Id = id}).ConfigureAwait(false);
+                    await service.Post(new Reference {Id = id});
                 }
 
                 await using (var context = new ReferencesDbContext(options))
@@ -77,11 +77,11 @@ namespace Nbic.References.Tests
                 await using (var context = new ReferencesDbContext(options))
                 {
                     var service = GetReferencesController(context, index);
-                    var result = await service.Get(id).ConfigureAwait(false);
+                    var result = await service.Get(id);
                     Assert.Equal(id, result.Value.Id);
-                    var count = (await service.GetCount().ConfigureAwait(false)).Value;
+                    var count = (await service.GetCount()).Value;
                     Assert.Equal(1, count);
-                    var all = await service.GetAll().ConfigureAwait(false);
+                    var all = await service.GetAll();
                     Assert.Single(all.ToArray());
                 }
             }
@@ -102,18 +102,18 @@ namespace Nbic.References.Tests
                 await using (var context = new ReferencesDbContext(options))
                 {
                     var service = GetReferencesController(context, index);
-                    await service.Post(new Reference {Id = id}).ConfigureAwait(false);
+                    await service.Post(new Reference {Id = id});
                 }
 
                 // Use a separate instance of the context to verify correct data was saved to database
                 await using (var context = new ReferencesDbContext(options))
                 {
                     var service = GetReferencesController(context, index);
-                    var result = await service.Get(id).ConfigureAwait(false);
+                    var result = await service.Get(id);
                     Assert.Equal(id, result.Value.Id);
                     service.Delete(id);
 
-                    var all = await service.GetAll().ConfigureAwait(false);
+                    var all = await service.GetAll();
                     Assert.Empty(all.ToArray());
                 }
             }
@@ -139,19 +139,19 @@ namespace Nbic.References.Tests
                     {
                         Id = id,
                         ReferenceUsage = new List<ReferenceUsage> {new() {ApplicationId = 1, UserId = new Guid()}}
-                    }).ConfigureAwait(false);
+                    });
                 }
 
                 // Use a separate instance of the context to verify correct data was saved to database
                 await using (var context = new ReferencesDbContext(options))
                 {
                     var service = GetReferencesController(context, index);
-                    var result = await service.Get(id).ConfigureAwait(false);
+                    var result = await service.Get(id);
                     Assert.Equal(id, result.Value.Id);
 
                     Assert.Throws<InvalidOperationException>(() => service.Delete(id));
 
-                    var all = await service.GetAll().ConfigureAwait(false);
+                    var all = await service.GetAll();
                     Assert.Single(all.ToArray());
                 }
             }
@@ -177,19 +177,19 @@ namespace Nbic.References.Tests
                     {
                         Id = id,
                         ReferenceUsage = new List<ReferenceUsage> {new() {ApplicationId = 1, UserId = new Guid()}}
-                    }).ConfigureAwait(false);
+                    });
                 }
 
                 // Use a separate instance of the context to verify correct data was saved to database
                 await using (var context = new ReferencesDbContext(options))
                 {
                     var service = GetReferencesController(context, index);
-                    var result = await service.Get(id).ConfigureAwait(false);
+                    var result = await service.Get(id);
                     Assert.Equal(id, result.Value.Id);
 
                     Assert.Throws<InvalidOperationException>(() => service.Delete(id));
 
-                    var all = await service.GetAll().ConfigureAwait(false);
+                    var all = await service.GetAll();
                     Assert.Single(all.ToArray());
                 }
             }
@@ -239,7 +239,7 @@ namespace Nbic.References.Tests
                 await using (var context = new ReferencesDbContext(options))
                 {
                     var service = GetReferencesController(context, index);
-                    await service.Post(reference).ConfigureAwait(false);
+                    await service.Post(reference);
                 }
 
                 // Use a separate instance of the context to verify correct data was saved to database
@@ -313,7 +313,7 @@ namespace Nbic.References.Tests
                 await using (var context = new ReferencesDbContext(options))
                 {
                     var service = GetReferencesController(context, index);
-                    await service.Post(reference).ConfigureAwait(false);
+                    await service.Post(reference);
                 }
 
                 var replacementReference = new Reference
@@ -343,7 +343,7 @@ namespace Nbic.References.Tests
                 await using (var context = new ReferencesDbContext(options))
                 {
                     var service = GetReferencesController(context, index);
-                    await service.Put(reference.Id, replacementReference).ConfigureAwait(false);
+                    await service.Put(reference.Id, replacementReference);
                 }
 
                 // Use a separate instance of the context to verify correct data was saved to database
@@ -351,7 +351,7 @@ namespace Nbic.References.Tests
                 {
                     Assert.Equal(1, context.Reference.Count());
                     var service = GetReferencesController(context, index);
-                    var getit = await service.Get(reference.Id).ConfigureAwait(false);
+                    var getit = await service.Get(reference.Id);
                     var it = getit.Value;
 
                     Assert.Equal(it.Year, replacementReference.Year);
@@ -399,14 +399,14 @@ namespace Nbic.References.Tests
                 await using (var context = new ReferencesDbContext(options))
                 {
                     var service = GetReferencesController(context, index);
-                    await service.Put(reference.Id, replacementReference2).ConfigureAwait(false);
+                    await service.Put(reference.Id, replacementReference2);
                 }
 
                 await using (var context = new ReferencesDbContext(options))
                 {
                     Assert.Equal(1, context.Reference.Count());
                     var service = GetReferencesController(context, index);
-                    var getit = await service.Get(reference.Id).ConfigureAwait(false);
+                    var getit = await service.Get(reference.Id);
                     var it = getit.Value;
 
                     Assert.Equal(it.Year, replacementReference2.Year);
@@ -438,7 +438,7 @@ namespace Nbic.References.Tests
         }
 
         [Fact]
-        public void CanPostBulkReferences()
+        public async void CanPostBulkReferences()
         {
             GetInMemoryDb(out var connection, out var options);
 
@@ -447,14 +447,14 @@ namespace Nbic.References.Tests
             {
 
                 // Run the test against one instance of the context
-                using (var context = new ReferencesDbContext(options))
+                await using (var context = new ReferencesDbContext(options))
                 {
                     var service = GetReferencesController(context, index);
-                    service.PostMany([new Reference {Summary = "Ref1"}, new Reference {Summary = "Ref2"}]);
+                    await service.PostMany([new Reference {Summary = "Ref1"}, new Reference {Summary = "Ref2"}]);
                 }
 
                 // Use a separate instance of the context to verify correct data was saved to database
-                using (var context = new ReferencesDbContext(options))
+                await using (var context = new ReferencesDbContext(options))
                 {
                     Assert.Equal(1, context.Reference.Count(x => x.Summary == "Ref1"));
                     Assert.Equal(1, context.Reference.Count(x => x.Summary == "Ref2"));
@@ -498,10 +498,10 @@ namespace Nbic.References.Tests
                 await using var context = new ReferencesDbContext(options);
                 var id = Guid.NewGuid();
                 var service = GetReferencesController(context, index);
-                await service.Post(new Reference {Id = id}).ConfigureAwait(false);
+                await service.Post(new Reference {Id = id});
                 await Assert
                     .ThrowsAsync<InvalidOperationException>(() =>
-                        service.Post(new Reference {Id = id, Summary = "Ref1"})).ConfigureAwait(false);
+                        service.Post(new Reference {Id = id, Summary = "Ref1"}));
             }
             finally
             {
