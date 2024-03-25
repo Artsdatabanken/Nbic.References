@@ -16,6 +16,7 @@ ENV WriteAccessRole="my_write_access_role"
 ENV SwaggerClientId="implicit"
 ENV DbProvider=Sqlite
 ENV DbConnectionString="Data Source=references.db"
+ENV ApplicationInsights__ConnectionString=""
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src

@@ -1,6 +1,7 @@
 ﻿// ReSharper disable once StyleCop.SA1634
 // ReSharper disable StyleCop.SA1600
 
+using Microsoft.ApplicationInsights;
 using Nbic.References.Infrastructure.Repositories;
 using Nbic.References.Infrastructure.Repositories.DbContext;
 using Nbic.References.Infrastructure.Services.Indexing;
@@ -30,6 +31,8 @@ using RobotsTxt;
 using Swagger;
 
 using Index = Index;
+using Microsoft.ApplicationInsights.Extensibility;
+using Middleware;
 
 public class Startup
 {
@@ -100,6 +103,9 @@ public class Startup
     [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
     public void ConfigureServices(IServiceCollection services)
     {
+        services.AddApplicationInsightsTelemetry();
+        services.AddSingleton<ITelemetryInitializer, FilterHealthchecksTelemetryInitializer>();
+
         services.AddResponseCompression();
         services.AddControllers(options => options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true);
 
@@ -185,7 +191,7 @@ public class Startup
                         },
                         OnAuthenticationFailed = e =>
                         {
-                            // _logger.LogTrace("JWT: authentication failed");
+                            logger.LogWarning("JWT: authentication failed");
                             return Task.CompletedTask;
                         },
                         OnChallenge = e =>
@@ -324,6 +330,7 @@ public class Startup
                 // c.OAuthAdditionalQueryStringParams(new { foo = "bar" });
                 c.OAuthUseBasicAuthenticationWithAccessCodeGrant();
                 c.RoutePrefix = string.Empty;
+                c.DocumentTitle = "Nbic Reference API - swagger documentation";
             });
     }
 }

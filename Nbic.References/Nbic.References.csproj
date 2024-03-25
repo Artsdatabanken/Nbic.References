@@ -5,9 +5,11 @@
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <UserSecretsId>d1a9df1e-a712-4a31-80a5-eb5557a1f6ee</UserSecretsId>
     <AssemblyName>Nbic.References</AssemblyName>
+    <ApplicationInsightsResourceId>/subscriptions/2e1858b1-de46-4865-a290-c1d54976a10f/resourceGroups/adb-test-nbicreferenceapi-rg/providers/microsoft.insights/components/adb-test-nbicreferenceapi-ai</ApplicationInsightsResourceId>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="3.0.1" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="8.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
