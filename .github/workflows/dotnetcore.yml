@@ -20,7 +20,15 @@ jobs:
     - name: Build with dotnet
       run: dotnet build --configuration Release
     - name: Run tests
-      run: dotnet test Nbic.References.Tests/Nbic.References.Tests.csproj -- MaxCpuCount=1
+      run: dotnet test --no-restore --verbosity normal --logger "trx;LogFileName=test-results.trx" Nbic.References.Tests/Nbic.References.Tests.csproj -- MaxCpuCount=1 || True
+    - name: Test Report
+      uses: dorny/test-reporter@v1
+      if: always()
+      with:
+        name: DotNET Tests
+        path: "**/test-results.trx"
+        reporter: dotnet-trx
+        fail-on-error: true
     - name: Login to Docker Hub
       uses: docker/login-action@v3
       with:
@@ -32,7 +40,7 @@ jobs:
       uses: docker/build-push-action@v5
 #      if: github.event.pull_request.merged == 'true' && ${{ github.actor != 'dependabot[bot]' }}
       with:
-        context: ./src
+#        context: ./src
         file: ./Nbic.References/Dockerfile
         tags: artsdatabanken/nbicreferences:latest
         push: true
