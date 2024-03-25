@@ -1,110 +1,106 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
-namespace Nbic.References.Controllers
+namespace Nbic.References.Controllers;
+
+using Microsoft.AspNetCore.Authorization;
+
+[Route("api/[controller]")]
+[ApiController]
+[SwaggerTag("Read, add or delete ReferencesUsages")]
+public class ReferenceUsageController : ControllerBase
 {
-    using Microsoft.AspNetCore.Authorization;
+    private readonly IReferenceUsageRepository _referenceUsageRepository;
 
-    using EFCore;
-
-    [Route("api/[controller]")]
-    [ApiController]
-    [SwaggerTag("Read, add or delete ReferencesUsages")]
-    public class ReferenceUsageController : ControllerBase
+    public ReferenceUsageController(IReferenceUsageRepository referenceUsageRepository)
     {
-        private readonly IReferenceUsageRepository _referenceUsageRepository;
+        _referenceUsageRepository = referenceUsageRepository;
+    }
 
-        public ReferenceUsageController(IReferenceUsageRepository referenceUsageRepository)
-        {
-            _referenceUsageRepository = referenceUsageRepository;
-        }
+    [HttpGet]
+    public async Task<List<ReferenceUsage>> GetAll(int offset = 0, int limit = 10)
+    {
+        return await _referenceUsageRepository.GetAll(offset, limit);
+    }
+    [HttpGet]
+    [Route("Reference/{id:guid}")]
+    public async Task<List<ReferenceUsage>> Get(Guid id)
+    {
+        return await _referenceUsageRepository.GetFromReferenceId(id);
+    }
 
-        [HttpGet]
-        public async Task<List<ReferenceUsage>> GetAll(int offset = 0, int limit = 10)
-        {
-            return await _referenceUsageRepository.GetAll(offset, limit);
-        }
-        [HttpGet]
-        [Route("Reference/{id}")]
-        public async Task<List<ReferenceUsage>> Get(Guid id)
-        {
-            return await _referenceUsageRepository.GetFromReferenceId(id);
-        }
+    [HttpGet]
+    [Route("Count")]
+    public async Task<ActionResult<int>> GetCount()
+    {
+        return await _referenceUsageRepository.CountAsync();
+    }
 
-        [HttpGet]
-        [Route("Count")]
-        public async Task<ActionResult<int>> GetCount()
+    /// <summary>
+    /// Delete Usage for Reference
+    /// </summary>
+    /// <param name="id">Reference Id</param>
+    /// <returns></returns>
+    [Authorize("WriteAccess")]
+    [HttpDelete("{id:guid}")]
+    [ProducesResponseType(404)]
+    public Microsoft.AspNetCore.Mvc.ActionResult DeleteAllUsages(Guid id)
+    {
+        try
         {
-            return await _referenceUsageRepository.CountAsync();
+            _referenceUsageRepository.DeleteForReference(id);
         }
-
-        /// <summary>
-        /// Delete Usage for Reference
-        /// </summary>
-        /// <param name="id">Reference Id</param>
-        /// <returns></returns>
-        [Authorize("WriteAccess")]
-        [HttpDelete("{id}")]
-        [ProducesResponseType(404)]
-        public Microsoft.AspNetCore.Mvc.ActionResult DeleteAllUsages(Guid id)
+        catch (NotFoundException e)
         {
-            try
-            {
-                _referenceUsageRepository.DeleteForReference(id);
-            }
-            catch (NotFoundException e)
-            {
-                return NotFound(e);
-            }
+            return NotFound(e);
+        }
             
-            return Ok();
-        }
+        return Ok();
+    }
 
-        [Authorize("WriteAccess")]
-        [HttpDelete("{id},{applicationId},{userId}")]
-        public Microsoft.AspNetCore.Mvc.ActionResult DeleteUsage(Guid id, int applicationId, Guid userId)
+    [Authorize("WriteAccess")]
+    [HttpDelete("{id:guid},{applicationId:int},{userId:guid}")]
+    public Microsoft.AspNetCore.Mvc.ActionResult DeleteUsage(Guid id, int applicationId, Guid userId)
+    {
+        try
         {
-            try
-            {
-                _referenceUsageRepository.DeleteUsage(id, applicationId,userId);
-            }
-            catch (NotFoundException e)
-            {
-                return NotFound(e);
-            }
+            _referenceUsageRepository.DeleteUsage(id, applicationId,userId);
+        }
+        catch (NotFoundException e)
+        {
+            return NotFound(e);
+        }
             
-            return Ok();
+        return Ok();
 
+    }
+
+    [Authorize("WriteAccess")]
+    [HttpPost]
+    public async Task<ActionResult<ReferenceUsage>> Post([FromBody] ReferenceUsage value)
+    {
+        if (value == null)
+        {
+            return BadRequest("No data posted");
         }
 
-        [Authorize("WriteAccess")]
-        [HttpPost]
-        public async Task<ActionResult<ReferenceUsage>> Post([FromBody] ReferenceUsage value)
-        {
-            if (value == null)
-            {
-                return BadRequest("No data posted");
-            }
-
-            await _referenceUsageRepository.Add(value);
+        await _referenceUsageRepository.Add(value);
             
-            return value;
-        }
+        return value;
+    }
 
-        [Authorize("WriteAccess")]
-        [HttpPost("bulk")]
-        public async Task<ActionResult<bool>> Post(ReferenceUsage[] value)
+    [Authorize("WriteAccess")]
+    [HttpPost("bulk")]
+    public async Task<ActionResult<bool>> Post(ReferenceUsage[] value)
+    {
+        if (value == null)
         {
-            if (value == null)
-            {
-                return BadRequest("No data posted");
-            }
-
-            return await _referenceUsageRepository.AddRange(value);
+            return BadRequest("No data posted");
         }
+
+        return await _referenceUsageRepository.AddRange(value);
     }
 }
