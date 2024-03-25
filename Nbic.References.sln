@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nbic.References", "Nbic.Ref
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution", "Solution", "{69A2E534-0B87-456E-B931-E0C42F48BED5}"
 	ProjectSection(SolutionItems) = preProject
-		removed.travis.yml = removed.travis.yml
-		removed-deploy.sh = removed-deploy.sh
 		.github\workflows\dotnetcore.yml = .github\workflows\dotnetcore.yml
 		README.md = README.md
 	EndProjectSection
