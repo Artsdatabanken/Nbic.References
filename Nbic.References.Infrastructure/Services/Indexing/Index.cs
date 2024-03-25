@@ -11,21 +11,26 @@ namespace Nbic.References.Infrastructure.Services.Indexing;
 
 public class Index : IDisposable
 {
-    private const string Field_Id = "Id";
-    private const string Field_String = "Reference";
+    private const string FieldId = "Id";
+    private const string FieldString = "Reference";
     private IndexWriter _writer;
 
     private bool firstUse = true;
-    private HashSet<string> _stopwords = new HashSet<string> { "a", "an", "and", "are", "as", "at", "be", "but", "by", "for", "if", "in", "into", "is", "it", "no", "not", "of", "on", "or", "such", "that", "the", "their", "then", "there", "these", "they", "this", "to", "was", "will", "with" }; // StopAnalyzer.ENGLISH_STOP_WORDS_SET.ToArray().ToHashSet();
+    private HashSet<string> _stopwords =
+    [
+        "a", "an", "and", "are", "as", "at", "be", "but", "by", "for", "if", "in", "into", "is", "it", "no", "not",
+        "of", "on", "or", "such", "that", "the", "their", "then", "there", "these", "they", "this", "to", "was", "will",
+        "with"
+    ]; // StopAnalyzer.ENGLISH_STOP_WORDS_SET.ToArray().ToHashSet();
     private FSDirectory _dir;
 
-    private static object _theLock = new object();
+    private static object _theLock = new();
     private bool _lockWasTaken = false;
 
     public Index(bool waitForLockFile = false, bool deleteAndCreateIndex = false)
     {
         // Ensures index backwards compatibility
-        var AppLuceneVersion = LuceneVersion.LUCENE_48;
+        var appLuceneVersion = LuceneVersion.LUCENE_48;
 
         var applicationRoot = GetApplicationRoot();
         if (string.IsNullOrWhiteSpace(applicationRoot))
@@ -55,11 +60,11 @@ public class Index : IDisposable
         _dir = FSDirectory.Open(indexLocation);
 
         //create an analyzer to process the text
-        var analyzer = new StandardAnalyzer(AppLuceneVersion);
+        var analyzer = new StandardAnalyzer(appLuceneVersion);
         //_idAnalyser = new SimpleAnalyzer(AppLuceneVersion);
 
         //create an index writer
-        var indexConfig = new IndexWriterConfig(AppLuceneVersion, analyzer);
+        var indexConfig = new IndexWriterConfig(appLuceneVersion, analyzer);
         if (deleteAndCreateIndex)
         {
             indexConfig.OpenMode = OpenMode.CREATE;
@@ -80,16 +85,16 @@ public class Index : IDisposable
 
         if (indexString.Length <= 0) return;
 
-        Document doc = new Document
+        var doc = new Document
             {
-                new StringField(Field_Id, reference.Id.ToString(), Field.Store.YES),
+                new StringField(FieldId, reference.Id.ToString(), Field.Store.YES),
                 // StringField indexes but doesn't tokenize
-                new TextField(Field_String, indexString, Field.Store.YES)
+                new TextField(FieldString, indexString, Field.Store.YES)
                 //new TextField("favoritePhrase", source.FavoritePhrase, Field.Store.YES)
             };
         //            var id = new Term("Id", reference.Id.ToString());
         //            _writer.DeleteDocuments(id);
-        _writer.UpdateDocument(new Term(Field_Id, reference.Id.ToString()), doc);
+        _writer.UpdateDocument(new Term(FieldId, reference.Id.ToString()), doc);
         // _writer.AddDocument(doc);
         //_writer.Flush(triggerMerge: true, applyAllDeletes: true);
         _writer.Commit();
@@ -109,16 +114,16 @@ public class Index : IDisposable
             var indexString = GetIndexString(reference);
 
             //if (indexString.Length <= 0) continue;
-            Document doc = new Document
+            var doc = new Document
                                    {
-                                       new StringField(Field_Id, reference.Id.ToString(), Field.Store.YES),
+                                       new StringField(FieldId, reference.Id.ToString(), Field.Store.YES),
                                        // StringField indexes but doesn't tokenize
-                                       new TextField(Field_String, indexString, Field.Store.YES)
+                                       new TextField(FieldString, indexString, Field.Store.YES)
                                        //new TextField("favoritePhrase", source.FavoritePhrase, Field.Store.YES)
                                    };
             //            var id = new Term("Id", reference.Id.ToString());
             //            _writer.DeleteDocuments(id);
-            _writer.UpdateDocument(new Term(Field_Id, reference.Id.ToString()), doc);
+            _writer.UpdateDocument(new Term(FieldId, reference.Id.ToString()), doc);
 
             // _writer.AddDocument(doc);
 
@@ -160,7 +165,7 @@ public class Index : IDisposable
 
         if (items.Length == 1)
         {
-            query = new TermQuery(new Term(Field_String, items[0]));
+            query = new TermQuery(new Term(FieldString, items[0]));
         }
         else
         {
@@ -169,7 +174,7 @@ public class Index : IDisposable
             {
                 if (!_stopwords.Contains(item))
                 {
-                    ((BooleanQuery)query).Add(new BooleanClause(new TermQuery(new Term(Field_String, item)), Occur.MUST));
+                    ((BooleanQuery)query).Add(new BooleanClause(new TermQuery(new Term(FieldString, item)), Occur.MUST));
                 }
 
             }
@@ -185,29 +190,33 @@ public class Index : IDisposable
             count++;
             if (count <= startAt) continue;
             var foundDoc = searcher.Doc(hit.Doc);
-            var guid = Guid.Parse(foundDoc.Get(Field_Id));
+            var guid = Guid.Parse(foundDoc.Get(FieldId));
             found.Add(guid);
             yield return guid;
         }
 
         var longTerms = items.Where(x => x.Length > 2).ToArray();
 
-        if (longTerms.Length <= 0) yield break;
-
-        if (longTerms.Length == 1)
+        switch (longTerms.Length)
         {
-            query = new WildcardQuery(new Term(Field_String, $"{longTerms[0]}*"));
-        }
-        else
-        {
-            query = new BooleanQuery();
-            foreach (var item in longTerms)
+            case <= 0:
+                yield break;
+            case 1:
+                query = new WildcardQuery(new Term(FieldString, $"{longTerms[0]}*"));
+                break;
+            default:
             {
-                if (!_stopwords.Contains(item))
+                query = new BooleanQuery();
+                foreach (var item in longTerms)
                 {
-                    ((BooleanQuery)query).Add(new WildcardQuery(new Term(Field_String, $"{item}*")), Occur.MUST);
+                    if (!_stopwords.Contains(item))
+                    {
+                        ((BooleanQuery)query).Add(new WildcardQuery(new Term(FieldString, $"{item}*")), Occur.MUST);
+                    }
+
                 }
 
+                break;
             }
         }
 
@@ -219,7 +228,7 @@ public class Index : IDisposable
             count++;
             if (count <= startAt) continue;
             var foundDoc = searcher.Doc(hit.Doc);
-            var guid = Guid.Parse(foundDoc.Get(Field_Id));
+            var guid = Guid.Parse(foundDoc.Get(FieldId));
             if (found.Contains(guid))
             {
                 continue;
@@ -231,7 +240,7 @@ public class Index : IDisposable
 
     public void Delete(Guid newGuid)
     {
-        _writer.DeleteDocuments(new Term(Field_Id, newGuid.ToString()));
+        _writer.DeleteDocuments(new Term(FieldId, newGuid.ToString()));
         //_writer.Flush(triggerMerge: true, applyAllDeletes: true);
         _writer.Commit();
     }
@@ -246,7 +255,8 @@ public class Index : IDisposable
         //_writer.Flush(true,true);
         _writer.Commit();
     }
-    public string GetApplicationRoot()
+
+    private static string GetApplicationRoot()
     {
         var exePath = Path.GetDirectoryName(System.Reflection
             .Assembly.GetExecutingAssembly().Location);
