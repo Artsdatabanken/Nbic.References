@@ -1,147 +1,145 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Nbic.References.Core.Models;
-using Index = Nbic.References.Infrastructure.Services.Indexing.Index;
 
-namespace Nbic.References.EFCore
+namespace Nbic.References.Infrastructure.Repositories.DbContext;
+
+public partial class ReferencesDbContext : Microsoft.EntityFrameworkCore.DbContext
 {
-    public partial class ReferencesDbContext : DbContext
+    public ReferencesDbContext()
     {
-        public ReferencesDbContext()
+    }
+
+    public ReferencesDbContext(DbContextOptions<ReferencesDbContext> options)
+        : base(options)
+    {
+    }
+
+    public virtual DbSet<Reference> Reference { get; set; } = null!;
+    public virtual DbSet<ReferenceUsage> ReferenceUsage { get; set; } = null!;
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        if (!optionsBuilder.IsConfigured)
         {
         }
+    }
 
-        public ReferencesDbContext(DbContextOptions<ReferencesDbContext> options)
-            : base(options)
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.HasAnnotation("ProductVersion", "2.2.3-servicing-35854");
+
+        modelBuilder.Entity<Reference>(entity =>
         {
-        }
+            entity.HasKey(e => e.Id)
+                .HasName("PK_Id");
 
-        public virtual DbSet<Reference> Reference { get; set; } = null!;
-        public virtual DbSet<ReferenceUsage> ReferenceUsage { get; set; } = null!;
+            entity.ToTable("Reference");
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
+            entity.HasIndex(e => new { e.UserId, e.ApplicationId })
+                .HasDatabaseName("IX_UserId_ApplicationId");
+
+            entity.Property(e => e.Id)
+                .HasColumnName("Id")
+                .ValueGeneratedNever();
+
+            entity.Property(e => e.ApplicationId).HasColumnName("ApplicationId");
+
+            entity.Property(e => e.Author).IsUnicode(false);
+
+            entity.Property(e => e.Bibliography).IsUnicode(false);
+            if (this.Database.IsSqlite())
             {
+                entity.Property(e => e.EditDate)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("date('now')");
             }
-        }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.HasAnnotation("ProductVersion", "2.2.3-servicing-35854");
-
-            modelBuilder.Entity<Reference>(entity =>
+            else
             {
-                entity.HasKey(e => e.Id)
-                    .HasName("PK_Id");
-
-                entity.ToTable("Reference");
-
-                entity.HasIndex(e => new { e.UserId, e.ApplicationId })
-                    .HasDatabaseName("IX_UserId_ApplicationId");
-
-                entity.Property(e => e.Id)
-                    .HasColumnName("Id")
-                    .ValueGeneratedNever();
-
-                entity.Property(e => e.ApplicationId).HasColumnName("ApplicationId");
-
-                entity.Property(e => e.Author).IsUnicode(false);
-
-                entity.Property(e => e.Bibliography).IsUnicode(false);
-                if (this.Database.IsSqlite())
-                {
-                    entity.Property(e => e.EditDate)
-                        .HasColumnType("datetime")
-                        .HasDefaultValueSql("date('now')");
-                }
-                else
-                {
-                    entity.Property(e => e.EditDate)
+                entity.Property(e => e.EditDate)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("GetUtcDate()");
-                }
+            }
 
-                entity.Property(e => e.Firstname).IsUnicode(false);
+            entity.Property(e => e.Firstname).IsUnicode(false);
 
-                entity.Property(e => e.UserId).HasColumnName("UserId");
+            entity.Property(e => e.UserId).HasColumnName("UserId");
 
-                entity.Property(e => e.ReferenceString).HasColumnName("ReferenceString");
+            entity.Property(e => e.ReferenceString).HasColumnName("ReferenceString");
 
-                entity.Property(e => e.Journal).IsUnicode(false);
+            entity.Property(e => e.Journal).IsUnicode(false);
 
-                entity.Property(e => e.Keywords).IsUnicode(false);
+            entity.Property(e => e.Keywords).IsUnicode(false);
 
-                entity.Property(e => e.Lastname).IsUnicode(false);
+            entity.Property(e => e.Lastname).IsUnicode(false);
 
-                entity.Property(e => e.Middlename).IsUnicode(false);
+            entity.Property(e => e.Middlename).IsUnicode(false);
 
-                entity.Property(e => e.Pages).IsUnicode(false);
+            entity.Property(e => e.Pages).IsUnicode(false);
 
-                entity.Property(e => e.Summary).IsUnicode(false);
+            entity.Property(e => e.Summary).IsUnicode(false);
 
-                entity.Property(e => e.Title).IsUnicode(false);
+            entity.Property(e => e.Title).IsUnicode(false);
 
-                entity.Property(e => e.Url)
-                    .HasColumnName("Url")
-                    .IsUnicode(false);
+            entity.Property(e => e.Url)
+                .HasColumnName("Url")
+                .IsUnicode(false);
 
-                entity.Property(e => e.Volume).IsUnicode(false);
+            entity.Property(e => e.Volume).IsUnicode(false);
 
-                entity.Property(e => e.Year).IsUnicode(false);
-            });
+            entity.Property(e => e.Year).IsUnicode(false);
+        });
 
-            modelBuilder.Entity<ReferenceUsage>(entity =>
-            {
-                entity.HasKey(e => new { e.ReferenceId, e.ApplicationId, e.UserId });
-
-                entity.ToTable("ReferenceUsage");
-
-                entity.Property(e => e.ReferenceId).HasColumnName("ReferenceId");
-
-                entity.Property(e => e.ApplicationId).HasColumnName("ApplicationId");
-
-                entity.Property(e => e.UserId).HasColumnName("UserId");
-
-                entity.HasOne(d => d.Reference)
-                    .WithMany(p => p.ReferenceUsage)
-                    .HasForeignKey(d => d.ReferenceId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_ReferenceUsage_Reference");
-            });
-        }
-
-    }
-
-    public class SqliteReferencesDbContext : ReferencesDbContext
-    {
-        private readonly string _dbConnectionString = "DataSource=:memory:";
-
-        public SqliteReferencesDbContext(string dbConnectionString)
+        modelBuilder.Entity<ReferenceUsage>(entity =>
         {
-            _dbConnectionString = dbConnectionString;
-        }
-        //public SqliteReferencesDbContext()
-        //{
-        //    _dbConnectionString = "Data Source=references.db";
-        //}
+            entity.HasKey(e => new { e.ReferenceId, e.ApplicationId, e.UserId });
 
-        protected override void OnConfiguring(DbContextOptionsBuilder options)
-            => options.UseSqlite(_dbConnectionString);
+            entity.ToTable("ReferenceUsage");
+
+            entity.Property(e => e.ReferenceId).HasColumnName("ReferenceId");
+
+            entity.Property(e => e.ApplicationId).HasColumnName("ApplicationId");
+
+            entity.Property(e => e.UserId).HasColumnName("UserId");
+
+            entity.HasOne(d => d.Reference)
+                .WithMany(p => p.ReferenceUsage)
+                .HasForeignKey(d => d.ReferenceId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ReferenceUsage_Reference");
+        });
     }
-    public class SqlServerReferencesDbContext : ReferencesDbContext
+
+}
+
+public class SqliteReferencesDbContext : ReferencesDbContext
+{
+    private readonly string _dbConnectionString = "DataSource=:memory:";
+
+    public SqliteReferencesDbContext(string dbConnectionString)
     {
-        private readonly string _dbConnectionString;
-
-        public SqlServerReferencesDbContext(string dbConnectionString)
-        {
-            _dbConnectionString = dbConnectionString;
-        }
-        //public SqlServerReferencesDbContext()
-        //{
-        //    _dbConnectionString = "Server = localhost; Database = ref2; Integrated Security = true; MultipleActiveResultSets = true";
-        //}
-
-        protected override void OnConfiguring(DbContextOptionsBuilder options)
-            => options.UseSqlServer(_dbConnectionString);
+        _dbConnectionString = dbConnectionString;
     }
+    //public SqliteReferencesDbContext()
+    //{
+    //    _dbConnectionString = "Data Source=references.db";
+    //}
+
+    protected override void OnConfiguring(DbContextOptionsBuilder options)
+        => options.UseSqlite(_dbConnectionString);
+}
+public class SqlServerReferencesDbContext : ReferencesDbContext
+{
+    private readonly string _dbConnectionString;
+
+    public SqlServerReferencesDbContext(string dbConnectionString)
+    {
+        _dbConnectionString = dbConnectionString;
+    }
+    //public SqlServerReferencesDbContext()
+    //{
+    //    _dbConnectionString = "Server = localhost; Database = ref2; Integrated Security = true; MultipleActiveResultSets = true";
+    //}
+
+    protected override void OnConfiguring(DbContextOptionsBuilder options)
+        => options.UseSqlServer(_dbConnectionString);
 }

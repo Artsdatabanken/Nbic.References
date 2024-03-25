@@ -6,6 +6,7 @@ using Nbic.References.Controllers;
 using Nbic.References.Core.Models;
 using Nbic.References.EFCore;
 using Nbic.References.Infrastructure.Repositories;
+using Nbic.References.Infrastructure.Repositories.DbContext;
 using Xunit;
 using Index = Nbic.References.Infrastructure.Services.Indexing.Index;
 

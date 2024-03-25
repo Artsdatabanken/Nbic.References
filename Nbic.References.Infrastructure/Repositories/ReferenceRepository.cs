@@ -2,7 +2,7 @@
 using Nbic.References.Core.Exceptions;
 using Nbic.References.Core.Interfaces.Repositories;
 using Nbic.References.Core.Models;
-using Nbic.References.EFCore;
+using Nbic.References.Infrastructure.Repositories.DbContext;
 using Index = Nbic.References.Infrastructure.Services.Indexing.Index;
 
 namespace Nbic.References.Infrastructure.Repositories;
