@@ -1,7 +1,6 @@
 ﻿// ReSharper disable once StyleCop.SA1634
 // ReSharper disable StyleCop.SA1600
 
-using Microsoft.ApplicationInsights;
 using Nbic.References.Infrastructure.Repositories;
 using Nbic.References.Infrastructure.Repositories.DbContext;
 using Nbic.References.Infrastructure.Services.Indexing;
@@ -92,7 +91,7 @@ public class Startup
 
         app.UseAuthentication();
         app.UseAuthorization();
-
+        app.UseHealthChecks("/hc");
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();
@@ -137,7 +136,12 @@ public class Startup
                             .WithExposedHeaders("WWW-Authenticate");
                     });
             });
-            
+        
+        // health monitoring
+        services.AddHealthChecks()
+            .AddDbContextCheck<ReferencesDbContext>();
+
+        // no search engine indexing
         services.AddStaticRobotsTxt(builder => builder.DenyAll());
     }
 
@@ -330,7 +334,7 @@ public class Startup
                 // c.OAuthAdditionalQueryStringParams(new { foo = "bar" });
                 c.OAuthUseBasicAuthenticationWithAccessCodeGrant();
                 c.RoutePrefix = string.Empty;
-                c.DocumentTitle = "Nbic Reference API - swagger documentation";
+                c.DocumentTitle = "Nbic Reference API - swagger documentation"; // Since swagger doc i index.html - modify title
             });
     }
 }
