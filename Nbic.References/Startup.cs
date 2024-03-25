@@ -191,7 +191,7 @@ public class Startup
                         },
                         OnAuthenticationFailed = e =>
                         {
-                            logger.LogWarning("JWT: authentication failed");
+                            logger.LogError("JWT: authentication failed: " + e.Exception);
                             return Task.CompletedTask;
                         },
                         OnChallenge = e =>
