@@ -60,7 +60,7 @@ namespace Nbic.References.Infrastructure.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<bool> AddRange(ReferenceUsage[] referenceUsages)
+        public async Task<bool> AddRange(IEnumerable<ReferenceUsage> referenceUsages)
         {
             var toSave = new List<ReferenceUsage>();
             foreach (var referenceUsage in referenceUsages)
