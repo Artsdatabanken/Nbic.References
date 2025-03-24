@@ -149,7 +149,7 @@ public class Startup
 
     private void AddIdentityServerAuthentication(IServiceCollection services)
     {
-        var roleClaim = "role";
+        var roleClaim = "roles";
         var roleClaimValue = writeAccessRole;
 
         // Users defined at https://demo.identityserver.com has no roles.
@@ -166,21 +166,26 @@ public class Startup
         services.AddCors();
 
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-        .AddJwtBearer("token", options =>
+        .AddJwtBearer(options =>
         {
             options.Authority = authAuthority;
+            options.Audience = apiName;
             options.RequireHttpsMetadata = false;
-
-            options.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
-                ValidIssuer = authAuthority,
-                ValidAudience = apiName,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("your_secret_key"))
-            };
+            // audience is optional, make sure you read the following paragraphs
+            // to understand your options
+            options.TokenValidationParameters.ValidateAudience = false;
+            // it's recommended to check the type header to avoid "JWT confusion" attacks
+            options.TokenValidationParameters.ValidTypes = new[] { "at+jwt" };
+            //options.TokenValidationParameters = new TokenValidationParameters
+            //{
+            //    ValidateIssuer = true,
+            //    ValidateAudience = true,
+            //    ValidateLifetime = true,
+            //    ValidateIssuerSigningKey = true,
+            //    ValidIssuer = authAuthority,
+            //    ValidAudience = apiName,
+            //    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("your_secret_key"))
+            //};
 
             options.Events = new JwtBearerEvents
             {
@@ -310,9 +315,6 @@ public class Startup
                                 Scopes = new Dictionary<string, string>
                                 {
                                     { apiName, "Access Api" }
-
-                                    // { "readAccess", "Access read operations" },
-                                    // { "writeAccess", "Access write operations" }
                                 }
                             }
                         }
