@@ -32,6 +32,8 @@ using Swagger;
 using Index = Index;
 using Microsoft.ApplicationInsights.Extensibility;
 using Middleware;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 public class Startup
 {
@@ -163,48 +165,48 @@ public class Startup
 
         services.AddCors();
 
-        services.AddAuthentication("token")
-            .AddJwtBearer("Bearer", options =>
-                {
-                    options.Authority = authAuthority;
-                    options.RequireHttpsMetadata = false;
-                        
-                    options.Audience = apiName;
-                    //options.TokenValidationParameters.ValidAudiences = options.TokenValidationParameters.ValidAudiences.Append("fab4api");
-                }
-            )
-            .AddIdentityServerAuthentication(
-                "token",
-                options =>
-                {
-                    options.Authority = authAuthority;
-                    options.RequireHttpsMetadata = false;
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        .AddJwtBearer("token", options =>
+        {
+            options.Authority = authAuthority;
+            options.RequireHttpsMetadata = false;
 
-                    options.ApiName = apiName;
-                    options.JwtBearerEvents = new JwtBearerEvents
-                    {
-                        OnMessageReceived = e =>
-                        {
-                            // _logger.LogTrace("JWT: message received");
-                            return Task.CompletedTask;
-                        },
-                        OnTokenValidated = e =>
-                        {
-                            // _logger.LogTrace("JWT: token validated");
-                            return Task.CompletedTask;
-                        },
-                        OnAuthenticationFailed = e =>
-                        {
-                            logger.LogError("JWT: authentication failed: " + e.Exception);
-                            return Task.CompletedTask;
-                        },
-                        OnChallenge = e =>
-                        {
-                            // _logger.LogTrace("JWT: challenge");
-                            return Task.CompletedTask;
-                        }
-                    };
-                });
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = authAuthority,
+                ValidAudience = apiName,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("your_secret_key"))
+            };
+
+            options.Events = new JwtBearerEvents
+            {
+                OnMessageReceived = e =>
+                {
+                    // _logger.LogTrace("JWT: message received");
+                    return Task.CompletedTask;
+                },
+                OnTokenValidated = e =>
+                {
+                    // _logger.LogTrace("JWT: token validated");
+                    return Task.CompletedTask;
+                },
+                OnAuthenticationFailed = e =>
+                {
+                    logger.LogError("JWT: authentication failed: " + e.Exception);
+                    return Task.CompletedTask;
+                },
+                OnChallenge = e =>
+                {
+                    // _logger.LogTrace("JWT: challenge");
+                    return Task.CompletedTask;
+                }
+            };
+        });
+
 
         Microsoft.IdentityModel.Logging.IdentityModelEventSource.ShowPII = true;
     }
