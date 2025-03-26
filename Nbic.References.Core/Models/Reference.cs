@@ -47,109 +47,80 @@ public partial class Reference
     {
         if (reference == null)
         {
-            throw new ArgumentNullException("reference");
+            throw new ArgumentNullException(nameof(reference));
         }
 
         if (!string.IsNullOrWhiteSpace(reference.ReferenceString))
         {
-            if (!string.IsNullOrWhiteSpace(reference.Url))
-            {
-                return (reference.ReferenceString.Trim() + " " + reference.Url).Trim();
-
-            }
-            return reference.ReferenceString.Trim();
+            return !string.IsNullOrWhiteSpace(reference.Url)
+                ? $"{reference.ReferenceString.Trim()} {reference.Url}".Trim()
+                : reference.ReferenceString.Trim();
         }
 
-        string formatedString;
-        try
+        string formattedString = FormatReferenceDetails(reference);
+
+        if (!string.IsNullOrWhiteSpace(reference.Bibliography))
         {
-            formatedString =
-                ((!string.IsNullOrEmpty(reference.Author) ? reference.Author.Trim() : string.Empty) +
-                 (!string.IsNullOrEmpty(reference.Year) ? (" " + AddParanteseIfMissing(reference.Year.Trim())) : string.Empty) +
-                 ((!string.IsNullOrEmpty(reference.Author) || !string.IsNullOrEmpty(reference.Year))
-                      ? ". "
-                      : string.Empty) +
-                 (!string.IsNullOrEmpty(reference.Title) ? AddPointIfMissing(reference.Title.Trim()) : string.Empty) +
-                 (!string.IsNullOrEmpty(reference.Journal) ? (" " + reference.Journal.Trim()) : string.Empty) +
-                 (!string.IsNullOrEmpty(reference.Volume) ? (" " + reference.Volume.Trim()) : string.Empty) +
-                 ((!string.IsNullOrEmpty(reference.Volume) && !string.IsNullOrEmpty(reference.Pages)) ? ": " : " ") +
-                 (!string.IsNullOrEmpty(reference.Pages) ? AddPointIfMissing(reference.Pages.Trim()) : string.Empty)).Trim();
-            if (!string.IsNullOrWhiteSpace(reference.Bibliography))
-            {
-                //maybe try remove stuff from this instead...
-                var start = reference.Bibliography;
-                //var doo = false;
-                if (!string.IsNullOrEmpty(reference.Author) && start.Contains(reference.Author) || reference.Bibliography.Length > formatedString.Length)
-                {
-                    formatedString = start;
-                }
-            }
-
-            if (!string.IsNullOrWhiteSpace(reference.Url))
-            {
-                formatedString = (formatedString + " " + reference.Url).Trim();
-
-            }
+            formattedString = AdjustFormattedStringWithBibliography(reference, formattedString);
         }
-        catch (Exception ex)
+
+        if (!string.IsNullOrWhiteSpace(reference.Url))
         {
-            formatedString = "Feil i formatering av referanse!" + ex.Message;
+            formattedString = $"{formattedString} {reference.Url}".Trim();
         }
 
-        if (String.IsNullOrEmpty(formatedString) || formatedString.Trim() == ".")
-        {
-            if (!String.IsNullOrEmpty(reference.Author))
-            {
-                formatedString = reference.Author;
-            }
-            else if (!String.IsNullOrEmpty(reference.Lastname) || !String.IsNullOrEmpty(reference.Firstname))
-            {
-                formatedString = (reference.Lastname ?? string.Empty) + ", " + (reference.Firstname ?? string.Empty) +
-                                 (!string.IsNullOrEmpty(reference.Middlename)
-                                      ? (" " + reference.Middlename)
-                                      : string.Empty);
-            }
-            else if (!String.IsNullOrEmpty(reference.Url))
-            {
-                formatedString = reference.Url;
-            }
-            else
-            {
-                formatedString = "(Uten tittel)";
-            }
-        }
-
-        return formatedString.Trim();
+        return string.IsNullOrWhiteSpace(formattedString) || formattedString.Trim() == "."
+            ? GetFallbackFormattedString(reference)
+            : formattedString.Trim();
     }
+
+
+    private static string FormatReferenceDetails(Reference reference)
+    {
+        return string.Concat(
+            !string.IsNullOrEmpty(reference.Author) ? reference.Author.Trim() : string.Empty,
+            !string.IsNullOrEmpty(reference.Year) ? $" {AddParanteseIfMissing(reference.Year.Trim())}" : string.Empty,
+            (!string.IsNullOrEmpty(reference.Author) || !string.IsNullOrEmpty(reference.Year)) ? ". " : string.Empty,
+            !string.IsNullOrEmpty(reference.Title) ? AddPointIfMissing(reference.Title.Trim()) : string.Empty,
+            !string.IsNullOrEmpty(reference.Journal) ? $" {reference.Journal.Trim()}" : string.Empty,
+            !string.IsNullOrEmpty(reference.Volume) ? $" {reference.Volume.Trim()}" : string.Empty,
+            (!string.IsNullOrEmpty(reference.Volume) && !string.IsNullOrEmpty(reference.Pages)) ? ": " : " ",
+            !string.IsNullOrEmpty(reference.Pages) ? AddPointIfMissing(reference.Pages.Trim()) : string.Empty
+        ).Trim();
+    }
+
+    private static string AdjustFormattedStringWithBibliography(Reference reference, string formattedString)
+    {
+        var start = reference.Bibliography;
+        if (!string.IsNullOrEmpty(reference.Author) && start.Contains(reference.Author) || reference.Bibliography.Length > formattedString.Length)
+        {
+            return start;
+        }
+        return formattedString;
+    }
+
+    private static string GetFallbackFormattedString(Reference reference)
+    {
+        return reference switch
+        {
+            { Author: { Length: > 0 } } => reference.Author,
+            { Lastname: { Length: > 0 } } or { Firstname: { Length: > 0 } } => $"{reference.Lastname ?? string.Empty}, {reference.Firstname ?? string.Empty}{(!string.IsNullOrEmpty(reference.Middlename) ? $" {reference.Middlename}" : string.Empty)}",
+            { Url: { Length: > 0 } } => reference.Url,
+            _ => "(Uten tittel)"
+        };
+    }
+
 
     private static string GetReferenceType(Reference reference)
     {
-        string type;
-
-        if (!String.IsNullOrEmpty(reference.ReferenceString))
+        return reference switch
         {
-            type = "Reference";
-        }
-        else if (!String.IsNullOrEmpty(reference.Author) || !String.IsNullOrEmpty(reference.Year) ||
-            !String.IsNullOrEmpty(reference.Volume) || !String.IsNullOrEmpty(reference.Pages))
-        {
-            type = "Publication";
-        }
-        else if (!String.IsNullOrEmpty(reference.Firstname) | !String.IsNullOrEmpty(reference.Middlename) |
-                 !String.IsNullOrEmpty(reference.Lastname))
-        {
-            type = "Person";
-        }
-        else if (!String.IsNullOrEmpty(reference.Url))
-        {
-            type = "Url";
-        }
-        else
-        {
-            type = "All";
-        }
-
-        return type;
+            { ReferenceString: { Length: > 0 } } => "Reference",
+            { Author: { Length: > 0 } } or { Year: { Length: > 0 } } or { Volume: { Length: > 0 } } or { Pages: { Length: > 0 } } => "Publication",
+            { Firstname: { Length: > 0 } } or { Middlename: { Length: > 0 } } or { Lastname: { Length: > 0 } } => "Person",
+            { Url: { Length: > 0 } } => "Url",
+            _ => "All"
+        };
     }
 
     private static string AddParanteseIfMissing(string item)
