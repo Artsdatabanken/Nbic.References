@@ -149,7 +149,7 @@ public class Startup
 
     private void AddIdentityServerAuthentication(IServiceCollection services)
     {
-        var roleClaim = "roles";
+        var roleClaim = "role";
         var roleClaimValue = writeAccessRole;
 
         // Users defined at https://demo.identityserver.com has no roles.
@@ -161,7 +161,12 @@ public class Startup
         }
 
         services.AddAuthorization(options =>
-            options.AddPolicy("WriteAccess", policy => policy.RequireClaim(roleClaim, roleClaimValue)));
+            options.AddPolicy("WriteAccess", policy =>
+            {
+                policy.RequireRole(roleClaimValue);
+                policy.RequireAuthenticatedUser();
+                    //policy.RequireClaim(roleClaim, roleClaimValue);
+                }));
 
         services.AddCors();
 
