@@ -1,6 +1,6 @@
 #See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
 WORKDIR /app
 # temp fix ols ssl on sql server
 RUN sed -i 's/DEFAULT@SECLEVEL=2/DEFAULT@SECLEVEL=1/g' /etc/ssl/openssl.cnf
@@ -18,7 +18,7 @@ ENV DbProvider=Sqlite
 ENV DbConnectionString="Data Source=references.db"
 ENV ApplicationInsights__ConnectionString=""
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 COPY ["Nbic.References/Nbic.References.csproj", "Nbic.References/"]
 COPY ["Nbic.References.Core/Nbic.References.Core.csproj", "Nbic.References.Core/"]
