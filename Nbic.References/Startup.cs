@@ -32,6 +32,8 @@ using Swagger;
 using Index = Index;
 using Microsoft.ApplicationInsights.Extensibility;
 using Middleware;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 public class Startup
 {
@@ -147,12 +149,14 @@ public class Startup
 
     private void AddIdentityServerAuthentication(IServiceCollection services)
     {
+        var roleClaim = "role";
         var roleClaimValue = writeAccessRole;
 
         // Users defined at https://demo.identityserver.com has no roles.
         // Using the Issuer-claim (iss) as a substitute to allow authorization with Swagger when testing
         if (authAuthority == "https://demo.identityserver.com")
         {
+            roleClaim = "iss";
             roleClaimValue = "https://demo.identityserver.com";
         }
 
@@ -176,7 +180,7 @@ public class Startup
             // to understand your options
             options.TokenValidationParameters.ValidateAudience = false;
             // it's recommended to check the type header to avoid "JWT confusion" attacks
-            options.TokenValidationParameters.ValidTypes = ["at+jwt"];
+            options.TokenValidationParameters.ValidTypes = new[] { "at+jwt" };
             //options.TokenValidationParameters = new TokenValidationParameters
             //{
             //    ValidateIssuer = true,
@@ -214,7 +218,7 @@ public class Startup
         });
 
 
-        IdentityModelEventSource.ShowPII = true;
+        Microsoft.IdentityModel.Logging.IdentityModelEventSource.ShowPII = true;
     }
 
     [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
@@ -246,7 +250,6 @@ public class Startup
             {
                 try
                 {
-                    // ReSharper disable once UnusedVariable
                     var any = context.Reference.Any();
                 }
                 catch (SqliteException ex)
@@ -279,7 +282,6 @@ public class Startup
         {
             try
             {
-                // ReSharper disable once UnusedVariable
                 var any = context.Reference.Any();
             }
             catch (Exception ex)
@@ -299,8 +301,8 @@ public class Startup
             c =>
             {
                 c.SwaggerDoc(
-                    "v1",
-                    new OpenApiInfo { Title = "Nbic References API via Swagger", Version = "v1" });
+                    "v2",
+                    new OpenApiInfo { Title = "Nbic References API via Swagger", Version = "v2" });
 
                 c.AddSecurityDefinition(
                     "oauth2",
@@ -333,7 +335,7 @@ public class Startup
         app.UseSwaggerUI(
             c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Nbic References API V1");
+                c.SwaggerEndpoint("/swagger/v2/swagger.json", "Nbic References API V2");
                 c.OAuthClientId(swaggerClientId);
                 c.OAuthAppName(apiName);
                 c.OAuthScopeSeparator(" ");
