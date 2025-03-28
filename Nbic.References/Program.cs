@@ -122,10 +122,10 @@ public class Program
 
     private static void GetConfiguration(WebApplicationBuilder builder)
     {
-        authAuthority = builder.Configuration.GetValue("AuthAuthority", "https://demo.identityserver.com");
+        authAuthority = builder.Configuration.GetValue("AuthAuthority", "https://demo.duendesoftware.com/");
         authAuthorityEndPoint = builder.Configuration.GetValue(
             "AuthAuthorityEndPoint",
-            "https://demo.identityserver.com/connect/authorize");
+            "https://demo.duendesoftware.com/connect/authorize");
         apiName = builder.Configuration.GetValue("ApiName", "api");
 
         provider = builder.Configuration.GetValue("DbProvider", "Sqlite");
