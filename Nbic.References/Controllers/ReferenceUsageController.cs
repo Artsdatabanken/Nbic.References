@@ -11,32 +11,25 @@ using Microsoft.AspNetCore.Authorization;
 [Route("api/[controller]")]
 [ApiController]
 [SwaggerTag("Read, add or delete ReferencesUsages")]
-public class ReferenceUsageController : ControllerBase
+public class ReferenceUsageController(IReferenceUsageRepository referenceUsageRepository) : ControllerBase
 {
-    private readonly IReferenceUsageRepository _referenceUsageRepository;
-
-    public ReferenceUsageController(IReferenceUsageRepository referenceUsageRepository)
-    {
-        _referenceUsageRepository = referenceUsageRepository;
-    }
-
     [HttpGet]
     public async Task<List<ReferenceUsage>> GetAll(int offset = 0, int limit = 10)
     {
-        return await _referenceUsageRepository.GetAll(offset, limit);
+        return await referenceUsageRepository.GetAll(offset, limit);
     }
     [HttpGet]
     [Route("Reference/{id:guid}")]
     public async Task<List<ReferenceUsage>> Get(Guid id)
     {
-        return await _referenceUsageRepository.GetFromReferenceId(id);
+        return await referenceUsageRepository.GetFromReferenceId(id);
     }
 
     [HttpGet]
     [Route("Count")]
     public async Task<ActionResult<int>> GetCount()
     {
-        return await _referenceUsageRepository.CountAsync();
+        return await referenceUsageRepository.CountAsync();
     }
 
     /// <summary>
@@ -47,11 +40,11 @@ public class ReferenceUsageController : ControllerBase
     [Authorize("WriteAccess")]
     [HttpDelete("{id:guid}")]
     [ProducesResponseType(404)]
-    public Microsoft.AspNetCore.Mvc.ActionResult DeleteAllUsages(Guid id)
+    public ActionResult DeleteAllUsages(Guid id)
     {
         try
         {
-            _referenceUsageRepository.DeleteForReference(id);
+            referenceUsageRepository.DeleteForReference(id);
         }
         catch (NotFoundException e)
         {
@@ -63,11 +56,11 @@ public class ReferenceUsageController : ControllerBase
 
     [Authorize("WriteAccess")]
     [HttpDelete("{id:guid},{applicationId:int},{userId:guid}")]
-    public Microsoft.AspNetCore.Mvc.ActionResult DeleteUsage(Guid id, int applicationId, Guid userId)
+    public ActionResult DeleteUsage(Guid id, int applicationId, Guid userId)
     {
         try
         {
-            _referenceUsageRepository.DeleteUsage(id, applicationId,userId);
+            referenceUsageRepository.DeleteUsage(id, applicationId,userId);
         }
         catch (NotFoundException e)
         {
@@ -87,7 +80,7 @@ public class ReferenceUsageController : ControllerBase
             return BadRequest("No data posted");
         }
 
-        await _referenceUsageRepository.Add(value);
+        await referenceUsageRepository.Add(value);
             
         return value;
     }
@@ -101,6 +94,6 @@ public class ReferenceUsageController : ControllerBase
             return BadRequest("No data posted");
         }
 
-        return await _referenceUsageRepository.AddRange(value);
+        return await referenceUsageRepository.AddRange(value);
     }
 }

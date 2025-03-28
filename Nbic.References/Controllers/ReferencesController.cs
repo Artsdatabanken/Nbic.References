@@ -10,26 +10,19 @@ namespace Nbic.References.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [SwaggerTag("Create, read, update and delete References")]
-public class ReferencesController : ControllerBase
+public class ReferencesController(IReferencesRepository referencesRepository) : ControllerBase
 {
-    private readonly IReferencesRepository _referencesRepository;
-
-    public ReferencesController(IReferencesRepository referencesRepository)
-    {
-        _referencesRepository = referencesRepository;
-    }
-
     [HttpGet]
     public async Task<List<Reference>> GetAll(int offset = 0, int limit = 10, string search = null)
     {
-        return await _referencesRepository.Search(search, offset, limit);
+        return await referencesRepository.Search(search, offset, limit);
     }
 
     [HttpGet]
     [Route("Count")]
     public async Task<ActionResult<int>> GetCount()
     {
-        return await _referencesRepository.CountAsync(); // _referencesDbContext.Reference.CountAsync().ConfigureAwait(false);
+        return await referencesRepository.CountAsync(); // _referencesDbContext.Reference.CountAsync().ConfigureAwait(false);
     }
 
     [HttpGet]
@@ -37,14 +30,14 @@ public class ReferencesController : ControllerBase
     [Route("Reindex")]
     public ActionResult<bool> DoReindex()
     {
-        _referencesRepository.ReIndex();
+        referencesRepository.ReIndex();
         return true;
     }
 
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<Reference>> Get(Guid id)
     {
-        var reference = await _referencesRepository.Get(id);
+        var reference = await referencesRepository.Get(id);
         if (reference == null) return NotFound();
             
         return reference;
@@ -62,7 +55,7 @@ public class ReferencesController : ControllerBase
         Reference newReference;
         try
         {
-            newReference = await _referencesRepository.Add(value);
+            newReference = await referencesRepository.Add(value);
         }
         catch (BadRequestException e)
         {
@@ -83,7 +76,7 @@ public class ReferencesController : ControllerBase
         }
         try
         {
-            await _referencesRepository.AddRange(values);
+            await referencesRepository.AddRange(values);
         }
         catch (BadRequestException e)
         {
@@ -114,7 +107,7 @@ public class ReferencesController : ControllerBase
             
         try
         {
-            await _referencesRepository.Update(value);
+            await referencesRepository.Update(value);
         }
         catch (NotFoundException e)
         {
@@ -131,7 +124,7 @@ public class ReferencesController : ControllerBase
     {
         try
         {
-            _referencesRepository.Delete(id);
+            referencesRepository.Delete(id);
         }
         catch (NotFoundException e)
         {
