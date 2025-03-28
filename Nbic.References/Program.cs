@@ -289,8 +289,8 @@ public class Program
             c =>
             {
                 c.SwaggerDoc(
-                    "v1",
-                    new OpenApiInfo { Title = "Nbic References API via Swagger", Version = "v1" });
+                    "v2",
+                    new OpenApiInfo { Title = "Nbic References API via Swagger", Version = "v2" });
 
                 c.AddSecurityDefinition(
                     "oauth2",
@@ -323,7 +323,7 @@ public class Program
         app.UseSwaggerUI(
             c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Nbic References API V1");
+                c.SwaggerEndpoint("/swagger/v2/swagger.json", "Nbic References API V2");
                 c.OAuthClientId(swaggerClientId);
                 c.OAuthAppName(apiName);
                 c.OAuthScopeSeparator(" ");
