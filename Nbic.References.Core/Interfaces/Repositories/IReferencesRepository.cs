@@ -10,5 +10,5 @@ public interface IReferencesRepository : IRepository<Reference>
     void ReIndex();
     Task AddRange(Reference[] references);
     Task Update(Reference reference);
-    Task<List<Reference>> Search(string search, int offset, int limit);
+    Task<List<Reference>> Search(string? search, int offset, int limit);
 }

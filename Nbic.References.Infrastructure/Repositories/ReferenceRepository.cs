@@ -137,7 +137,7 @@ public class ReferenceRepository : Repository<Reference>, IReferencesRepository
             _index.AddOrUpdate(r);
     }
 
-    public async Task<List<Reference>> Search(string search, int offset, int limit)
+    public async Task<List<Reference>> Search(string? search, int offset, int limit)
     {
         if (string.IsNullOrWhiteSpace(search))
             return await _dbContext.Reference.Include(x => x.ReferenceUsage).OrderBy(x => x.Id)
