@@ -18,8 +18,8 @@ namespace Nbic.References.Controllers
 
         [HttpGet]
         [Authorize("WriteAccess")]
-        [Route("AuthorisedPing")]
-        public string AuthorisedPing()
+        [Route("AuthorizedPing")]
+        public string AuthorizedPing()
         {
             return "Ok!";
         }
