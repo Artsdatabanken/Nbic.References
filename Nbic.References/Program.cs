@@ -303,7 +303,7 @@ public class Program
                                             Name = "Artsdatabanken", Email = "drift at artsdatabanken.no"
                                         },
                                 Description =
-                                    "References used in Artsdatabanken's Redlist, Alien assessments, Nature Type assessments .... <br><br>" +
+                                    "References used in Artsdatabanken's Redlist, Alien assessments, Nature Type assessments.<br>The Api/dB is used internally by Artsdatabanken, but read operations of the Api may be used by others to get or reference existing references.<br><br>" +
                                     "(Based an early adoption of the Dublin Core standard)<br><br>" +
                                     "<br>" +
                                     "Links:<br>" +

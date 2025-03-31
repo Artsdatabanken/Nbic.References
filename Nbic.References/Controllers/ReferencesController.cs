@@ -12,12 +12,23 @@ namespace Nbic.References.Controllers;
 [SwaggerTag("Create, read, update and delete References")]
 public class ReferencesController(IReferencesRepository referencesRepository) : ControllerBase
 {
+    /// <summary>
+    /// Get all references
+    /// </summary>
+    /// <param name="offset">Start at reference number</param>
+    /// <param name="limit">Number of references</param>
+    /// <param name="search">Free text search</param>
+    /// <returns></returns>
     [HttpGet]
     public async Task<List<Reference>> GetAll(int offset = 0, int limit = 10, string search = null)
     {
         return await referencesRepository.Search(search, offset, limit);
     }
 
+    /// <summary>
+    /// Get the number of references in dB
+    /// </summary>
+    /// <returns>Number of references</returns>
     [HttpGet]
     [Route("Count")]
     public async Task<ActionResult<int>> GetCount()
@@ -25,6 +36,10 @@ public class ReferencesController(IReferencesRepository referencesRepository) : 
         return await referencesRepository.CountAsync(); // _referencesDbContext.Reference.CountAsync().ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// Administrative endpoint to force reindex of references
+    /// </summary>
+    /// <returns>Ok if done</returns>
     [HttpGet]
     [Authorize("WriteAccess")]
     [Route("Reindex")]
@@ -34,6 +49,11 @@ public class ReferencesController(IReferencesRepository referencesRepository) : 
         return true;
     }
 
+    /// <summary>
+    /// Get Reference by id
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<Reference>> Get(Guid id)
     {
@@ -43,6 +63,11 @@ public class ReferencesController(IReferencesRepository referencesRepository) : 
         return reference;
     }
 
+    /// <summary>
+    /// Add a new reference
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
     [Authorize("WriteAccess")]
     [HttpPost]
     public async Task<ActionResult<Reference>> Post([FromBody] Reference value)
@@ -64,7 +89,12 @@ public class ReferencesController(IReferencesRepository referencesRepository) : 
 
         return newReference;
     }
-        
+
+    /// <summary>
+    /// Add many references
+    /// </summary>
+    /// <param name="values"></param>
+    /// <returns></returns>
     [Authorize("WriteAccess")]
     [HttpPost]
     [Route("Bulk")]
@@ -86,6 +116,12 @@ public class ReferencesController(IReferencesRepository referencesRepository) : 
         return Ok();
     }
 
+    /// <summary>
+    /// Update a reference by Id
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
     [Authorize("WriteAccess")]
     [HttpPut("{id:guid}")]
     public async Task<ActionResult> Put(Guid id, [FromBody] Reference value)
@@ -117,6 +153,11 @@ public class ReferencesController(IReferencesRepository referencesRepository) : 
         return Ok();
     }
 
+    /// <summary>
+    /// Delete a reference by Id
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     [Authorize("WriteAccess")]
     [HttpDelete("{id:guid}")]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
