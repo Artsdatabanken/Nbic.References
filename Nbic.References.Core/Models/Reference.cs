@@ -1,5 +1,8 @@
 namespace Nbic.References.Core.Models;
 
+/// <summary>
+/// Represents a Reference - article , book, person, url etc.
+/// </summary>
 public partial class Reference
 {
     public Reference()
@@ -7,25 +10,104 @@ public partial class Reference
         ReferenceUsage = new HashSet<ReferenceUsage>();
     }
 
+    /// <summary>
+    /// Internal Id for the reference
+    /// </summary>
     public Guid Id { get; set; }
+
+    /// <summary>
+    /// The application the reference was registered via
+    /// </summary>
     public int? ApplicationId { get; set; }
+
+    /// <summary>
+    /// A reference to the user registering the reference
+    /// </summary>
     public Guid UserId { get; set; }
+
+    /// <summary>
+    /// The author of the publication/reference
+    /// </summary>
     public string? Author { get; set; }
+
+    /// <summary>
+    /// the year of the publication/reference
+    /// </summary>
     public string? Year { get; set; }
+
+    /// <summary>
+    /// The title of the publication/reference
+    /// </summary>
     public string? Title { get; set; }
+
+    /// <summary>
+    /// An summary of the content of the reference
+    /// </summary>
     public string? Summary { get; set; }
+
+    /// <summary>
+    /// The journal of the publication/reference
+    /// </summary>
     public string? Journal { get; set; }
+
+    /// <summary>
+    /// Volume in the publication/journal
+    /// </summary>
     public string? Volume { get; set; }
+
+    /// <summary>
+    /// Pages of the publication/journal
+    /// </summary>
     public string? Pages { get; set; }
+
+    /// <summary>
+    /// A bibliographic reference for the resource.
+    /// </summary>
     public string? Bibliography { get; set; }
+
+    /// <summary>
+    /// Last name of a person referenced
+    /// </summary>
+    /// <remarks>
+    /// Used in context with Middlename and firstname - other fields not required
+    /// </remarks>
     public string? Lastname { get; set; }
+
+    /// <summary>
+    /// Middle name of a person referenced
+    /// </summary>
     public string? Middlename { get; set; }
+
+    /// <summary>
+    /// First name of a person references
+    /// </summary>
     public string? Firstname { get; set; }
+
+    /// <summary>
+    /// An reference to an URL - may be standalone but then in context of an title
+    /// </summary>
     public string? Url { get; set; }
+
+    /// <summary>
+    /// AN reference to an URL - may be standalone but then in context of an title
+    /// </summary>
     public string? Keywords { get; set; }
+
     //public string ImportXml { get; set; }
+    
+    /// <summary>
+    /// A free format representation of the reference
+    /// </summary>
     public string? ReferenceString { get; set; }
+    
+    /// <summary>
+    /// The edit date
+    /// </summary>
     public DateTime EditDate { get; set; }
+
+    /// <summary>
+    /// Readonly formatted/standardized presentation of the reference
+    /// </summary>
     public string ReferencePresentation
     {
         get
@@ -33,6 +115,10 @@ public partial class Reference
             return FormatReference(this);
         }
     }
+
+    /// <summary>
+    /// Readonly category of reference type "Reference", "Publication", "Person","Url" ....
+    /// </summary>
     public string ReferenceType
     {
         get
@@ -41,6 +127,9 @@ public partial class Reference
         }
     }
 
+    /// <summary>
+    /// A list of usages in different applications
+    /// </summary>
     public virtual ICollection<ReferenceUsage> ReferenceUsage { get; set; }
 
     private static string FormatReference(Reference reference)

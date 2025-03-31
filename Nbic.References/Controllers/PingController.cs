@@ -9,6 +9,10 @@ namespace Nbic.References.Controllers
     [SwaggerTag("Check status and authentication")]
     public class PingController : ControllerBase
     {
+        /// <summary>
+        /// A simple unauthenticated ping endpoint
+        /// </summary>
+        /// <returns>Ok!</returns>
         [HttpGet]
         [Route("Ping")]
         public string Ping()
@@ -16,6 +20,10 @@ namespace Nbic.References.Controllers
             return "Ok!";
         }
 
+        /// <summary>
+        /// A simple authenticated ping endpoint verifying that the user has write access
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         [Authorize("WriteAccess")]
         [Route("AuthorizedPing")]
