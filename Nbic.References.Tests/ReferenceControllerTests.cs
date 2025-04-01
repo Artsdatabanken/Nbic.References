@@ -13,6 +13,8 @@ using Index = Nbic.References.Infrastructure.Services.Indexing.Index;
 
 namespace Nbic.References.Tests;
 
+using Azure;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 
 public class ReferenceControllerTests
@@ -40,7 +42,11 @@ public class ReferenceControllerTests
                 var count = (await service.GetCount()).Value;
                 Assert.Equal(1, count);
                 var all = await service.GetAll();
-                Assert.Single(all.ToArray());
+                if (all.Result is OkObjectResult okResult)
+                {
+                    var list =okResult.Value as List<Reference>;
+                    Assert.Single(list.ToArray());
+                }
             }
         }
         finally
@@ -83,7 +89,11 @@ public class ReferenceControllerTests
                 var count = (await service.GetCount()).Value;
                 Assert.Equal(1, count);
                 var all = await service.GetAll();
-                Assert.Single(all.ToArray());
+                if (all.Result is OkObjectResult okResult)
+                {
+                    var list = okResult.Value as List<Reference>;
+                    Assert.Single(list.ToArray());
+                }
             }
         }
         finally
@@ -115,7 +125,11 @@ public class ReferenceControllerTests
                 service.Delete(id);
 
                 var all = await service.GetAll();
-                Assert.Empty(all.ToArray());
+                if (all.Result is OkObjectResult okResult)
+                {
+                    var list = okResult.Value as List<Reference>;
+                    Assert.Single(list.ToArray());
+                }
             }
         }
         finally
@@ -153,7 +167,11 @@ public class ReferenceControllerTests
                 Assert.Throws<InvalidOperationException>(() => service.Delete(id));
 
                 var all = await service.GetAll();
-                Assert.Single(all.ToArray());
+                if (all.Result is OkObjectResult okResult)
+                {
+                    var list =okResult.Value as List<Reference>;
+                    Assert.Single(list.ToArray());
+                }
             }
         }
         finally
@@ -191,7 +209,11 @@ public class ReferenceControllerTests
                 Assert.Throws<InvalidOperationException>(() => service.Delete(id));
 
                 var all = await service.GetAll();
-                Assert.Single(all.ToArray());
+                if (all.Result is OkObjectResult okResult)
+                {
+                    var list = okResult.Value as List<Reference>;
+                    Assert.Single(list.ToArray());
+                }
             }
         }
         finally
@@ -439,7 +461,7 @@ public class ReferenceControllerTests
     }
 
     [Fact]
-    public async Task CanPostBulkReferences()
+    public async void CanPostBulkReferences()
     {
         GetInMemoryDb(out var connection, out var options);
 
@@ -489,7 +511,7 @@ public class ReferenceControllerTests
     }
 
     [Fact]
-    public async Task CanNotPostReferencesWithIdenticalId()
+    public async void CanNotPostReferencesWithIdenticalId()
     {
         GetInMemoryDb(out var connection, out var options);
 

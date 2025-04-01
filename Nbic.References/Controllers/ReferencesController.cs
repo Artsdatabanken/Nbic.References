@@ -20,9 +20,9 @@ public class ReferencesController(IReferencesRepository referencesRepository) : 
     /// <param name="search">Free text search</param>
     /// <returns></returns>
     [HttpGet]
-    public async Task<List<Reference>> GetAll(int offset = 0, int limit = 10, string search = null)
+    public async Task<ActionResult<List<Reference>>> GetAll(int offset = 0, int limit = 10, string search = null)
     {
-        return await referencesRepository.Search(search, offset, limit);
+        return Ok(await referencesRepository.Search(search, offset, limit));
     }
 
     /// <summary>
@@ -33,8 +33,10 @@ public class ReferencesController(IReferencesRepository referencesRepository) : 
     [Route("Count")]
     public async Task<ActionResult<int>> GetCount()
     {
-        return await referencesRepository.CountAsync(); // _referencesDbContext.Reference.CountAsync().ConfigureAwait(false);
+        var count = await referencesRepository.CountAsync();
+        return Ok(count);
     }
+
 
     /// <summary>
     /// Administrative endpoint to force reindex of references
@@ -46,8 +48,9 @@ public class ReferencesController(IReferencesRepository referencesRepository) : 
     public ActionResult<bool> DoReindex()
     {
         referencesRepository.ReIndex();
-        return true;
+        return Ok(true);
     }
+
 
     /// <summary>
     /// Get Reference by id
@@ -59,9 +62,10 @@ public class ReferencesController(IReferencesRepository referencesRepository) : 
     {
         var reference = await referencesRepository.Get(id);
         if (reference == null) return NotFound();
-            
-        return reference;
+
+        return Ok(reference);
     }
+
 
     /// <summary>
     /// Add a new reference
@@ -84,11 +88,12 @@ public class ReferencesController(IReferencesRepository referencesRepository) : 
         }
         catch (BadRequestException e)
         {
-            return BadRequest(e);
+            return BadRequest(e.Message);
         }
 
-        return newReference;
+        return Ok(newReference);
     }
+
 
     /// <summary>
     /// Add many references
@@ -110,11 +115,12 @@ public class ReferencesController(IReferencesRepository referencesRepository) : 
         }
         catch (BadRequestException e)
         {
-            return BadRequest(e);
+            return BadRequest(e.Message);
         }
-            
+
         return Ok();
     }
+
 
     /// <summary>
     /// Update a reference by Id
@@ -135,23 +141,24 @@ public class ReferencesController(IReferencesRepository referencesRepository) : 
         {
             value.Id = id;
         }
-            
+
         if (value.Id != id)
         {
             return BadRequest("Id on reference set and different...");
         }
-            
+
         try
         {
             await referencesRepository.Update(value);
         }
         catch (NotFoundException e)
         {
-            return NotFound(e);
+            return NotFound(e.Message);
         }
-           
+
         return Ok();
     }
+
 
     /// <summary>
     /// Delete a reference by Id
@@ -169,10 +176,9 @@ public class ReferencesController(IReferencesRepository referencesRepository) : 
         }
         catch (NotFoundException e)
         {
-            return NotFound(e);
+            return NotFound(e.Message);
         }
 
         return Ok();
-
     }
 }
