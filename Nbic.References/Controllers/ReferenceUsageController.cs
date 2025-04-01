@@ -20,9 +20,10 @@ public class ReferenceUsageController(IReferenceUsageRepository referenceUsageRe
     /// <param name="limit"></param>
     /// <returns></returns>
     [HttpGet]
-    public async Task<List<ReferenceUsage>> GetAll(int offset = 0, int limit = 10)
+    public async Task<ActionResult<List<ReferenceUsage>>> GetAll(int offset = 0, int limit = 10)
     {
-        return await referenceUsageRepository.GetAll(offset, limit);
+        var usages = await referenceUsageRepository.GetAll(offset, limit);
+        return Ok(usages);
     }
 
     /// <summary>
@@ -32,9 +33,10 @@ public class ReferenceUsageController(IReferenceUsageRepository referenceUsageRe
     /// <returns></returns>
     [HttpGet]
     [Route("Reference/{id:guid}")]
-    public async Task<List<ReferenceUsage>> Get(Guid id)
+    public async Task<ActionResult<List<ReferenceUsage>>> Get(Guid id)
     {
-        return await referenceUsageRepository.GetFromReferenceId(id);
+        var usages = await referenceUsageRepository.GetFromReferenceId(id);
+        return Ok(usages);
     }
 
     /// <summary>
@@ -45,7 +47,8 @@ public class ReferenceUsageController(IReferenceUsageRepository referenceUsageRe
     [Route("Count")]
     public async Task<ActionResult<int>> GetCount()
     {
-        return await referenceUsageRepository.CountAsync();
+        var count = await referenceUsageRepository.CountAsync();
+        return Ok(count);
     }
 
     /// <summary>
@@ -66,7 +69,7 @@ public class ReferenceUsageController(IReferenceUsageRepository referenceUsageRe
         {
             return NotFound(e);
         }
-            
+
         return Ok();
     }
 
@@ -83,15 +86,14 @@ public class ReferenceUsageController(IReferenceUsageRepository referenceUsageRe
     {
         try
         {
-            referenceUsageRepository.DeleteUsage(id, applicationId,userId);
+            referenceUsageRepository.DeleteUsage(id, applicationId, userId);
         }
         catch (NotFoundException e)
         {
             return NotFound(e);
         }
-            
-        return Ok();
 
+        return Ok();
     }
 
     /// <summary>
@@ -109,8 +111,8 @@ public class ReferenceUsageController(IReferenceUsageRepository referenceUsageRe
         }
 
         await referenceUsageRepository.Add(value);
-            
-        return value;
+
+        return Ok(value);
     }
 
     /// <summary>
@@ -127,6 +129,7 @@ public class ReferenceUsageController(IReferenceUsageRepository referenceUsageRe
             return BadRequest("No data posted");
         }
 
-        return await referenceUsageRepository.AddRange(value);
+        var result = await referenceUsageRepository.AddRange(value);
+        return Ok(result);
     }
 }
