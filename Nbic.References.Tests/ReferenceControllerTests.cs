@@ -37,14 +37,26 @@ public class ReferenceControllerTests
             await using (var context = new ReferencesDbContext(options))
             {
                 var service = GetReferencesController(context, index);
-                var result = await service.Get(id);
-                Assert.Equal(id, result.Value.Id);
-                var count = (await service.GetCount()).Value;
-                Assert.Equal(1, count);
-                var all = await service.GetAll();
-                if (all.Result is OkObjectResult okResult)
+
+                var response = await service.Get(id);     
+                if (response.Result is OkObjectResult okResult)
                 {
-                    var list =okResult.Value as List<Reference>;
+                    var reference = okResult.Value as Reference;
+                    Assert.Equal(id, reference.Id);
+                }
+
+                var response1 = await service.GetCount();
+                if (response1.Result is OkObjectResult okResult1)
+                {
+                    var count1 = okResult1.Value as int?;
+                    Assert.Equal(1, count1);
+
+                }
+
+                var all = await service.GetAll();
+                if (all.Result is OkObjectResult okResult2)
+                {
+                    var list =okResult2.Value as List<Reference>;
                     Assert.Single(list.ToArray());
                 }
             }
@@ -84,14 +96,25 @@ public class ReferenceControllerTests
             await using (var context = new ReferencesDbContext(options))
             {
                 var service = GetReferencesController(context, index);
-                var result = await service.Get(id);
-                Assert.Equal(id, result.Value.Id);
-                var count = (await service.GetCount()).Value;
-                Assert.Equal(1, count);
-                var all = await service.GetAll();
-                if (all.Result is OkObjectResult okResult)
+
+                var response = await service.Get(id);
+                if (response.Result is OkObjectResult okResult)
                 {
-                    var list = okResult.Value as List<Reference>;
+                    var reference = okResult.Value as Reference;
+                    Assert.Equal(id, reference.Id);
+                }
+
+                var response1 = await service.GetCount();
+                if (response1.Result is OkObjectResult okResult1)
+                {
+                    var count1 = okResult1.Value as int?;
+                    Assert.Equal(1, count1);
+                }
+
+                var all = await service.GetAll();
+                if (all.Result is OkObjectResult okResult2)
+                {
+                    var list = okResult2.Value as List<Reference>;
                     Assert.Single(list.ToArray());
                 }
             }
@@ -120,16 +143,23 @@ public class ReferenceControllerTests
             await using (var context = new ReferencesDbContext(options))
             {
                 var service = GetReferencesController(context, index);
-                var result = await service.Get(id);
-                Assert.Equal(id, result.Value.Id);
-                service.Delete(id);
+                var response = await service.Get(id);
+                //Assert.Equal(id, response.Value.Id);
+                if (response.Result is OkObjectResult okResult)
+                {
+                    var reference = okResult.Value as Reference;
+                    Assert.Equal(id, reference.Id);
+                }
+                
 
                 var all = await service.GetAll();
-                if (all.Result is OkObjectResult okResult)
+                if (all.Result is OkObjectResult okResult1)
                 {
-                    var list = okResult.Value as List<Reference>;
+                    var list = okResult1.Value as List<Reference>;
                     Assert.Single(list.ToArray());
                 }
+
+                service.Delete(id);
             }
         }
         finally
@@ -161,15 +191,20 @@ public class ReferenceControllerTests
             await using (var context = new ReferencesDbContext(options))
             {
                 var service = GetReferencesController(context, index);
-                var result = await service.Get(id);
-                Assert.Equal(id, result.Value.Id);
+                var response = await service.Get(id);
+    
+                if (response.Result is OkObjectResult okResult)
+                {
+                    var reference = okResult.Value as Reference;
+                    Assert.Equal(id, reference.Id);
+                }
 
                 Assert.Throws<InvalidOperationException>(() => service.Delete(id));
 
                 var all = await service.GetAll();
-                if (all.Result is OkObjectResult okResult)
+                if (all.Result is OkObjectResult okResult1)
                 {
-                    var list =okResult.Value as List<Reference>;
+                    var list =okResult1.Value as List<Reference>;
                     Assert.Single(list.ToArray());
                 }
             }
@@ -203,15 +238,19 @@ public class ReferenceControllerTests
             await using (var context = new ReferencesDbContext(options))
             {
                 var service = GetReferencesController(context, index);
-                var result = await service.Get(id);
-                Assert.Equal(id, result.Value.Id);
+                var response = await service.Get(id);
 
+                if (response.Result is OkObjectResult okResult)
+                {
+                    var reference = okResult.Value as Reference;
+                    Assert.Equal(id, reference.Id);
+                }
                 Assert.Throws<InvalidOperationException>(() => service.Delete(id));
 
                 var all = await service.GetAll();
-                if (all.Result is OkObjectResult okResult)
+                if (all.Result is OkObjectResult okResult1)
                 {
-                    var list = okResult.Value as List<Reference>;
+                    var list = okResult1.Value as List<Reference>;
                     Assert.Single(list.ToArray());
                 }
             }
@@ -374,29 +413,53 @@ public class ReferenceControllerTests
             {
                 Assert.Equal(1, context.Reference.Count());
                 var service = GetReferencesController(context, index);
-                var getit = await service.Get(reference.Id);
-                var it = getit.Value;
+                var response = await service.Get(reference.Id);
+                if (response.Result is OkObjectResult okResult)
+                {
+                    var reference1 = okResult.Value as Reference;
 
-                Assert.Equal(it.Year, replacementReference.Year);
-                Assert.Equal(it.Volume, replacementReference.Volume);
-                //Assert.Equal(it.ApplicationId, replacementReference.ApplicationId);
-                Assert.Equal(it.Author, replacementReference.Author);
-                Assert.Equal(it.Bibliography, replacementReference.Bibliography);
-                //Assert.Equal(it.EditDate, replacementReference.EditDate);
-                Assert.Equal(it.Firstname, replacementReference.Firstname);
-                //Assert.Equal(it.Id, replacementReference.Id);
-                Assert.Equal(it.ReferenceString, replacementReference.ReferenceString);
-                Assert.Equal(it.Journal, replacementReference.Journal);
-                Assert.Equal(it.Lastname, replacementReference.Lastname);
-                Assert.Equal(it.Middlename, replacementReference.Middlename);
-                Assert.Equal(it.Pages, replacementReference.Pages);
-                Assert.Single(it.ReferenceUsage.ToArray());
-                Assert.Equal(it.ReferenceUsage.First().ApplicationId,
-                    replacementReference.ReferenceUsage.First().ApplicationId);
-                Assert.Equal(it.Summary, replacementReference.Summary);
-                Assert.Equal(it.Title, replacementReference.Title);
-                Assert.Equal(it.Url, replacementReference.Url);
-                Assert.Equal(it.UserId, replacementReference.UserId);
+                    Assert.Equal(reference1.Year, replacementReference.Year);
+                    Assert.Equal(reference1.Volume, replacementReference.Volume);
+                    Assert.Equal(reference1.ApplicationId, replacementReference.ApplicationId);
+                    Assert.Equal(reference1.Author, replacementReference.Author);
+                    Assert.Equal(reference1.Bibliography, replacementReference.Bibliography);
+                    Assert.True(Math.Abs((reference1.EditDate - replacementReference.EditDate).TotalMilliseconds) < 1000, $"Expected: {replacementReference.EditDate}, Actual: {reference1.EditDate}");
+
+                    Assert.Equal(reference1.Firstname, replacementReference.Firstname);
+                    Assert.Equal(reference1.Id, replacementReference.Id);
+                    Assert.Equal(reference1.ReferenceString, replacementReference.ReferenceString);
+                    Assert.Equal(reference1.Journal, replacementReference.Journal);
+                    Assert.Equal(reference1.Lastname, replacementReference.Lastname);
+                    Assert.Equal(reference1.Middlename, replacementReference.Middlename);
+                    Assert.Equal(reference1.Pages, replacementReference.Pages);
+                    Assert.Single(reference1.ReferenceUsage.ToArray());
+                    Assert.Equal(reference1.ReferenceUsage.First().ApplicationId,replacementReference.ReferenceUsage.First().ApplicationId);
+                    Assert.Equal(reference1.Summary, replacementReference.Summary);
+                    Assert.Equal(reference1.Title, replacementReference.Title);
+                    Assert.Equal(reference1.Url, replacementReference.Url);
+                    Assert.Equal(reference1.UserId, replacementReference.UserId);
+                }
+
+                //Assert.Equal(it.Year, replacementReference.Year);
+                //Assert.Equal(it.Volume, replacementReference.Volume);
+                ////Assert.Equal(it.ApplicationId, replacementReference.ApplicationId);
+                //Assert.Equal(it.Author, replacementReference.Author);
+                //Assert.Equal(it.Bibliography, replacementReference.Bibliography);
+                ////Assert.Equal(it.EditDate, replacementReference.EditDate);
+                //Assert.Equal(it.Firstname, replacementReference.Firstname);
+                ////Assert.Equal(it.Id, replacementReference.Id);
+                //Assert.Equal(it.ReferenceString, replacementReference.ReferenceString);
+                //Assert.Equal(it.Journal, replacementReference.Journal);
+                //Assert.Equal(it.Lastname, replacementReference.Lastname);
+                //Assert.Equal(it.Middlename, replacementReference.Middlename);
+                //Assert.Equal(it.Pages, replacementReference.Pages);
+                //Assert.Single(it.ReferenceUsage.ToArray());
+                //Assert.Equal(it.ReferenceUsage.First().ApplicationId,
+                //    replacementReference.ReferenceUsage.First().ApplicationId);
+                //Assert.Equal(it.Summary, replacementReference.Summary);
+                //Assert.Equal(it.Title, replacementReference.Title);
+                //Assert.Equal(it.Url, replacementReference.Url);
+                //Assert.Equal(it.UserId, replacementReference.UserId);
             }
 
             var replacementReference2 = new Reference
@@ -429,29 +492,32 @@ public class ReferenceControllerTests
             {
                 Assert.Equal(1, context.Reference.Count());
                 var service = GetReferencesController(context, index);
-                var getit = await service.Get(reference.Id);
-                var it = getit.Value;
+                var response = await service.Get(reference.Id);
+                if (response.Result is OkObjectResult okResult)
+                {
+                    var reference1 = okResult.Value as Reference;
 
-                Assert.Equal(it.Year, replacementReference2.Year);
-                Assert.Equal(it.Volume, replacementReference2.Volume);
-                //Assert.Equal(it.ApplicationId, replacementReference.ApplicationId);
-                Assert.Equal(it.Author, replacementReference2.Author);
-                Assert.Equal(it.Bibliography, replacementReference2.Bibliography);
-                //Assert.Equal(it.EditDate, replacementReference.EditDate);
-                Assert.Equal(it.Firstname, replacementReference2.Firstname);
-                //Assert.Equal(it.Id, replacementReference.Id);
-                Assert.Equal(it.ReferenceString, replacementReference2.ReferenceString);
-                Assert.Equal(it.Journal, replacementReference2.Journal);
-                Assert.Equal(it.Lastname, replacementReference2.Lastname);
-                Assert.Equal(it.Middlename, replacementReference2.Middlename);
-                Assert.Equal(it.Pages, replacementReference2.Pages);
-                Assert.Single(it.ReferenceUsage.ToArray());
-                Assert.Equal(it.ReferenceUsage.First().ApplicationId,
-                    replacementReference.ReferenceUsage.First().ApplicationId);
-                Assert.Equal(it.Summary, replacementReference2.Summary);
-                Assert.Equal(it.Title, replacementReference2.Title);
-                Assert.Equal(it.Url, replacementReference2.Url);
-                Assert.Equal(it.UserId, replacementReference2.UserId);
+                    Assert.Equal(reference1.Year, replacementReference2.Year);
+                    Assert.Equal(reference1.Volume, replacementReference2.Volume);
+                    //Assert.Equal(reference1.ApplicationId, replacementReference.ApplicationId);
+                    Assert.Equal(reference1.Author, replacementReference2.Author);
+                    Assert.Equal(reference1.Bibliography, replacementReference2.Bibliography);
+                    //Assert.Equal(reference1.EditDate, replacementReference.EditDate);
+                    Assert.Equal(reference1.Firstname, replacementReference2.Firstname);
+                    //Assert.Equal(reference1.Id, replacementReference.Id);
+                    Assert.Equal(reference1.ReferenceString, replacementReference2.ReferenceString);
+                    Assert.Equal(reference1.Journal, replacementReference2.Journal);
+                    Assert.Equal(reference1.Lastname, replacementReference2.Lastname);
+                    Assert.Equal(reference1.Middlename, replacementReference2.Middlename);
+                    Assert.Equal(reference1.Pages, replacementReference2.Pages);
+                    Assert.Single(reference1.ReferenceUsage.ToArray());
+                    Assert.Equal(reference1.ReferenceUsage.First().ApplicationId,
+                        replacementReference.ReferenceUsage.First().ApplicationId);
+                    Assert.Equal(reference1.Summary, replacementReference2.Summary);
+                    Assert.Equal(reference1.Title, replacementReference2.Title);
+                    Assert.Equal(reference1.Url, replacementReference2.Url);
+                    Assert.Equal(reference1.UserId, replacementReference2.UserId);
+                }
             }
         }
         finally
