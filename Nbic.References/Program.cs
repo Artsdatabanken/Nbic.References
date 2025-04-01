@@ -116,11 +116,8 @@ public class Program
         app.UseAuthentication();
         app.UseAuthorization();
         app.UseHealthChecks("/hc");
-        app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
-
+        
+        app.MapControllers();
         app.Run();
     }
 

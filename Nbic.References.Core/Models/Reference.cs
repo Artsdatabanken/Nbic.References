@@ -181,7 +181,7 @@ public partial class Reference
     private static string AdjustFormattedStringWithBibliography(Reference reference, string formattedString)
     {
         var start = reference.Bibliography;
-        if (!string.IsNullOrEmpty(reference.Author) && start.Contains(reference.Author) || reference.Bibliography.Length > formattedString.Length)
+        if (start != null && reference.Bibliography != null && (!string.IsNullOrEmpty(reference.Author) && start.Contains(reference.Author) || reference.Bibliography.Length > formattedString.Length))
         {
             return start;
         }

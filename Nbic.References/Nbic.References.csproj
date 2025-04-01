@@ -5,7 +5,9 @@
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <UserSecretsId>d1a9df1e-a712-4a31-80a5-eb5557a1f6ee</UserSecretsId>
     <AssemblyName>Nbic.References</AssemblyName>
-    <ApplicationInsightsResourceId>/subscriptions/2e1858b1-de46-4865-a290-c1d54976a10f/resourceGroups/adb-test-nbicreferenceapi-rg/providers/microsoft.insights/components/adb-test-nbicreferenceapi-ai</ApplicationInsightsResourceId><GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <ApplicationInsightsResourceId>/subscriptions/2e1858b1-de46-4865-a290-c1d54976a10f/resourceGroups/adb-test-nbicreferenceapi-rg/providers/microsoft.insights/components/adb-test-nbicreferenceapi-ai</ApplicationInsightsResourceId>
+	<GenerateDocumentationFile>true</GenerateDocumentationFile>
+	<NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <!--<PackageReference Include="Duende.IdentityServer" Version="7.1.0" />-->
