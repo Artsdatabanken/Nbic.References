@@ -7,6 +7,7 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace Nbic.References.Controllers;
 
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -20,6 +21,8 @@ public class ReferenceUsageController(IReferenceUsageRepository referenceUsageRe
     /// <param name="limit"></param>
     /// <returns></returns>
     [HttpGet]
+    [ProducesResponseType(typeof(List<ReferenceUsage>), 200)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<List<ReferenceUsage>>> GetAll(int offset = 0, int limit = 10)
     {
         var usages = await referenceUsageRepository.GetAll(offset, limit);
@@ -33,6 +36,9 @@ public class ReferenceUsageController(IReferenceUsageRepository referenceUsageRe
     /// <returns></returns>
     [HttpGet]
     [Route("Reference/{id:guid}")]
+    [ProducesResponseType(typeof(List<ReferenceUsage>), 200)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<List<ReferenceUsage>>> Get(Guid id)
     {
         var usages = await referenceUsageRepository.GetFromReferenceId(id);
@@ -45,6 +51,7 @@ public class ReferenceUsageController(IReferenceUsageRepository referenceUsageRe
     /// <returns></returns>
     [HttpGet]
     [Route("Count")]
+    [ProducesResponseType(typeof(int), 200)]
     public async Task<ActionResult<int>> GetCount()
     {
         var count = await referenceUsageRepository.CountAsync();
@@ -58,7 +65,9 @@ public class ReferenceUsageController(IReferenceUsageRepository referenceUsageRe
     /// <returns></returns>
     [Authorize("WriteAccess")]
     [HttpDelete("{id:guid}")]
-    [ProducesResponseType(404)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public ActionResult DeleteAllUsages(Guid id)
     {
         try
@@ -82,6 +91,9 @@ public class ReferenceUsageController(IReferenceUsageRepository referenceUsageRe
     /// <returns></returns>
     [Authorize("WriteAccess")]
     [HttpDelete("{id:guid},{applicationId:int},{userId:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public ActionResult DeleteUsage(Guid id, int applicationId, Guid userId)
     {
         try
@@ -103,6 +115,8 @@ public class ReferenceUsageController(IReferenceUsageRepository referenceUsageRe
     /// <returns></returns>
     [Authorize("WriteAccess")]
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<ReferenceUsage>> Post([FromBody] ReferenceUsage value)
     {
         if (value == null)
@@ -122,6 +136,8 @@ public class ReferenceUsageController(IReferenceUsageRepository referenceUsageRe
     /// <returns></returns>
     [Authorize("WriteAccess")]
     [HttpPost("bulk")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<bool>> Post(ReferenceUsage[] value)
     {
         if (value == null)

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -20,6 +21,8 @@ public class ReferencesController(IReferencesRepository referencesRepository) : 
     /// <param name="search">Free text search</param>
     /// <returns></returns>
     [HttpGet]
+    [ProducesResponseType(typeof(List<Reference>), 200)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<List<Reference>>> GetAll(int offset = 0, int limit = 10, string search = null)
     {
         return Ok(await referencesRepository.Search(search, offset, limit));
@@ -31,6 +34,7 @@ public class ReferencesController(IReferencesRepository referencesRepository) : 
     /// <returns>Number of references</returns>
     [HttpGet]
     [Route("Count")]
+    [ProducesResponseType(typeof(int), 200)]
     public async Task<ActionResult<int>> GetCount()
     {
         var count = await referencesRepository.CountAsync();
@@ -45,6 +49,7 @@ public class ReferencesController(IReferencesRepository referencesRepository) : 
     [HttpGet]
     [Authorize("WriteAccess")]
     [Route("Reindex")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public ActionResult<bool> DoReindex()
     {
         referencesRepository.ReIndex();
@@ -58,6 +63,9 @@ public class ReferencesController(IReferencesRepository referencesRepository) : 
     /// <param name="id"></param>
     /// <returns></returns>
     [HttpGet("{id:guid}")]
+    [ProducesResponseType(typeof(Reference), 200)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<Reference>> Get(Guid id)
     {
         var reference = await referencesRepository.Get(id);
@@ -74,6 +82,8 @@ public class ReferencesController(IReferencesRepository referencesRepository) : 
     /// <returns></returns>
     [Authorize("WriteAccess")]
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Reference))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<Reference>> Post([FromBody] Reference value)
     {
         if (value == null)
@@ -103,6 +113,8 @@ public class ReferencesController(IReferencesRepository referencesRepository) : 
     [Authorize("WriteAccess")]
     [HttpPost]
     [Route("Bulk")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> PostMany([FromBody] Reference[] values)
     {
         if (values == null || values.Length == 0)
@@ -130,6 +142,9 @@ public class ReferencesController(IReferencesRepository referencesRepository) : 
     /// <returns></returns>
     [Authorize("WriteAccess")]
     [HttpPut("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> Put(Guid id, [FromBody] Reference value)
     {
         if (value == null)
@@ -168,6 +183,9 @@ public class ReferencesController(IReferencesRepository referencesRepository) : 
     [Authorize("WriteAccess")]
     [HttpDelete("{id:guid}")]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public ActionResult Delete(Guid id)
     {
         try
