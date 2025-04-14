@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -20,9 +21,11 @@ public class ReferencesController(IReferencesRepository referencesRepository) : 
     /// <param name="search">Free text search</param>
     /// <returns></returns>
     [HttpGet]
-    public async Task<List<Reference>> GetAll(int offset = 0, int limit = 10, string search = null)
+    [ProducesResponseType(typeof(List<Reference>), 200)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<List<Reference>>> GetAll(int offset = 0, int limit = 10, string search = null)
     {
-        return await referencesRepository.Search(search, offset, limit);
+        return Ok(await referencesRepository.Search(search, offset, limit));
     }
 
     /// <summary>
@@ -31,10 +34,13 @@ public class ReferencesController(IReferencesRepository referencesRepository) : 
     /// <returns>Number of references</returns>
     [HttpGet]
     [Route("Count")]
+    [ProducesResponseType(typeof(int), 200)]
     public async Task<ActionResult<int>> GetCount()
     {
-        return await referencesRepository.CountAsync(); // _referencesDbContext.Reference.CountAsync().ConfigureAwait(false);
+        var count = await referencesRepository.CountAsync();
+        return Ok(count);
     }
+
 
     /// <summary>
     /// Administrative endpoint to force reindex of references
@@ -43,11 +49,13 @@ public class ReferencesController(IReferencesRepository referencesRepository) : 
     [HttpGet]
     [Authorize("WriteAccess")]
     [Route("Reindex")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public ActionResult<bool> DoReindex()
     {
         referencesRepository.ReIndex();
-        return true;
+        return Ok(true);
     }
+
 
     /// <summary>
     /// Get Reference by id
@@ -55,13 +63,17 @@ public class ReferencesController(IReferencesRepository referencesRepository) : 
     /// <param name="id"></param>
     /// <returns></returns>
     [HttpGet("{id:guid}")]
+    [ProducesResponseType(typeof(Reference), 200)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<Reference>> Get(Guid id)
     {
         var reference = await referencesRepository.Get(id);
         if (reference == null) return NotFound();
-            
-        return reference;
+
+        return Ok(reference);
     }
+
 
     /// <summary>
     /// Add a new reference
@@ -70,6 +82,8 @@ public class ReferencesController(IReferencesRepository referencesRepository) : 
     /// <returns></returns>
     [Authorize("WriteAccess")]
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Reference))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<Reference>> Post([FromBody] Reference value)
     {
         if (value == null)
@@ -84,11 +98,12 @@ public class ReferencesController(IReferencesRepository referencesRepository) : 
         }
         catch (BadRequestException e)
         {
-            return BadRequest(e);
+            return BadRequest(e.Message);
         }
 
-        return newReference;
+        return Ok(newReference);
     }
+
 
     /// <summary>
     /// Add many references
@@ -98,6 +113,8 @@ public class ReferencesController(IReferencesRepository referencesRepository) : 
     [Authorize("WriteAccess")]
     [HttpPost]
     [Route("Bulk")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> PostMany([FromBody] Reference[] values)
     {
         if (values == null || values.Length == 0)
@@ -110,11 +127,12 @@ public class ReferencesController(IReferencesRepository referencesRepository) : 
         }
         catch (BadRequestException e)
         {
-            return BadRequest(e);
+            return BadRequest(e.Message);
         }
-            
+
         return Ok();
     }
+
 
     /// <summary>
     /// Update a reference by Id
@@ -124,6 +142,9 @@ public class ReferencesController(IReferencesRepository referencesRepository) : 
     /// <returns></returns>
     [Authorize("WriteAccess")]
     [HttpPut("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> Put(Guid id, [FromBody] Reference value)
     {
         if (value == null)
@@ -135,23 +156,24 @@ public class ReferencesController(IReferencesRepository referencesRepository) : 
         {
             value.Id = id;
         }
-            
+
         if (value.Id != id)
         {
             return BadRequest("Id on reference set and different...");
         }
-            
+
         try
         {
             await referencesRepository.Update(value);
         }
         catch (NotFoundException e)
         {
-            return NotFound(e);
+            return NotFound(e.Message);
         }
-           
+
         return Ok();
     }
+
 
     /// <summary>
     /// Delete a reference by Id
@@ -161,6 +183,9 @@ public class ReferencesController(IReferencesRepository referencesRepository) : 
     [Authorize("WriteAccess")]
     [HttpDelete("{id:guid}")]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public ActionResult Delete(Guid id)
     {
         try
@@ -169,10 +194,9 @@ public class ReferencesController(IReferencesRepository referencesRepository) : 
         }
         catch (NotFoundException e)
         {
-            return NotFound(e);
+            return NotFound(e.Message);
         }
 
         return Ok();
-
     }
 }
