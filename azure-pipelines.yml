@@ -11,6 +11,11 @@ pool:
 
 steps: 
 
+- task: UseDotNet@2
+  inputs:
+    packageType: 'sdk'
+    version: '9.x'
+
 - task: DotNetCoreCLI@2
   displayName: 'Test'
   inputs:
@@ -26,6 +31,7 @@ steps:
     arguments: '--configuration $(buildConfiguration)'
 
 - task: DotNetCoreCLI@2
+  displayName: Publish
   inputs:
     command: publish
     publishWebProjects: True
@@ -33,6 +39,7 @@ steps:
     zipAfterPublish: True
 
 - task: PublishBuildArtifacts@1
+  displayName: Push Artifacts
   inputs:
     pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
     artifactName: 'nbicreference'
