@@ -527,7 +527,7 @@ public class ReferenceControllerTests
     }
 
     [Fact]
-    public async void CanPostBulkReferences()
+    public async Task CanPostBulkReferences()
     {
         GetInMemoryDb(out var connection, out var options);
 
@@ -577,7 +577,7 @@ public class ReferenceControllerTests
     }
 
     [Fact]
-    public async void CanNotPostReferencesWithIdenticalId()
+    public async Task CanNotPostReferencesWithIdenticalId()
     {
         GetInMemoryDb(out var connection, out var options);
 
