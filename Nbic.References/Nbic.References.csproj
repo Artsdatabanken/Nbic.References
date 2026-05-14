@@ -35,6 +35,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Nbic.References.Core\Nbic.References.Core.csproj" />
     <ProjectReference Include="..\Nbic.References.Infrastructure\Nbic.References.Infrastructure.csproj" />
+    <ProjectReference Include="..\Nbic.References.ServiceDefaults\Nbic.References.ServiceDefaults.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Data\" />

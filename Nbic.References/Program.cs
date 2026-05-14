@@ -49,6 +49,7 @@ public class Program
         
         // configuration
         GetConfiguration(builder);
+        builder.AddServiceDefaults();
 
         // Add services to the container.
         builder.Services.AddApplicationInsightsTelemetry();
@@ -93,7 +94,7 @@ public class Program
         builder.Services.AddStaticRobotsTxt(builder => builder.DenyAll());
 
         var app = builder.Build();
-
+        app.MapDefaultEndpoints();
         // Configure the HTTP request pipeline.
         app.UseResponseCompression();
         if (app.Environment.IsDevelopment())
@@ -130,7 +131,7 @@ public class Program
         apiName = builder.Configuration.GetValue("ApiName", "api");
 
         provider = builder.Configuration.GetValue("DbProvider", "Sqlite");
-        connectionString = builder.Configuration.GetValue("DbConnectionString", "DataSource=:memory:");
+        connectionString = builder.Configuration.GetValue("ConnectionStrings:ReferencesDb", "DataSource=:memory:");
 
         writeAccessRole = builder.Configuration.GetValue("WriteAccessRole", "my_write_access_role");
         swaggerClientId = builder.Configuration.GetValue("SwaggerClientId", "implicit");

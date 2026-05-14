@@ -25,6 +25,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Nbic.References\Nbic.References.csproj" />
+    <ProjectReference Include="..\Nbic.References.ServiceDefaults\Nbic.References.ServiceDefaults.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Data\" />
