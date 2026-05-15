@@ -1,0 +1,71 @@
+<div class="search-panel">
+  <div class="search-row">
+    <input
+      type="text"
+      class="search-input"
+      placeholder="Search references..."
+      [(ngModel)]="searchTerm"
+      (ngModelChange)="onSearchChanged()"
+      (keyup.enter)="performSearch()"
+    />
+    <button class="search-btn" (click)="performSearch()">Search</button>
+  </div>
+
+  @if (loading()) {
+    <div class="loader">Loading...</div>
+  }
+
+  @if (errorMessage()) {
+    <div class="error">{{ errorMessage() }}</div>
+  }
+
+  <div class="results-info">
+    @if (countKnown()) {
+      <span>{{ resultCount() }} result(s) found</span>
+      <span class="page-info">
+        Page {{ currentPage() }} of {{ totalPages() }}
+      </span>
+    } @else {
+      <span>
+        Showing {{ resultCount() }} result(s).
+        @if (hasMore()) { More results available. Use page navigation below or "Load next page". }
+      </span>
+      <span class="page-info">
+        Page {{ currentPage() }} (more pages may exist)
+      </span>
+    }
+  </div>
+
+  @if (hasMore() && !countKnown()) {
+    <div class="load-more-bar">
+      <button class="load-more-btn" (click)="goToPage(getPage(currentPage() + 1))">
+        Load next page
+      </button>
+    </div>
+  }
+
+  <ul class="references-list">
+    @for (ref of paginatedResults(); track ref.id) {
+      <li class="reference-item">
+        <span class="ref-type-badge">{{ ref.referenceType }}</span>
+        <span class="ref-presentation">{{ ref.referencePresentation }}</span>
+      </li>
+    } @empty {
+      <li class="empty-state">No references found. Try a broader search.</li>
+    }
+  </ul>
+
+  @if (showPagination()) {
+    <nav class="pagination">
+      <button class="page-btn" [disabled]="currentPage() <= 1" (click)="goToPage(getPage(1))">First</button>
+      <button class="page-btn" [disabled]="currentPage() <= 1" (click)="goToPage(getPage(currentPage() - 1))">&lsaquo;</button>
+
+      @for (page of visiblePages(); track page) {
+        <button class="page-btn" [class.active]="page === currentPage()" (click)="goToPage(page)">{{ page }}</button>
+      }
+
+      <button class="page-btn" [disabled]="currentPage() >= totalPages()" (click)="goToPage(getPage(currentPage() + 1))">&rsaquo;</button>
+      <button class="page-btn" [disabled]="currentPage() >= totalPages()" (click)="goToPage(getPage(totalPages()))">Last</button>
+    </nav>
+  }
+</div>
