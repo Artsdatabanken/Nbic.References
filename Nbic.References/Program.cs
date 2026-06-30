@@ -28,6 +28,10 @@ using Microsoft.Extensions.Hosting;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using System.Reflection;
+
+using Microsoft.OpenApi.Any;
 
 public class Program
 {
@@ -112,11 +116,8 @@ public class Program
         app.UseAuthentication();
         app.UseAuthorization();
         app.UseHealthChecks("/hc");
-        app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
-
+        
+        app.MapControllers();
         app.Run();
     }
 
@@ -287,33 +288,56 @@ public class Program
     {
         services.AddSwaggerGen(
             c =>
-            {
-                c.SwaggerDoc("v1",
-                    new OpenApiInfo { Title = "Nbic References API via Swagger", Version = "v1" });
-
-                c.AddSecurityDefinition(
-                    "oauth2",
-                    new OpenApiSecurityScheme
-                    {
-                        Type = SecuritySchemeType.OAuth2,
-                        Flows = new OpenApiOAuthFlows
-                        {
-                            Implicit = new OpenApiOAuthFlow
+                {
+                    c.SwaggerDoc(
+                        "v1",
+                        new OpenApiInfo
                             {
-                                AuthorizationUrl =
-                                    new Uri(
-                                        authAuthorityEndPoint,
-                                        UriKind.Absolute),
-                                Scopes = new Dictionary<string, string>
-                                {
-                                    { apiName, "Access Api" }
-                                }
-                            }
-                        }
-                    });
-                c.OperationFilter<SecurityRequirementsOperationFilter>();
-                c.EnableAnnotations();
-            });
+                                Title = "Nbic References API",
+                                Contact =
+                                    new OpenApiContact()
+                                        {
+                                            Name = "Artsdatabanken", Email = "drift at artsdatabanken.no"
+                                        },
+                                Description =
+                                    "References used in Artsdatabanken's Redlist, Alien species assessments, Nature Type assessments.<br>The Api/dB is used internally by Artsdatabanken, but read operations of the Api may be used by others to get or reference existing references.<br><br>" +
+                                    "(Based an early adoption of the Dublin Core standard)<br><br>" +
+                                    "<br>" +
+                                    "Links:<br>" +
+                                    "<a href='https://www.dublincore.org/'>Dublin Core</a><br>" +
+                                    "<a href='https://github.com/Artsdatabanken/Nbic.References'>Github repo</a><br>",
+                                Version = "v1",
+                                License = new OpenApiLicense()
+                                              {
+                                                  Name = "MIT License",
+                                                  Url = new Uri("https://opensource.org/license/mit")
+                                              }
+                        });
+
+                    c.AddSecurityDefinition(
+                        "oauth2",
+                        new OpenApiSecurityScheme
+                            {
+                                Type = SecuritySchemeType.OAuth2,
+                                Flows = new OpenApiOAuthFlows
+                                            {
+                                                Implicit = new OpenApiOAuthFlow
+                                                               {
+                                                                   AuthorizationUrl =
+                                                                       new Uri(authAuthorityEndPoint, UriKind.Absolute),
+                                                                   Scopes = new Dictionary<string, string>
+                                                                                {
+                                                                                    { apiName, "Access Api" }
+                                                                                }
+                                                               }
+                                            }
+                            });
+                    c.OperationFilter<SecurityRequirementsOperationFilter>();
+                    c.EnableAnnotations();
+                    c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"));
+                    c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetAssembly(typeof(Nbic.References.Core.Models.Reference)).GetName().Name}.xml"));
+                });
+
     }
 
     private static void AddSwaggerMiddleware(IApplicationBuilder app)

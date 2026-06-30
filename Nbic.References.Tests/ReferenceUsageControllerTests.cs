@@ -13,9 +13,7 @@ using Index = Nbic.References.Infrastructure.Services.Indexing.Index;
 namespace Nbic.References.Tests;
 
 using System.Collections.Generic;
-
 using Microsoft.AspNetCore.Mvc;
-using Index = Index;
 
 public class ReferenceUsageControllerTests
 {
@@ -27,7 +25,7 @@ public class ReferenceUsageControllerTests
     {
         return new ReferenceUsageController(new ReferenceUsageRepository(context));
     }
-    
+
     [Fact]
     public async Task CanPostReferenceAndGetReferenceUsages()
     {
@@ -54,12 +52,26 @@ public class ReferenceUsageControllerTests
             {
                 var usageService = GetReferencesUsageController(context);
 
-                var count = (await usageService.GetCount()).Value;
-                Assert.Equal(1, count);
-                var all = await usageService.GetAll();
-                Assert.Single(all);
-                var them = await usageService.Get(id);
-                Assert.Single(them);
+                var response = await usageService.GetCount();
+                if (response.Result is OkObjectResult okResult)
+                {
+                    var count1 = okResult.Value as int?;
+                    Assert.Equal(1, count1);
+                }
+
+                var allResult = await usageService.GetAll();
+                if (allResult.Result is OkObjectResult allOkResult)
+                {
+                    var all = allOkResult.Value as List<ReferenceUsage>;
+                    Assert.Single(all);
+                }
+
+                var themResult = await usageService.Get(id);
+                if (themResult.Result is OkObjectResult themOkResult)
+                {
+                    var them = themOkResult.Value as List<ReferenceUsage>;
+                    Assert.Single(them);
+                }
             }
         }
         finally
@@ -95,10 +107,20 @@ public class ReferenceUsageControllerTests
                 var service = GetReferencesController(context, index);
                 var usageService = GetReferencesUsageController(context);
                 usageService.DeleteAllUsages(id);
-                var all = await usageService.GetAll();
-                Assert.Empty(all);
-                var result = await service.Get(id);
-                Assert.Equal(id, result.Value.Id);
+
+                var allResult = await usageService.GetAll();
+                if (allResult.Result is OkObjectResult allOkResult)
+                {
+                    var all = allOkResult.Value as List<ReferenceUsage>;
+                    Assert.Empty(all);
+                }
+
+                var response = await service.Get(id);
+                if (response.Result is OkObjectResult okObjectResult)
+                {
+                    Assert.Equal(id, ((Reference)okObjectResult.Value).Id);
+                    Assert.Empty(((Reference)okObjectResult.Value).ReferenceUsage);
+                }
 
                 // now delete reference
                 service.Delete(id);
@@ -141,14 +163,28 @@ public class ReferenceUsageControllerTests
                 var service = GetReferencesController(context, index);
                 var usageService = GetReferencesUsageController(context);
                 usageService.DeleteUsage(id, 1, new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3"));
-                var all = await usageService.GetAll();
-                Assert.Single(all);
-                var result = await service.Get(id);
-                Assert.Equal(id, result.Value.Id);
+
+                var allResult = await usageService.GetAll();
+                if (allResult.Result is OkObjectResult allOkResult)
+                {
+                    var all = allOkResult.Value as List<ReferenceUsage>;
+                    Assert.Single(all);
+                }
+
+                var response = await service.Get(id);
+                if (response.Result is OkObjectResult okObjectResult)
+                {
+                    Assert.Equal(id, ((Reference)okObjectResult.Value).Id);
+                    Assert.Single(((Reference)okObjectResult.Value).ReferenceUsage);
+                }
 
                 // and should not be found
-                var result2 = await service.Get(id);
-                Assert.Single(result2.Value.ReferenceUsage);
+                var response1 = await service.Get(id);
+                if (response1.Result is OkObjectResult okObjectResult1)
+                {
+                    Assert.Equal(id, ((Reference)okObjectResult1.Value).Id);
+                    Assert.Single(((Reference)okObjectResult1.Value).ReferenceUsage);
+                }
             }
         }
         finally
@@ -178,11 +214,20 @@ public class ReferenceUsageControllerTests
                 var service = GetReferencesController(context, index);
                 var usageService = GetReferencesUsageController(context);
                 await usageService.Post(new ReferenceUsage { ApplicationId = 3, ReferenceId = id, UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3") });
-                var all = await usageService.GetAll();
-                Assert.Equal(3, all.Count);
-                var result = await service.Get(id);
-                Assert.Equal(id, result.Value.Id);
-                Assert.Equal(3, result.Value.ReferenceUsage.Count);
+
+                var allResult = await usageService.GetAll();
+                if (allResult.Result is OkObjectResult allOkResult)
+                {
+                    var all = allOkResult.Value as List<ReferenceUsage>;
+                    Assert.Equal(3, all.Count);
+                }
+
+                var response = await service.Get(id);
+                if (response.Result is OkObjectResult okObjectResult)
+                {
+                    Assert.Equal(id, ((Reference)okObjectResult.Value).Id);
+                    Assert.Equal(3, ((Reference)okObjectResult.Value).ReferenceUsage.Count);
+                }
             }
         }
         finally
@@ -229,26 +274,40 @@ public class ReferenceUsageControllerTests
             {
                 var service = GetReferencesController(context, index);
                 var usageService = GetReferencesUsageController(context);
-                await usageService.Post([
-                    new()
+                await usageService.Post(new[]
+                {
+                    new ReferenceUsage
                     {
                         ApplicationId = 3, ReferenceId = id,
                         UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")
                     },
-                    new()
+                    new ReferenceUsage
                     {
                         ApplicationId = 3, ReferenceId = id2,
                         UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")
                     }
-                ]);
-                var all = await usageService.GetAll();
-                Assert.Equal(6, all.Count);
-                var result = await service.Get(id);
-                Assert.Equal(id, result.Value.Id);
-                Assert.Equal(3, result.Value.ReferenceUsage.Count);
-                var result2 = await service.Get(id2);
-                Assert.Equal(id2, result2.Value.Id);
-                Assert.Equal(3, result2.Value.ReferenceUsage.Count);
+                });
+
+                var allResult = await usageService.GetAll();
+                if (allResult.Result is OkObjectResult allOkResult)
+                {
+                    var all = allOkResult.Value as List<ReferenceUsage>;
+                    Assert.Equal(6, all.Count);
+                }
+
+                var response = await service.Get(id);
+                if (response.Result is OkObjectResult okObjectResult)
+                {
+                    Assert.Equal(id, ((Reference)okObjectResult.Value).Id);
+                    Assert.Equal(3, ((Reference)okObjectResult.Value).ReferenceUsage.Count);
+                }
+
+                var response1 = await service.Get(id2);
+                if (response1.Result is OkObjectResult okResult)
+                {
+                    Assert.Equal(id2, ((Reference)okResult.Value).Id);
+                    Assert.Equal(3, ((Reference)okResult.Value).ReferenceUsage.Count);
+                }
             }
         }
         finally
@@ -256,6 +315,7 @@ public class ReferenceUsageControllerTests
             connection.Close();
         }
     }
+
     [Fact]
     public async Task AddReferenceUsageToNotExistingReferenceShouldNotFail()
     {
@@ -295,31 +355,45 @@ public class ReferenceUsageControllerTests
             {
                 var service = GetReferencesController(context, index);
                 var usageService = GetReferencesUsageController(context);
-                await usageService.Post([
-                    new()
+                await usageService.Post(new[]
+                {
+                    new ReferenceUsage
                     {
                         ApplicationId = 3, ReferenceId = id,
                         UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")
                     },
-                    new()
+                    new ReferenceUsage
                     {
                         ApplicationId = 3, ReferenceId = id2,
                         UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")
                     },
-                    new()
+                    new ReferenceUsage
                     {
                         ApplicationId = 3, ReferenceId = id3,
                         UserId = new Guid("3ed89222-de9a-4df3-9e95-87f7fcac67a3")
                     }
-                ]);
-                var all = await usageService.GetAll();
-                Assert.Equal(6, all.Count);
-                var result = await service.Get(id);
-                Assert.Equal(id, result.Value.Id);
-                Assert.Equal(3, result.Value.ReferenceUsage.Count);
-                var result2 = await service.Get(id2);
-                Assert.Equal(id2, result2.Value.Id);
-                Assert.Equal(3, result2.Value.ReferenceUsage.Count);
+                });
+
+                var allResult = await usageService.GetAll();
+                if (allResult.Result is OkObjectResult allOkResult)
+                {
+                    var all = allOkResult.Value as List<ReferenceUsage>;
+                    Assert.Equal(6, all.Count);
+                }
+
+                var response = await service.Get(id);
+                if (response.Result is OkObjectResult okObjectResult)
+                {
+                    Assert.Equal(id, ((Reference)okObjectResult.Value).Id);
+                    Assert.Equal(3, ((Reference)okObjectResult.Value).ReferenceUsage.Count);
+                }
+
+                var response2 = await service.Get(id2);
+                if (response2.Result is OkObjectResult okResult)
+                {
+                    Assert.Equal(id2, ((Reference)okResult.Value).Id);
+                    Assert.Equal(3, ((Reference)okResult.Value).ReferenceUsage.Count);
+                }
             }
         }
         finally
@@ -327,6 +401,7 @@ public class ReferenceUsageControllerTests
             connection.Close();
         }
     }
+
     [Fact]
     public async Task CanAddSingleDuplicateReferenceUsage()
     {
@@ -360,11 +435,20 @@ public class ReferenceUsageControllerTests
                     ReferenceId = id,
                     UserId = new Guid("3ed89222-de9a-4df3-9e95-67f7fcac67a3")
                 });
-                var all = await usageService.GetAll();
-                Assert.Equal(2, all.Count);
-                var result = await service.Get(id);
-                Assert.Equal(id, result.Value.Id);
-                Assert.Equal(2, result.Value.ReferenceUsage.Count);
+
+                var allResult = await usageService.GetAll();
+                if (allResult.Result is OkObjectResult allOkResult)
+                {
+                    var all = allOkResult.Value as List<ReferenceUsage>;
+                    Assert.Equal(2, all.Count);
+                }
+
+                var response = await service.Get(id);
+                if (response.Result is OkObjectResult okObjectResult)
+                {
+                    Assert.Equal(id, ((Reference)okObjectResult.Value).Id);
+                    Assert.Equal(2, ((Reference)okObjectResult.Value).ReferenceUsage.Count);
+                }
             }
         }
         finally
