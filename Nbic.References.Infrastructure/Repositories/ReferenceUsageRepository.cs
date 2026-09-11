@@ -58,8 +58,13 @@ public class ReferenceUsageRepository : Repository<ReferenceUsage>, IReferenceUs
     public async Task<bool> AddRange(IEnumerable<ReferenceUsage> referenceUsages)
     {
         var toSave = new List<ReferenceUsage>();
+        var seenKeys = new HashSet<(Guid ReferenceId, int ApplicationId, Guid UserId)>();
         foreach (var referenceUsage in referenceUsages)
         {
+            var key = (referenceUsage.ReferenceId, referenceUsage.ApplicationId, referenceUsage.UserId);
+
+            if (!seenKeys.Add(key)) continue;
+
             if (_dbContext.ReferenceUsage.Any(
                     x => x.ReferenceId == referenceUsage.ReferenceId && x.ApplicationId == referenceUsage.ApplicationId
                                                                      && x.UserId == referenceUsage.UserId)) continue;
