@@ -1,6 +1,6 @@
 #See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
-FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
@@ -15,7 +15,8 @@ ENV DbProvider=Sqlite
 ENV DbConnectionString="Data Source=references.db"
 ENV ApplicationInsights__ConnectionString=""
 
-FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["Nbic.References/Nbic.References.csproj", "Nbic.References/"]
 COPY ["Nbic.References.Core/Nbic.References.Core.csproj", "Nbic.References.Core/"]

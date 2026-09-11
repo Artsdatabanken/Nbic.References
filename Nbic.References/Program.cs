@@ -1,35 +1,30 @@
-﻿namespace Nbic.References;
+﻿using System.Reflection;
 
-using Microsoft.ApplicationInsights.Extensibility;
-using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Logging;
+namespace Nbic.References;
 
-using Nbic.References.Infrastructure.Repositories;
-using Nbic.References.Infrastructure.Repositories.DbContext;
-using Nbic.References.Middleware;
-
-using RobotsTxt;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Logging;
 using Microsoft.OpenApi.Models;
-using Nbic.References.Swagger;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
+using Infrastructure.Repositories;
+using Infrastructure.Repositories.DbContext;
+using Middleware;
+using Swagger;
+using OpenTelemetry.Trace;
+using RobotsTxt;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
-
-using Index = Nbic.References.Infrastructure.Services.Indexing.Index;
-using Microsoft.Extensions.Hosting;
-
+using System.Linq;
 using System.Threading.Tasks;
-
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
-using System.Reflection;
+using Index = Infrastructure.Services.Indexing.Index;
 
 using Microsoft.OpenApi.Any;
 
@@ -52,7 +47,10 @@ public class Program
 
         // Add services to the container.
         builder.Services.AddApplicationInsightsTelemetry();
-        builder.Services.AddSingleton<ITelemetryInitializer, FilterHealthchecksTelemetryInitializer>();
+        builder.Services.ConfigureOpenTelemetryTracerProvider((sp, tracerBuilder) =>
+        {
+            tracerBuilder.AddProcessor(new FilterHealthchecksProcessor());
+        });
         builder.Services.AddResponseCompression();
         builder.Services.AddControllers(options => options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true);
 
@@ -78,9 +76,9 @@ public class Program
                 {
                     options.AddPolicy(
                         "AllowAll",
-                        builder =>
+                        policyBuilder =>
                             {
-                                builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()
+                                policyBuilder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()
                                     .WithExposedHeaders("WWW-Authenticate");
                             });
                 });
@@ -90,7 +88,7 @@ public class Program
             .AddDbContextCheck<ReferencesDbContext>();
 
         // no search engine indexing
-        builder.Services.AddStaticRobotsTxt(builder => builder.DenyAll());
+        builder.Services.AddStaticRobotsTxt(optionsBuilder => optionsBuilder.DenyAll());
 
         var app = builder.Build();
 
