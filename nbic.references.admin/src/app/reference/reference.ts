@@ -1,7 +1,7 @@
 export interface Reference {
   id: string;
-  referencePresentation: string;
-  referenceType: string;
+  applicationId: number | null;
+  userId: string;
   author: string | null;
   year: string | null;
   title: string | null;
@@ -16,7 +16,7 @@ export interface Reference {
   url: string | null;
   keywords: string | null;
   referenceString: string | null;
-  applicationId: number | null;
-  userId: string;
+  referencePresentation: string;
+  referenceType: string;
   editDate: string;
 }

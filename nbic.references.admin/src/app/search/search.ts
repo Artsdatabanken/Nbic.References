@@ -1,4 +1,4 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, signal, computed, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ReferencesService } from '../references/references.service';
 import { Reference } from '../reference/reference';
@@ -9,8 +9,8 @@ const PAGE_SIZE = 12;
   selector: 'app-search',
   imports: [FormsModule],
   templateUrl: './search.html',
-  styleUrl: './search.css',
-  standalone: true
+  standalone: true,
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class SearchComponent {
   searchTerm = signal('');
@@ -27,7 +27,6 @@ export class SearchComponent {
     if (this.countKnown()) {
       return Math.max(1, Math.ceil(this.resultCount() / PAGE_SIZE));
     }
-    // Lower bound + 1 (we know there's at least one more page)
     return Math.max(this.currentPage() + 1, Math.floor(this.lowerBound() / PAGE_SIZE) + 1);
   });
 
@@ -35,10 +34,8 @@ export class SearchComponent {
     const total = this.totalPages();
     const current = this.currentPage();
     const delta = 2;
-    const start = Math.max(1, current - delta);
-    const end = Math.min(total, current + delta);
     const pages: number[] = [];
-    for (let i = start; i <= end; i++) pages.push(i);
+    for (let i = Math.max(1, current - delta); i <= Math.min(total, current + delta); i++) pages.push(i);
     return pages;
   });
 
@@ -72,7 +69,6 @@ export class SearchComponent {
 
       if (page === 1) {
         if (results.length < PAGE_SIZE) {
-          // Full result set known
           this.countKnown.set(true);
           this.lowerBound.set(results.length);
         } else {
@@ -82,7 +78,6 @@ export class SearchComponent {
       } else {
         this.hasMore.set(results.length === PAGE_SIZE);
         if (results.length < PAGE_SIZE) {
-          // Last partial page — we now know the total
           this.lowerBound.set((page - 1) * PAGE_SIZE + results.length);
           this.countKnown.set(true);
         } else {

@@ -1,85 +1,52 @@
 .search-panel {
-  max-width: 960px;
+  max-width: var(--adb-spacing-screen-xl);
+  padding: var(--adb-spacing-md);
   margin: 0 auto;
-  padding: 24px;
+  width: 100%;
 }
 
 .search-row {
   display: flex;
-  gap: 8px;
-  margin-bottom: 16px;
+  gap: var(--adb-spacing-xsm);
+  margin-bottom: var(--adb-spacing-md);
 }
 
 .search-input {
   flex: 1;
-  padding: 10px 14px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
+  padding: var(--adb-spacing-2xsm) var(--adb-spacing-sm);
+  font-size: var(--adb-font-size-4);
+  font-family: var(--adb-font-family-primary);
+  line-height: var(--adb-font-line-height);
+  color: var(--adb-text-primary);
+  background: var(--adb-surface-primary);
+  border: 2px solid var(--adb-border-default, #D2DDE0);
+  border-radius: var(--adb-radius-md, 4px);
   outline: none;
 }
 
 .search-input:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
-}
-
-.search-btn {
-  padding: 10px 24px;
-  font-size: 16px;
-  background: #2563eb;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.search-btn:hover {
-  background: #1d4ed8;
+  border-color: var(--adb-surface-accent, #005A71);
+  box-shadow: 0 0 0 2px rgba(0, 90, 113, 0.15);
 }
 
 .loader {
-  padding: 20px 0;
-  color: #666;
+  padding: var(--adb-spacing-md) 0;
+  color: var(--adb-text-secondary, #616B6D);
   font-style: italic;
-}
-
-.error {
-  padding: 12px;
-  margin-bottom: 12px;
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  border-radius: 6px;
-  color: #b91c1c;
 }
 
 .results-info {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 8px;
-  font-size: 14px;
-  color: #555;
-  padding: 0 4px;
+  margin-bottom: var(--adb-spacing-sm);
+  font-size: var(--adb-font-size-3);
+  color: var(--adb-text-secondary);
 }
 
 .load-more-bar {
   display: flex;
   justify-content: flex-end;
-  margin-bottom: 12px;
-}
-
-.load-more-btn {
-  padding: 8px 20px;
-  font-size: 14px;
-  background: #2563eb;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.load-more-btn:hover {
-  background: #1d4ed8;
+  margin-bottom: var(--adb-spacing-md);
 }
 
 .references-list {
@@ -90,78 +57,56 @@
 
 .reference-item {
   display: flex;
-  gap: 12px;
+  gap: var(--adb-spacing-sm);
   align-items: flex-start;
-  padding: 12px 14px;
-  margin-bottom: 6px;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  background: #fff;
+  padding: var(--adb-spacing-sm) var(--adb-spacing-md);
+  margin-bottom: var(--adb-spacing-2xsm);
+  background: var(--adb-surface-primary);
+  border: 2px solid var(--adb-border-default, #D2DDE0);
+  border-radius: var(--adb-radius-md, 4px);
+  transition: background-color 120ms ease;
 }
 
 .reference-item:hover {
-  background: #f9fafb;
+  background: var(--adb-surface-subtle, #F2DFC5);
 }
 
 .ref-type-badge {
   flex-shrink: 0;
-  padding: 2px 8px;
-  font-size: 11px;
-  font-weight: 600;
+  padding: 2px var(--adb-spacing-2xsm);
+  font-size: var(--adb-font-size-3);
+  font-weight: var(--adb-font-weight-bold);
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  color: #fff;
-  background: #6b7280;
-  border-radius: 4px;
+  color: var(--adb-text-invert);
+  background: var(--adb-surface-accent, #005A71);
+  border-radius: var(--adb-radius-md, 4px);
   min-width: 52px;
   text-align: center;
   margin-top: 1px;
 }
 
 .ref-presentation {
-  font-size: 15px;
-  line-height: 1.5;
-  word-break: break-word;
+  font-size: var(--adb-font-size-5);
+  line-height: var(--adb-font-line-height);
 }
 
 .empty-state {
   text-align: center;
-  padding: 40px;
-  color: #888;
+  padding: var(--adb-spacing-2xl);
+  color: var(--adb-text-secondary);
 }
 
 .pagination {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 4px;
-  margin-top: 20px;
+  gap: var(--adb-spacing-2xsm);
+  margin-top: var(--adb-spacing-md);
   flex-wrap: wrap;
 }
 
-.page-btn {
-  min-width: 36px;
-  height: 36px;
-  padding: 0 6px;
-  font-size: 14px;
-  border: 1px solid #d1d5db;
-  border-radius: 4px;
-  background: #fff;
-  cursor: pointer;
-  color: #374151;
-}
-
-.page-btn:hover:not(:disabled) {
-  background: #f3f4f6;
-}
-
-.page-btn.active {
-  background: #2563eb;
-  color: #fff;
-  border-color: #2563eb;
-}
-
-.page-btn:disabled {
-  opacity: 0.4;
-  cursor: default;
+.nav-btn-active {
+  background: var(--adb-surface-accent) !important;
+  color: var(--adb-text-invert) !important;
 }

@@ -30,8 +30,13 @@ dotnet run --project Nbic.References
 | `npm run build` | Production build to `dist/` |
 
 - Angular 21 standalone components, `provideHttpClient(withFetch())`.
-- Search component (`src/app/components/search/search.ts`) calls `GET /api/references?offset=&limit=12&search=`.
-- Results display `referencePresentation` with type badge; page resets to 1 when search term changes.
+- Uses **Artsdatabanken Design System** (`@artsdatabanken/components` version 1.1.2) — a lit-based Web Component library with design tokens, dark mode, and WCAG 2.1 AA compliance.
+- Design system is registered in `main.ts` via `import '@artsdatabanken/components';`.
+- Components available: `<adb-button>`, `<adb-icon-button>`, `<adb-minimal-button>`, `<adb-accordion>`, `<adb-accordion-item>`, `<adb-alert>`, `<adb-checkbox>`, `<adb-radio>`, `<adb-tabs>`, `<adb-icon>`.
+- Design tokens are CSS custom properties with `--adb-` prefix (e.g., `--adb-surface-accent`, `--adb-text-primary`, `--adb-spacing-sm`). Set dark mode via `[data-theme="dark"]` on `<html>`.
+- Search component (`src/app/search/`) calls `GET /api/references?offset=&limit=12&search=`.
+- Pagination uses a lower-bound strategy: when page 1 returns fewer than limit results, total is known; when it returns exactly limit, more results may exist.
+- Angular `schemas: [CUSTOM_ELEMENTS_SCHEMA]` is required on components using Web Components so Angular doesn't complain about custom element tags and their attributes.
 - Dev proxy (`proxy.conf.json`) forwards `/api` → the backend URL.
 
 ## Architecture Notes
