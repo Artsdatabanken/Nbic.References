@@ -31,6 +31,7 @@
     <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.4.421302">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="NuGet.Protocol" Version="6.12.5" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Nbic.References.Core\Nbic.References.Core.csproj" />
