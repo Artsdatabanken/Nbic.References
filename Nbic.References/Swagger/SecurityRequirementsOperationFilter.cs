@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Nbic.References.Swagger;
@@ -22,13 +22,10 @@ public class SecurityRequirementsOperationFilter : IOperationFilter
 
         if (requiredScopes.Count == 0) return;
             
-        operation.Responses.Add("401", new() { Description = "Unauthorized" });
-        operation.Responses.Add("403", new() { Description = "Forbidden" });
+        operation.Responses.Add("401", new OpenApiResponse { Description = "Unauthorized" });
+        operation.Responses.Add("403", new OpenApiResponse { Description = "Forbidden" });
 
-        var oAuthScheme = new OpenApiSecurityScheme
-        {
-            Reference = new() { Type = ReferenceType.SecurityScheme, Id = "oauth2" }
-        };
+        var oAuthScheme = new OpenApiSecuritySchemeReference("oauth2", null, null);
 
         operation.Security = new List<OpenApiSecurityRequirement>
         {

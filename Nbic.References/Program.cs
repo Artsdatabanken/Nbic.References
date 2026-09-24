@@ -11,7 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Logging;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Infrastructure.Repositories;
 using Infrastructure.Repositories.DbContext;
 using Middleware;
@@ -26,7 +26,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Index = Infrastructure.Services.Indexing.Index;
 
-using Microsoft.OpenApi.Any;
 
 public class Program
 {
