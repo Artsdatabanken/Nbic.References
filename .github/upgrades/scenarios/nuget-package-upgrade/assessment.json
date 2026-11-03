@@ -1,0 +1,742 @@
+{
+  "settings": {
+    "components": {
+      "code": true,
+      "binaries": false
+    },
+    "targetId": ""
+  },
+  "analysisStartTime": "2026-09-24T21:28:42.7231439Z",
+  "analysisEndTime": "2026-09-24T21:30:22.5334633Z",
+  "privacyModeHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2270980",
+  "stats": {
+    "summary": {
+      "projects": 4,
+      "issues": 1,
+      "incidents": 24,
+      "effort": 0
+    },
+    "charts": {
+      "severity": {
+        "Mandatory": 0,
+        "Optional": 0,
+        "Potential": 0,
+        "Information": 24
+      },
+      "category": {
+        "Pkg": 24
+      }
+    }
+  },
+  "projects": [
+    {
+      "path": "Nbic.References.Core\\Nbic.References.Core.csproj",
+      "startingProject": true,
+      "issues": 0,
+      "storyPoints": 0,
+      "properties": {
+        "appName": "Nbic.References.Core",
+        "projectKind": "ClassLibrary",
+        "frameworks": [
+          "net10.0"
+        ],
+        "languages": [
+          "C#"
+        ],
+        "tools": [
+          "MSBuild"
+        ],
+        "isSdkStyle": true,
+        "isTestProject": false,
+        "numberOfFiles": 7,
+        "numberOfCodeFiles": 7,
+        "linesTotal": 342,
+        "linesOfCode": 342,
+        "totalApiScanned": 0,
+        "minLinesOfCodeToChange": 0,
+        "maxLinesOfCodeToChange": 0
+      },
+      "ruleInstances": [],
+      "features": []
+    },
+    {
+      "path": "Nbic.References\\Nbic.References.csproj",
+      "startingProject": true,
+      "issues": 1,
+      "storyPoints": 0,
+      "properties": {
+        "appName": "Nbic.References",
+        "projectKind": "AspNetCore",
+        "frameworks": [
+          "net10.0"
+        ],
+        "languages": [
+          "C#"
+        ],
+        "tools": [
+          "MSBuild"
+        ],
+        "isSdkStyle": true,
+        "isTestProject": false,
+        "numberOfFiles": 9,
+        "numberOfCodeFiles": 7,
+        "linesTotal": 852,
+        "linesOfCode": 816,
+        "totalApiScanned": 0,
+        "minLinesOfCodeToChange": 0,
+        "maxLinesOfCodeToChange": 0
+      },
+      "ruleInstances": [
+        {
+          "incidentId": "11c85eb0-44aa-40d1-8d6c-d2cf9a8c18e0",
+          "ruleId": "Pkg.0001",
+          "description": "Project references \u0027Microsoft.ApplicationInsights.AspNetCore\u0027 3.1.2 (included in this upgrade).",
+          "projectPath": "Nbic.References\\Nbic.References.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microsoft.ApplicationInsights.AspNetCore, 3.1.2",
+              "protected": "Microsoft.ApplicationInsights.AspNetCore, 3.1.2"
+            },
+            "kind": "File",
+            "path": "Nbic.References\\Nbic.References.csproj",
+            "snippet": "Microsoft.ApplicationInsights.AspNetCore, 3.1.2",
+            "protectedSnippet": "Microsoft.ApplicationInsights.AspNetCore, 3.1.2",
+            "label": "Microsoft.ApplicationInsights.AspNetCore 3.1.2",
+            "properties": {
+              "PackageId": "Microsoft.ApplicationInsights.AspNetCore",
+              "PackageVersion": "3.1.2",
+              "PackageNewVersion": "3.1.2",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "6ea7c539-e15b-4033-9165-902ca14d5cc2",
+          "ruleId": "Pkg.0001",
+          "description": "Project references \u0027Microsoft.AspNetCore.Authentication.JwtBearer\u0027 10.0.9; proposed upgrade to 10.0.12.",
+          "projectPath": "Nbic.References\\Nbic.References.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microsoft.AspNetCore.Authentication.JwtBearer, 10.0.9",
+              "protected": "Microsoft.AspNetCore.Authentication.JwtBearer, 10.0.9"
+            },
+            "kind": "File",
+            "path": "Nbic.References\\Nbic.References.csproj",
+            "snippet": "Microsoft.AspNetCore.Authentication.JwtBearer, 10.0.9",
+            "protectedSnippet": "Microsoft.AspNetCore.Authentication.JwtBearer, 10.0.9",
+            "label": "Microsoft.AspNetCore.Authentication.JwtBearer 10.0.9",
+            "properties": {
+              "PackageId": "Microsoft.AspNetCore.Authentication.JwtBearer",
+              "PackageVersion": "10.0.9",
+              "PackageNewVersion": "10.0.12",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "8ef2388c-8c08-473f-8a2b-81595994db65",
+          "ruleId": "Pkg.0001",
+          "description": "Project references \u0027Microsoft.CodeAnalysis.NetAnalyzers\u0027 10.0.301; proposed upgrade to 10.0.401.",
+          "projectPath": "Nbic.References\\Nbic.References.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microsoft.CodeAnalysis.NetAnalyzers, 10.0.301",
+              "protected": "Microsoft.CodeAnalysis.NetAnalyzers, 10.0.301"
+            },
+            "kind": "File",
+            "path": "Nbic.References\\Nbic.References.csproj",
+            "snippet": "Microsoft.CodeAnalysis.NetAnalyzers, 10.0.301",
+            "protectedSnippet": "Microsoft.CodeAnalysis.NetAnalyzers, 10.0.301",
+            "label": "Microsoft.CodeAnalysis.NetAnalyzers 10.0.301",
+            "properties": {
+              "PackageId": "Microsoft.CodeAnalysis.NetAnalyzers",
+              "PackageVersion": "10.0.301",
+              "PackageNewVersion": "10.0.401",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "02a04bbd-8deb-4ac9-a94d-a3ba05567b5f",
+          "ruleId": "Pkg.0001",
+          "description": "Project references \u0027Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers\u0027 0.4.421302 (included in this upgrade).",
+          "projectPath": "Nbic.References\\Nbic.References.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers, 0.4.421302",
+              "protected": "Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers, 0.4.421302"
+            },
+            "kind": "File",
+            "path": "Nbic.References\\Nbic.References.csproj",
+            "snippet": "Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers, 0.4.421302",
+            "protectedSnippet": "Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers, 0.4.421302",
+            "label": "Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers 0.4.421302",
+            "properties": {
+              "PackageId": "Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers",
+              "PackageVersion": "0.4.421302",
+              "PackageNewVersion": "0.4.421302",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "6019e901-8635-4cbe-ac6f-261eff3201ee",
+          "ruleId": "Pkg.0001",
+          "description": "Project references \u0027Microsoft.EntityFrameworkCore.Tools\u0027 10.0.9; proposed upgrade to 10.0.12.",
+          "projectPath": "Nbic.References\\Nbic.References.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microsoft.EntityFrameworkCore.Tools, 10.0.9",
+              "protected": "Microsoft.EntityFrameworkCore.Tools, 10.0.9"
+            },
+            "kind": "File",
+            "path": "Nbic.References\\Nbic.References.csproj",
+            "snippet": "Microsoft.EntityFrameworkCore.Tools, 10.0.9",
+            "protectedSnippet": "Microsoft.EntityFrameworkCore.Tools, 10.0.9",
+            "label": "Microsoft.EntityFrameworkCore.Tools 10.0.9",
+            "properties": {
+              "PackageId": "Microsoft.EntityFrameworkCore.Tools",
+              "PackageVersion": "10.0.9",
+              "PackageNewVersion": "10.0.12",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "7f5b32dc-04b2-4862-be7e-573d58c4ca5a",
+          "ruleId": "Pkg.0001",
+          "description": "Project references \u0027Microsoft.Extensions.Diagnostics.HealthChecks\u0027 10.0.9; proposed upgrade to 10.0.12.",
+          "projectPath": "Nbic.References\\Nbic.References.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microsoft.Extensions.Diagnostics.HealthChecks, 10.0.9",
+              "protected": "Microsoft.Extensions.Diagnostics.HealthChecks, 10.0.9"
+            },
+            "kind": "File",
+            "path": "Nbic.References\\Nbic.References.csproj",
+            "snippet": "Microsoft.Extensions.Diagnostics.HealthChecks, 10.0.9",
+            "protectedSnippet": "Microsoft.Extensions.Diagnostics.HealthChecks, 10.0.9",
+            "label": "Microsoft.Extensions.Diagnostics.HealthChecks 10.0.9",
+            "properties": {
+              "PackageId": "Microsoft.Extensions.Diagnostics.HealthChecks",
+              "PackageVersion": "10.0.9",
+              "PackageNewVersion": "10.0.12",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "c84308a4-2e9a-499f-b227-93ec20aa7f7f",
+          "ruleId": "Pkg.0001",
+          "description": "Project references \u0027Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore\u0027 10.0.9; proposed upgrade to 10.0.12.",
+          "projectPath": "Nbic.References\\Nbic.References.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore, 10.0.9",
+              "protected": "Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore, 10.0.9"
+            },
+            "kind": "File",
+            "path": "Nbic.References\\Nbic.References.csproj",
+            "snippet": "Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore, 10.0.9",
+            "protectedSnippet": "Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore, 10.0.9",
+            "label": "Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore 10.0.9",
+            "properties": {
+              "PackageId": "Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore",
+              "PackageVersion": "10.0.9",
+              "PackageNewVersion": "10.0.12",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "580301dc-3936-4d21-a594-1c98c7b2e531",
+          "ruleId": "Pkg.0001",
+          "description": "Project references \u0027Microsoft.Extensions.Logging.Debug\u0027 10.0.9; proposed upgrade to 10.0.12.",
+          "projectPath": "Nbic.References\\Nbic.References.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microsoft.Extensions.Logging.Debug, 10.0.9",
+              "protected": "Microsoft.Extensions.Logging.Debug, 10.0.9"
+            },
+            "kind": "File",
+            "path": "Nbic.References\\Nbic.References.csproj",
+            "snippet": "Microsoft.Extensions.Logging.Debug, 10.0.9",
+            "protectedSnippet": "Microsoft.Extensions.Logging.Debug, 10.0.9",
+            "label": "Microsoft.Extensions.Logging.Debug 10.0.9",
+            "properties": {
+              "PackageId": "Microsoft.Extensions.Logging.Debug",
+              "PackageVersion": "10.0.9",
+              "PackageNewVersion": "10.0.12",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "d5de96e8-5d51-484d-893d-77f23b4312de",
+          "ruleId": "Pkg.0001",
+          "description": "Project references \u0027Microsoft.VisualStudio.Web.CodeGeneration.Design\u0027 10.0.2 (included in this upgrade).",
+          "projectPath": "Nbic.References\\Nbic.References.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microsoft.VisualStudio.Web.CodeGeneration.Design, 10.0.2",
+              "protected": "Microsoft.VisualStudio.Web.CodeGeneration.Design, 10.0.2"
+            },
+            "kind": "File",
+            "path": "Nbic.References\\Nbic.References.csproj",
+            "snippet": "Microsoft.VisualStudio.Web.CodeGeneration.Design, 10.0.2",
+            "protectedSnippet": "Microsoft.VisualStudio.Web.CodeGeneration.Design, 10.0.2",
+            "label": "Microsoft.VisualStudio.Web.CodeGeneration.Design 10.0.2",
+            "properties": {
+              "PackageId": "Microsoft.VisualStudio.Web.CodeGeneration.Design",
+              "PackageVersion": "10.0.2",
+              "PackageNewVersion": "10.0.2",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "695499db-2f79-4ef9-80d8-1846f94ba5fb",
+          "ruleId": "Pkg.0001",
+          "description": "Project references \u0027NuGet.Protocol\u0027 6.12.5; proposed upgrade to 7.9.0.",
+          "projectPath": "Nbic.References\\Nbic.References.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "NuGet.Protocol, 6.12.5",
+              "protected": "NuGet.Protocol, 6.12.5"
+            },
+            "kind": "File",
+            "path": "Nbic.References\\Nbic.References.csproj",
+            "snippet": "NuGet.Protocol, 6.12.5",
+            "protectedSnippet": "NuGet.Protocol, 6.12.5",
+            "label": "NuGet.Protocol 6.12.5",
+            "properties": {
+              "PackageId": "NuGet.Protocol",
+              "PackageVersion": "6.12.5",
+              "PackageNewVersion": "7.9.0",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "4d336ad4-890b-479e-9a33-4a654e2c6d14",
+          "ruleId": "Pkg.0001",
+          "description": "Project references \u0027RobotsTxtCore\u0027 3.0.0 (included in this upgrade).",
+          "projectPath": "Nbic.References\\Nbic.References.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "RobotsTxtCore, 3.0.0",
+              "protected": "RobotsTxtCore, 3.0.0"
+            },
+            "kind": "File",
+            "path": "Nbic.References\\Nbic.References.csproj",
+            "snippet": "RobotsTxtCore, 3.0.0",
+            "protectedSnippet": "RobotsTxtCore, 3.0.0",
+            "label": "RobotsTxtCore 3.0.0",
+            "properties": {
+              "PackageId": "RobotsTxtCore",
+              "PackageVersion": "3.0.0",
+              "PackageNewVersion": "3.0.0",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "4652563e-9d06-420f-99aa-a1ea033e4848",
+          "ruleId": "Pkg.0001",
+          "description": "Project references \u0027Swashbuckle.AspNetCore\u0027 9.0.3; proposed upgrade to 10.2.3.",
+          "projectPath": "Nbic.References\\Nbic.References.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Swashbuckle.AspNetCore, 9.0.3",
+              "protected": "Swashbuckle.AspNetCore, 9.0.3"
+            },
+            "kind": "File",
+            "path": "Nbic.References\\Nbic.References.csproj",
+            "snippet": "Swashbuckle.AspNetCore, 9.0.3",
+            "protectedSnippet": "Swashbuckle.AspNetCore, 9.0.3",
+            "label": "Swashbuckle.AspNetCore 9.0.3",
+            "properties": {
+              "PackageId": "Swashbuckle.AspNetCore",
+              "PackageVersion": "9.0.3",
+              "PackageNewVersion": "10.2.3",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "3677cc81-1aa1-48b8-8361-3a1a7a0cdc05",
+          "ruleId": "Pkg.0001",
+          "description": "Project references \u0027Swashbuckle.AspNetCore.Annotations\u0027 9.0.3; proposed upgrade to 10.2.3.",
+          "projectPath": "Nbic.References\\Nbic.References.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Swashbuckle.AspNetCore.Annotations, 9.0.3",
+              "protected": "Swashbuckle.AspNetCore.Annotations, 9.0.3"
+            },
+            "kind": "File",
+            "path": "Nbic.References\\Nbic.References.csproj",
+            "snippet": "Swashbuckle.AspNetCore.Annotations, 9.0.3",
+            "protectedSnippet": "Swashbuckle.AspNetCore.Annotations, 9.0.3",
+            "label": "Swashbuckle.AspNetCore.Annotations 9.0.3",
+            "properties": {
+              "PackageId": "Swashbuckle.AspNetCore.Annotations",
+              "PackageVersion": "9.0.3",
+              "PackageNewVersion": "10.2.3",
+              "PackageReplacements": null
+            }
+          }
+        }
+      ],
+      "features": []
+    },
+    {
+      "path": "Nbic.References.Infrastructure\\Nbic.References.Infrastructure.csproj",
+      "startingProject": true,
+      "issues": 1,
+      "storyPoints": 0,
+      "properties": {
+        "appName": "Nbic.References.Infrastructure",
+        "projectKind": "ClassLibrary",
+        "frameworks": [
+          "net10.0"
+        ],
+        "languages": [
+          "C#"
+        ],
+        "tools": [
+          "MSBuild"
+        ],
+        "isSdkStyle": true,
+        "isTestProject": false,
+        "numberOfFiles": 11,
+        "numberOfCodeFiles": 11,
+        "linesTotal": 1399,
+        "linesOfCode": 1399,
+        "totalApiScanned": 0,
+        "minLinesOfCodeToChange": 0,
+        "maxLinesOfCodeToChange": 0
+      },
+      "ruleInstances": [
+        {
+          "incidentId": "92c41153-39ff-46cb-83db-b0eb9f3afa9e",
+          "ruleId": "Pkg.0001",
+          "description": "Project references \u0027Microsoft.EntityFrameworkCore.Design\u0027 10.0.9; proposed upgrade to 10.0.12.",
+          "projectPath": "Nbic.References.Infrastructure\\Nbic.References.Infrastructure.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microsoft.EntityFrameworkCore.Design, 10.0.9",
+              "protected": "Microsoft.EntityFrameworkCore.Design, 10.0.9"
+            },
+            "kind": "File",
+            "path": "Nbic.References.Infrastructure\\Nbic.References.Infrastructure.csproj",
+            "snippet": "Microsoft.EntityFrameworkCore.Design, 10.0.9",
+            "protectedSnippet": "Microsoft.EntityFrameworkCore.Design, 10.0.9",
+            "label": "Microsoft.EntityFrameworkCore.Design 10.0.9",
+            "properties": {
+              "PackageId": "Microsoft.EntityFrameworkCore.Design",
+              "PackageVersion": "10.0.9",
+              "PackageNewVersion": "10.0.12",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "8f4c3fab-f3df-4c11-9aeb-749176e101bf",
+          "ruleId": "Pkg.0001",
+          "description": "Project references \u0027Microsoft.EntityFrameworkCore.Sqlite\u0027 10.0.9; proposed upgrade to 10.0.12.",
+          "projectPath": "Nbic.References.Infrastructure\\Nbic.References.Infrastructure.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microsoft.EntityFrameworkCore.Sqlite, 10.0.9",
+              "protected": "Microsoft.EntityFrameworkCore.Sqlite, 10.0.9"
+            },
+            "kind": "File",
+            "path": "Nbic.References.Infrastructure\\Nbic.References.Infrastructure.csproj",
+            "snippet": "Microsoft.EntityFrameworkCore.Sqlite, 10.0.9",
+            "protectedSnippet": "Microsoft.EntityFrameworkCore.Sqlite, 10.0.9",
+            "label": "Microsoft.EntityFrameworkCore.Sqlite 10.0.9",
+            "properties": {
+              "PackageId": "Microsoft.EntityFrameworkCore.Sqlite",
+              "PackageVersion": "10.0.9",
+              "PackageNewVersion": "10.0.12",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "260fc0aa-df1f-43f9-b363-3f5d2120037c",
+          "ruleId": "Pkg.0001",
+          "description": "Project references \u0027Microsoft.EntityFrameworkCore.SqlServer\u0027 10.0.9; proposed upgrade to 10.0.12.",
+          "projectPath": "Nbic.References.Infrastructure\\Nbic.References.Infrastructure.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microsoft.EntityFrameworkCore.SqlServer, 10.0.9",
+              "protected": "Microsoft.EntityFrameworkCore.SqlServer, 10.0.9"
+            },
+            "kind": "File",
+            "path": "Nbic.References.Infrastructure\\Nbic.References.Infrastructure.csproj",
+            "snippet": "Microsoft.EntityFrameworkCore.SqlServer, 10.0.9",
+            "protectedSnippet": "Microsoft.EntityFrameworkCore.SqlServer, 10.0.9",
+            "label": "Microsoft.EntityFrameworkCore.SqlServer 10.0.9",
+            "properties": {
+              "PackageId": "Microsoft.EntityFrameworkCore.SqlServer",
+              "PackageVersion": "10.0.9",
+              "PackageNewVersion": "10.0.12",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "b1f085d8-8fed-4880-a6ae-b70ae5515dad",
+          "ruleId": "Pkg.0001",
+          "description": "Project references \u0027Lucene.Net\u0027 4.8.0-beta00017; proposed upgrade to 2.9.2.2.",
+          "projectPath": "Nbic.References.Infrastructure\\Nbic.References.Infrastructure.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Lucene.Net, 4.8.0-beta00017",
+              "protected": "Lucene.Net, 4.8.0-beta00017"
+            },
+            "kind": "File",
+            "path": "Nbic.References.Infrastructure\\Nbic.References.Infrastructure.csproj",
+            "snippet": "Lucene.Net, 4.8.0-beta00017",
+            "protectedSnippet": "Lucene.Net, 4.8.0-beta00017",
+            "label": "Lucene.Net 4.8.0-beta00017",
+            "properties": {
+              "PackageId": "Lucene.Net",
+              "PackageVersion": "4.8.0-beta00017",
+              "PackageNewVersion": "2.9.2.2",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "c0232ab3-592e-434d-8748-8a921cc49067",
+          "ruleId": "Pkg.0001",
+          "description": "Project references \u0027Lucene.Net.Analysis.Common\u0027 4.8.0-beta00017 (included in this upgrade).",
+          "projectPath": "Nbic.References.Infrastructure\\Nbic.References.Infrastructure.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Lucene.Net.Analysis.Common, 4.8.0-beta00017",
+              "protected": "Lucene.Net.Analysis.Common, 4.8.0-beta00017"
+            },
+            "kind": "File",
+            "path": "Nbic.References.Infrastructure\\Nbic.References.Infrastructure.csproj",
+            "snippet": "Lucene.Net.Analysis.Common, 4.8.0-beta00017",
+            "protectedSnippet": "Lucene.Net.Analysis.Common, 4.8.0-beta00017",
+            "label": "Lucene.Net.Analysis.Common 4.8.0-beta00017",
+            "properties": {
+              "PackageId": "Lucene.Net.Analysis.Common",
+              "PackageVersion": "4.8.0-beta00017",
+              "PackageNewVersion": null,
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "49617742-1e69-4334-87ac-de5125a877fa",
+          "ruleId": "Pkg.0001",
+          "description": "Project references \u0027SQLitePCLRaw.lib.e_sqlite3\u0027 2.1.12-pre20260709125052; proposed upgrade to 3.53.3.",
+          "projectPath": "Nbic.References.Infrastructure\\Nbic.References.Infrastructure.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "SQLitePCLRaw.lib.e_sqlite3, 2.1.12-pre20260709125052",
+              "protected": "SQLitePCLRaw.lib.e_sqlite3, 2.1.12-pre20260709125052"
+            },
+            "kind": "File",
+            "path": "Nbic.References.Infrastructure\\Nbic.References.Infrastructure.csproj",
+            "snippet": "SQLitePCLRaw.lib.e_sqlite3, 2.1.12-pre20260709125052",
+            "protectedSnippet": "SQLitePCLRaw.lib.e_sqlite3, 2.1.12-pre20260709125052",
+            "label": "SQLitePCLRaw.lib.e_sqlite3 2.1.12-pre20260709125052",
+            "properties": {
+              "PackageId": "SQLitePCLRaw.lib.e_sqlite3",
+              "PackageVersion": "2.1.12-pre20260709125052",
+              "PackageNewVersion": "3.53.3",
+              "PackageReplacements": null
+            }
+          }
+        }
+      ],
+      "features": []
+    },
+    {
+      "path": "Nbic.References.Tests\\Nbic.References.Tests.csproj",
+      "startingProject": true,
+      "issues": 1,
+      "storyPoints": 0,
+      "properties": {
+        "appName": "Nbic.References.Tests",
+        "projectKind": "DotNetCoreApp",
+        "frameworks": [
+          "net10.0"
+        ],
+        "languages": [
+          "C#"
+        ],
+        "tools": [
+          "MSBuild"
+        ],
+        "isSdkStyle": true,
+        "isTestProject": true,
+        "numberOfFiles": 7,
+        "numberOfCodeFiles": 5,
+        "linesTotal": 4130,
+        "linesOfCode": 1494,
+        "totalApiScanned": 0,
+        "minLinesOfCodeToChange": 0,
+        "maxLinesOfCodeToChange": 0
+      },
+      "ruleInstances": [
+        {
+          "incidentId": "8fd210b0-d90d-4a57-99ce-fc82ce53456a",
+          "ruleId": "Pkg.0001",
+          "description": "Project references \u0027Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers\u0027 0.4.421302 (included in this upgrade).",
+          "projectPath": "Nbic.References.Tests\\Nbic.References.Tests.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers, 0.4.421302",
+              "protected": "Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers, 0.4.421302"
+            },
+            "kind": "File",
+            "path": "Nbic.References.Tests\\Nbic.References.Tests.csproj",
+            "snippet": "Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers, 0.4.421302",
+            "protectedSnippet": "Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers, 0.4.421302",
+            "label": "Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers 0.4.421302",
+            "properties": {
+              "PackageId": "Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers",
+              "PackageVersion": "0.4.421302",
+              "PackageNewVersion": "0.4.421302",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "62493f0a-3250-468a-8476-de6734bdd332",
+          "ruleId": "Pkg.0001",
+          "description": "Project references \u0027coverlet.collector\u0027 6.0.4; proposed upgrade to 10.0.1.",
+          "projectPath": "Nbic.References.Tests\\Nbic.References.Tests.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "coverlet.collector, 6.0.4",
+              "protected": "coverlet.collector, 6.0.4"
+            },
+            "kind": "File",
+            "path": "Nbic.References.Tests\\Nbic.References.Tests.csproj",
+            "snippet": "coverlet.collector, 6.0.4",
+            "protectedSnippet": "coverlet.collector, 6.0.4",
+            "label": "coverlet.collector 6.0.4",
+            "properties": {
+              "PackageId": "coverlet.collector",
+              "PackageVersion": "6.0.4",
+              "PackageNewVersion": "10.0.1",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "b042b629-9a84-40af-82cf-addce1c09b48",
+          "ruleId": "Pkg.0001",
+          "description": "Project references \u0027Microsoft.NET.Test.Sdk\u0027 18.7.0; proposed upgrade to 18.10.1.",
+          "projectPath": "Nbic.References.Tests\\Nbic.References.Tests.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microsoft.NET.Test.Sdk, 18.7.0",
+              "protected": "Microsoft.NET.Test.Sdk, 18.7.0"
+            },
+            "kind": "File",
+            "path": "Nbic.References.Tests\\Nbic.References.Tests.csproj",
+            "snippet": "Microsoft.NET.Test.Sdk, 18.7.0",
+            "protectedSnippet": "Microsoft.NET.Test.Sdk, 18.7.0",
+            "label": "Microsoft.NET.Test.Sdk 18.7.0",
+            "properties": {
+              "PackageId": "Microsoft.NET.Test.Sdk",
+              "PackageVersion": "18.7.0",
+              "PackageNewVersion": "18.10.1",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "f9fd1f61-5851-477d-ac18-5f66c37ff4a6",
+          "ruleId": "Pkg.0001",
+          "description": "Project references \u0027xunit\u0027 2.9.3 (included in this upgrade).",
+          "projectPath": "Nbic.References.Tests\\Nbic.References.Tests.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "xunit, 2.9.3",
+              "protected": "xunit, 2.9.3"
+            },
+            "kind": "File",
+            "path": "Nbic.References.Tests\\Nbic.References.Tests.csproj",
+            "snippet": "xunit, 2.9.3",
+            "protectedSnippet": "xunit, 2.9.3",
+            "label": "xunit 2.9.3",
+            "properties": {
+              "PackageId": "xunit",
+              "PackageVersion": "2.9.3",
+              "PackageNewVersion": "2.9.3",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "b59ae8d5-5d96-4e8b-a01a-ba893de5e92f",
+          "ruleId": "Pkg.0001",
+          "description": "Project references \u0027xunit.runner.visualstudio\u0027 3.1.1; proposed upgrade to 4.0.0.",
+          "projectPath": "Nbic.References.Tests\\Nbic.References.Tests.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "xunit.runner.visualstudio, 3.1.1",
+              "protected": "xunit.runner.visualstudio, 3.1.1"
+            },
+            "kind": "File",
+            "path": "Nbic.References.Tests\\Nbic.References.Tests.csproj",
+            "snippet": "xunit.runner.visualstudio, 3.1.1",
+            "protectedSnippet": "xunit.runner.visualstudio, 3.1.1",
+            "label": "xunit.runner.visualstudio 3.1.1",
+            "properties": {
+              "PackageId": "xunit.runner.visualstudio",
+              "PackageVersion": "3.1.1",
+              "PackageNewVersion": "4.0.0",
+              "PackageReplacements": null
+            }
+          }
+        }
+      ],
+      "features": []
+    }
+  ],
+  "rules": {
+    "Pkg.0001": {
+      "id": "Pkg.0001",
+      "isFeature": false,
+      "description": "Project references a package included in this upgrade.\n\nThe project references one of the packages being upgraded. This finding records the reference (current and proposed version) so the assessment lists every affected project even when no breaking API changes were detected.",
+      "label": "Project references an upgraded package",
+      "severity": "Information",
+      "effort": 0
+    }
+  }
+}
